@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+}
+
+.sidebar {
+  width: 30vw;
+  background-color: rgb(195, 208, 97);
+  height: 100vh;
+}
+
+.display {
+  width: 100%;
+  height: 100%;
+}

@@ -1,0 +1,17 @@
+.container {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.addTarget button {
+  width: 100%;
+  padding: 8px;
+  font-size: 20px;
+  background-color: rgb(30, 199, 142);
+  border-radius: 100px;
+  font-weight: 800;
+  color: rgb(43, 33, 20);
+}

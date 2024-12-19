@@ -1,0 +1,16 @@
+.container {
+  display: flex;
+  gap: 20px;
+}
+
+.name {
+  font-size: 25px;
+}
+
+.checkbox {
+  scale: 1.5;
+}
+
+.completed {
+  opacity: 0.5;
+}

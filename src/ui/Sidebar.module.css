@@ -1,0 +1,42 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin: 20px;
+}
+
+.topPart {
+  display: flex;
+  gap: 5vw;
+}
+
+.right {
+  margin-top: 30px;
+}
+
+.right h2 {
+  color: cadetblue;
+}
+
+.profileLogo {
+  margin: 30px;
+  margin-bottom: 5px;
+  scale: 2.5;
+}
+
+.topPart h2 {
+  margin-left: 10px;
+}
+
+.list {
+}
+
+.list h2 {
+  text-align: center;
+  border: solid black 2px;
+  background-color: antiquewhite;
+  color: thistle;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 10px;
+}
