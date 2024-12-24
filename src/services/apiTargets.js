@@ -9,10 +9,10 @@ export async function getTargets() {
   return targets;
 }
 
-export async function updateTarget(updatedValue, id) {
+export async function updateTarget(id, updatedTarget) {
   const { data, error } = await supabase
     .from("targets")
-    .update({ completed: updatedValue })
+    .update({ ...updatedTarget })
     .eq("id", id)
     .select();
   if (error) {

@@ -1,12 +1,12 @@
 import { updateTarget } from "../../services/apiTargets";
 import style from "./TargetRow.module.css";
 
-function TargetRow({ target }) {
-  //Name Tags Time Tick
+function TargetRow({ target, updateTargets }) {
   function handleCheckboxClick(e) {
     const id = e.target.name;
     const updatedValue = e.target.checked;
-    updateTarget(updatedValue, id);
+    const newTarget = { ...target, completed: updatedValue };
+    updateTargets(id, newTarget);
   }
   return (
     <div

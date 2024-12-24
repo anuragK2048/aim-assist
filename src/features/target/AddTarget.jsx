@@ -1,6 +1,5 @@
 import { Form } from "react-router";
 import style from "./AddTarget.module.css";
-import { getAppStateContext, useAppState } from "../../context/AppStateContext";
 import { getTargets } from "../../services/apiTargets";
 import { useEffect } from "react";
 
@@ -57,16 +56,16 @@ export async function action({ request }) {
   };
   // console.log(newTarget);
 
-  const { updateTargets, revertTargets, targets } = getAppStateContext();
-  const tempTargets = targets;
-  updateTargets(newTarget);
-  setTimeout(
-    function () {
-      revertTargets(tempTargets);
-      console.log("hi");
-    },
-    [3000]
-  );
+  // const { updateTargets, revertTargets, targets } = getAppStateContext();
+  // const tempTargets = targets;
+  // updateTargets(newTarget);
+  // setTimeout(
+  //   function () {
+  //     revertTargets(tempTargets);
+  //     console.log("hi");
+  //   },
+  //   [3000]
+  // );
   return null;
 }
 

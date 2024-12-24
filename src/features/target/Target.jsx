@@ -1,11 +1,22 @@
 import { useEffect, useState } from "react";
-import { getTargets } from "../../services/apiTargets";
+import { getTargets, updateTarget } from "../../services/apiTargets";
 import style from "./Target.module.css";
 import TargetRow from "./TargetRow";
 import supabase from "../../services/supabase";
+import { useDispatch, useSelector } from "react-redux";
+import { update } from "./targetSlice";
 
 function Target() {
-  const [targets, setTargets] = useState([]);
+  const dispatch = useDispatch();
+  const { targets } = useSelector((store) => store.targets);
+
+  function updateTargets(id, updatedTarget) {
+    const updatedTargets = targets.map((target) =>
+      target.id == id ? updatedTarget : target
+    );
+    dispatch(update(updatedTargets)); //updating global context
+    updateTarget(id, updatedTarget); //updating remote state
+  }
 
   const targetsTableUpdates = supabase
     .channel("custom-all-channel")
@@ -13,20 +24,14 @@ function Target() {
       "postgres_changes",
       { event: "*", schema: "public", table: "targets" },
       (payload) => {
-        const updatedTarget_Id = payload.old.id;
-        setTargets((prevTargets) =>
-          prevTargets.map((target) =>
-            target.id === updatedTarget_Id ? payload.new : target
-          )
+        const updatedTargets = targets.map((target) =>
+          target.id == payload.old.id ? payload.new : target
         );
+        dispatch(update(updatedTargets));
       }
     )
     .subscribe();
 
-  useEffect(function () {
-    getTargets().then((data) => setTargets(data));
-  }, []);
-  //   console.log("Target component rendered");
   return (
     <div className={style.container}>
       <div>
@@ -34,7 +39,11 @@ function Target() {
       </div>
       <div className={style.table}>
         {targets.map((target) => (
-          <TargetRow target={target} key={target.id} />
+          <TargetRow
+            target={target}
+            updateTargets={updateTargets}
+            key={target.id}
+          />
         ))}
       </div>
       <div className={style.addTarget}>
