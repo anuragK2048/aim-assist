@@ -14,4 +14,11 @@
   border-radius: 100px;
   font-weight: 800;
   color: rgb(43, 33, 20);
+  cursor: pointer;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }

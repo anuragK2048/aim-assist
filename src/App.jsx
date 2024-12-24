@@ -10,12 +10,19 @@ import DaySchedule from "./features/daySchedule/DaySchedule";
 import Journal from "./features/journal/Journal";
 import Display from "./ui/Display";
 import { useEffect } from "react";
-import { getTargets } from "./services/apiTargets";
+import {
+  addTarget,
+  deleteTarget,
+  getTargets,
+  updateTarget,
+} from "./services/apiTargets";
 import { fetched } from "./features/target/targetSlice";
-import { useDispatch } from "react-redux";
-import supabase from "./services/supabase";
+import { useDispatch, useSelector } from "react-redux";
+import { clearTaskQueue, getTaskQueue } from "./utility/reconnectionUpdates";
 
 function App() {
+  const { targets } = useSelector((store) => store.targets);
+
   const dispatch = useDispatch();
   useEffect(function () {
     async function foo() {
@@ -25,19 +32,37 @@ function App() {
     foo();
   }, []);
 
+  const availableTasks = [updateTarget, addTarget, deleteTarget];
+
   useEffect(() => {
-    function handleOnline(event) {
-      event.preventDefault();
-      // console.log(e);
-      console.log("online");
+    async function handleOnline() {
+      console.log("online, executing task queue");
+      const taskQueue = getTaskQueue();
+      console.log(taskQueue);
+      for (const task of taskQueue) {
+        try {
+          await availableTasks[task.functionNumber](
+            task.values[0],
+            task.values[1]
+          );
+          console.log(`Task executed successfully:`, task);
+        } catch (error) {
+          console.error(`Task execution failed:`, task, error);
+        }
+      }
+      //add sync global state to remote state if required
+      const targetsData = await getTargets();
+      dispatch(fetched(targetsData));
+
+      // Clear the queue after execution
+      clearTaskQueue();
     }
 
     function handleOffline() {
-      // e.preventDefault();
       console.log("offline");
     }
 
-    window.addEventListener("online", handleOnline(event));
+    window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
     return () => {

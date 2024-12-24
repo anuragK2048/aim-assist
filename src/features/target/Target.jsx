@@ -1,21 +1,34 @@
 import { useEffect, useState } from "react";
-import { getTargets, updateTarget } from "../../services/apiTargets";
+import {
+  deleteTarget,
+  getTargets,
+  updateTarget,
+} from "../../services/apiTargets";
 import style from "./Target.module.css";
 import TargetRow from "./TargetRow";
 import supabase from "../../services/supabase";
 import { useDispatch, useSelector } from "react-redux";
-import { update } from "./targetSlice";
+import { add, remove, update } from "./targetSlice";
+import { addTaskToQueue } from "../../utility/reconnectionUpdates";
+import AddTargetForm from "./AddTargetForm";
 
 function Target() {
   const dispatch = useDispatch();
   const { targets } = useSelector((store) => store.targets);
+  const [addTarget, setAddTarget] = useState(false);
 
-  function updateTargets(id, updatedTarget) {
+  function updateTargets(global_id, updatedTarget) {
     const updatedTargets = targets.map((target) =>
-      target.id == id ? updatedTarget : target
+      target.global_id == global_id ? updatedTarget : target
     );
     dispatch(update(updatedTargets)); //updating global context
-    updateTarget(id, updatedTarget); //updating remote state
+
+    if (navigator.onLine) {
+      updateTarget(global_id, updatedTarget); //updating remote state
+    } else {
+      addTaskToQueue({ values: [global_id, updatedTarget], functionNumber: 0 });
+      console.log("task queued for later execution");
+    }
   }
 
   const targetsTableUpdates = supabase
@@ -24,13 +37,45 @@ function Target() {
       "postgres_changes",
       { event: "*", schema: "public", table: "targets" },
       (payload) => {
-        const updatedTargets = targets.map((target) =>
-          target.id == payload.old.id ? payload.new : target
-        );
-        dispatch(update(updatedTargets));
+        console.log("update received");
+        console.log(payload);
+        if (!payload.old.id) {
+          targets.forEach((target) => {
+            if (target.global_id === payload.new.global_id) {
+              return null;
+            }
+          });
+          dispatch(add(payload.new));
+        } else if (payload.eventType === "DELETE") {
+          targets.forEach((target) => {
+            if (target.id === payload.old.id) {
+              dispatch(remove(target.global_id));
+            }
+          });
+        } else {
+          const updatedTargets = targets.map((target) =>
+            target.global_id == payload.new.global_id ? payload.new : target
+          );
+          dispatch(update(updatedTargets));
+        }
       }
     )
     .subscribe();
+
+  function handleAddTarget() {
+    setAddTarget((cur) => !cur);
+  }
+
+  async function handleDelete(global_id) {
+    console.log(global_id);
+    dispatch(remove(global_id));
+    if (navigator.onLine) {
+      deleteTarget(global_id); //updating remote state
+    } else {
+      addTaskToQueue({ values: [global_id, null], functionNumber: 2 });
+      console.log("task queued for later execution");
+    }
+  }
 
   return (
     <div className={style.container}>
@@ -42,13 +87,15 @@ function Target() {
           <TargetRow
             target={target}
             updateTargets={updateTargets}
-            key={target.id}
+            handleDelete={handleDelete}
+            key={target.global_id}
           />
         ))}
       </div>
       <div className={style.addTarget}>
-        <button>Add target +</button>
+        <button onClick={handleAddTarget}>Add target +</button>
       </div>
+      <div>{addTarget && <AddTargetForm />}</div>
     </div>
   );
 }

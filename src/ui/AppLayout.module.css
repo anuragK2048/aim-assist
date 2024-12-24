@@ -5,10 +5,11 @@
 .sidebar {
   width: 30vw;
   background-color: rgb(195, 208, 97);
-  height: 100vh;
+  height: 100%;
 }
 
 .display {
+  overflow: scroll;
   width: 100%;
   height: 100%;
 }

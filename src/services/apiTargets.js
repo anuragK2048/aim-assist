@@ -9,11 +9,11 @@ export async function getTargets() {
   return targets;
 }
 
-export async function updateTarget(id, updatedTarget) {
+export async function updateTarget(global_id, updatedTarget) {
   const { data, error } = await supabase
     .from("targets")
     .update({ ...updatedTarget })
-    .eq("id", id)
+    .eq("global_id", global_id)
     .select();
   if (error) {
     console.error(error);
@@ -21,4 +21,19 @@ export async function updateTarget(id, updatedTarget) {
   return data;
 }
 
+export async function addTarget(newTarget) {
+  const { data, error } = await supabase
+    .from("targets")
+    .insert([newTarget])
+    .select();
+  if (error) console.log(error);
+  return data;
+}
+
+export async function deleteTarget(global_id) {
+  const { error } = await supabase
+    .from("targets")
+    .delete()
+    .eq("global_id", global_id);
+}
 // updateTarget(false, 3);

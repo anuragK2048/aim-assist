@@ -8,7 +8,7 @@ export default defineConfig({
   //   //for preventing reload in mobile when reconnecting to internet
   //   hmr: {
   //     overlay: false, // Disable error overlay (optional)
-  //     // clientPort: 443, // Specify client port for WebSocket if necessary
+  //     clientPort: 443, // Specify client port for WebSocket if necessary
   //   },
   // },
 });
