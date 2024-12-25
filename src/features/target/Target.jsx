@@ -27,7 +27,7 @@ function Target() {
       updateTarget(global_id, updatedTarget); //updating remote state
     } else {
       addTaskToQueue({ values: [global_id, updatedTarget], functionNumber: 0 });
-      console.log("task queued for later execution");
+      // console.log("task queued for later execution");
     }
   }
 
@@ -37,22 +37,22 @@ function Target() {
       "postgres_changes",
       { event: "*", schema: "public", table: "targets" },
       (payload) => {
-        console.log("update received");
-        console.log(payload);
-        if (!payload.old.id) {
-          targets.forEach((target) => {
-            if (target.global_id === payload.new.global_id) {
-              return null;
-            }
-          });
-          dispatch(add(payload.new));
+        // console.log("update received");
+        // console.log(payload);
+        if (payload.eventType === "INSERT") {
+          const exists = targets.some(
+            (target) => target.global_id === payload.new.global_id
+          );
+          if (!exists) {
+            dispatch(add(payload.new));
+          }
         } else if (payload.eventType === "DELETE") {
           targets.forEach((target) => {
             if (target.id === payload.old.id) {
               dispatch(remove(target.global_id));
             }
           });
-        } else {
+        } else if (payload.eventType === "UPDATE") {
           const updatedTargets = targets.map((target) =>
             target.global_id == payload.new.global_id ? payload.new : target
           );
@@ -67,13 +67,12 @@ function Target() {
   }
 
   async function handleDelete(global_id) {
-    console.log(global_id);
     dispatch(remove(global_id));
     if (navigator.onLine) {
       deleteTarget(global_id); //updating remote state
     } else {
       addTaskToQueue({ values: [global_id, null], functionNumber: 2 });
-      console.log("task queued for later execution");
+      // console.log("task queued for later execution");
     }
   }
 

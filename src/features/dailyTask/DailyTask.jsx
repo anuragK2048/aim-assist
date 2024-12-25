@@ -1,5 +1,5 @@
 function DailyTask() {
-  return <div>Daily Task</div>;
+  return <div>.</div>;
 }
 
 export default DailyTask;

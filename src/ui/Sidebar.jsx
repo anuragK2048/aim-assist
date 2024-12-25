@@ -17,8 +17,8 @@ function Sidebar() {
       </div>
       <div className={style.list}>
         <h2 onClick={() => navigate("target")}>Target</h2>
-        <h2 onClick={() => navigate("task")}>Task</h2>
-        <h2 onClick={() => navigate("dailyTask")}>Daily Task</h2>
+        <h2 onClick={() => navigate("task/all_tasks")}>Task</h2>
+        <h2 onClick={() => navigate("dailyTask")}>.</h2>
         <h2 onClick={() => navigate("scheduleDay")}>Schedule Day</h2>
         <h2 onClick={() => navigate("daySchedule")}>Day Schedule</h2>
         <h2 onClick={() => navigate("journal")}>Journal</h2>

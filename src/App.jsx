@@ -19,6 +19,8 @@ import {
 import { fetched } from "./features/target/targetSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { clearTaskQueue, getTaskQueue } from "./utility/reconnectionUpdates";
+import TaskList from "./features/task/TaskList";
+import AddTaskForm from "./features/task/AddTaskForm";
 
 function App() {
   const { targets } = useSelector((store) => store.targets);
@@ -93,6 +95,16 @@ function App() {
         {
           path: "task",
           element: <Task />,
+          children: [
+            {
+              path: ":taskType",
+              element: <TaskList />,
+            },
+            {
+              path: "addTask",
+              element: <AddTaskForm />,
+            },
+          ],
         },
         {
           path: "dailyTask",

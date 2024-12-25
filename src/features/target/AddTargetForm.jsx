@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import styles from "./AddTargetForm.module.css";
 import { addTarget } from "../../services/apiTargets";
@@ -25,8 +25,7 @@ function AddTargetForm({ targetDetails = {} }) {
         ? targetDetails.tags.join(",")
         : "",
       reward: targetDetails.reward || "",
-      associatedTasks: targetDetails.associatedTasks || [],
-      deadline: targetDetails.deadline || "",
+      associatedTasks: targetDetails.associatedTasks || [""],
     },
   });
 
@@ -55,10 +54,10 @@ function AddTargetForm({ targetDetails = {} }) {
       await addTarget(newTarget); //updating remote state
     } else {
       addTaskToQueue({ values: [newTarget, null], functionNumber: 1 });
-      console.log("task queued for later execution");
+      // console.log("task queued for later execution");
     }
 
-    console.log("target added successfully");
+    // console.log("target added successfully");
   }
 
   return (
@@ -136,9 +135,9 @@ function AddTargetForm({ targetDetails = {} }) {
         />
       </label>
 
-      <h3>Tasks</h3>
-      {fields.map((field, index) => (
-        <div key={field.id} className={styles.task}>
+      <label>Tasks</label>
+      {fields.map((task, index) => (
+        <div key={index} className={styles.task}>
           <input
             type="text"
             placeholder={`Task ${index + 1} Name`}
@@ -146,6 +145,14 @@ function AddTargetForm({ targetDetails = {} }) {
               required: "Task name is required",
             })}
           />
+          <button
+            type="button"
+            className={styles.addTaskButton}
+            style={{ height: "45px" }}
+            onClick={() => remove(index)}
+          >
+            Remove
+          </button>
           <button
             type="button"
             className={styles.addTaskButton}
