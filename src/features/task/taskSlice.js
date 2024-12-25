@@ -1,9 +1,18 @@
-// const initialStates = {
-//   tasks: [],
-// };
+import { createSlice } from "@reduxjs/toolkit";
 
-// export default function tasksReducer(state = initialStates){
-//     switch () {
+const initialState = {
+  tasks: [],
+};
 
-//     }
-// }
+const taskSlice = createSlice({
+  name: "tasks",
+  initialState,
+  reducers: {
+    addTaskGlobal(state, action) {
+      state.tasks.push(action.payload);
+    },
+  },
+});
+
+export const { addTaskGlobal } = taskSlice.actions;
+export default taskSlice.reducer;

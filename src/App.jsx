@@ -21,10 +21,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearTaskQueue, getTaskQueue } from "./utility/reconnectionUpdates";
 import TaskList from "./features/task/TaskList";
 import AddTaskForm from "./features/task/AddTaskForm";
+import { addTaskRemote } from "./services/apiTasks";
 
 function App() {
-  const { targets } = useSelector((store) => store.targets);
-
   const dispatch = useDispatch();
   useEffect(function () {
     async function foo() {
@@ -34,7 +33,13 @@ function App() {
     foo();
   }, []);
 
-  const availableTasks = [updateTarget, addTarget, deleteTarget];
+  const availableTasks = [
+    updateTarget,
+    addTarget,
+    deleteTarget,
+    null,
+    addTaskRemote,
+  ];
 
   useEffect(() => {
     async function handleOnline() {

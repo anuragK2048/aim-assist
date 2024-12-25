@@ -1,9 +1,13 @@
 import React from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import styles from "./AddTaskForm.module.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { addTaskGlobal } from "./taskSlice";
+import { v4 as uuidv4 } from "uuid";
+import { addTaskRemote } from "../../services/apiTasks";
 
 function AddTaskForm({ onSubmit }) {
+  const dispatch = useDispatch();
   const { targets } = useSelector((store) => store.targets);
   const {
     register,
@@ -33,15 +37,22 @@ function AddTaskForm({ onSubmit }) {
     name: "subtask_list",
   });
 
-  function onSubmit(formData) {
+  async function onSubmit(formData) {
     console.log(formData);
     const newTask = {
       ...formData,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       completed: false,
+      global_id: uuidv4(),
     };
     console.log(newTask);
+    dispatch(addTaskGlobal(newTask)); //adding task to global state
+    if (navigator.onLine) {
+      await addTaskRemote(newTask); //adding task to remote state
+    } else {
+      addTaskToQueue({ values: [newTask, null], functionNumber: 4 });
+    }
   }
 
   return (

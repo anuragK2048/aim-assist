@@ -1,11 +1,11 @@
 import { act } from "react";
 
-const initialStates = {
+const initialState = {
   targets: [],
   test: "",
 };
 
-export default function targetsReducer(state = initialStates, action) {
+export default function targetsReducer(state = initialState, action) {
   switch (action.type) {
     case "targets/fetched":
       return { ...state, targets: action.payload };
