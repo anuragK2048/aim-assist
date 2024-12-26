@@ -1,26 +1,21 @@
-import { updateTarget } from "../../services/apiTargets";
-import style from "./TargetRow.module.css";
-import { MdDelete } from "react-icons/md";
-import { FaRegEdit } from "react-icons/fa";
-import { IoIosArrowDropdownCircle } from "react-icons/io";
-import { IoIosArrowDropup } from "react-icons/io";
 import { useState } from "react";
-import AddTargetForm from "./AddTargetForm";
+import AddTaskForm from "./AddTaskForm";
+import style from "./TaskRow.module.css";
+import { IoIosArrowDropdownCircle, IoIosArrowDropup } from "react-icons/io";
+import { FaRegEdit } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 
-function TargetRow({ target, updateTargets, handleDelete }) {
-  // console.log(target);
+function TaskRow({ task, updateTasks, handleDelete }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [editForm, setEditForm] = useState(false);
   function handleCheckboxClick(e) {
     const global_id = e.target.name;
     const updatedValue = e.target.checked;
-    const newTarget = { ...target, completed: updatedValue };
-    updateTargets(global_id, newTarget);
+    const updatedTask = { ...task, completed: updatedValue };
+    updateTasks(global_id, updatedTask);
   }
   return (
-    <div
-      className={`${target.completed && style.completed} ${style.container}`}
-    >
+    <div className={`${task.completed && style.completed} ${style.container}`}>
       <div className={style.top}>
         <div className={style.topLeft}>
           {isExpanded ? (
@@ -37,11 +32,11 @@ function TargetRow({ target, updateTargets, handleDelete }) {
           <input
             className={style.checkbox}
             type="checkbox"
-            name={`${target.global_id}`}
-            checked={target.completed}
+            name={`${task.global_id}`}
+            checked={task.completed}
             onChange={handleCheckboxClick}
           />
-          <div className={style.name}>{target.name}</div>
+          <div className={style.name}>{task.name}</div>
         </div>
         <div className={style.topRight}>
           <FaRegEdit
@@ -50,21 +45,21 @@ function TargetRow({ target, updateTargets, handleDelete }) {
           />
           <MdDelete
             style={{ scale: "1.7", cursor: "pointer" }}
-            name={`${target.global_id}`}
-            onClick={() => handleDelete(target.global_id)}
+            name={`${task.global_id}`}
+            onClick={() => handleDelete(task.global_id)}
           />
         </div>
       </div>
       {isExpanded && (
         <div className={style.bottom}>
-          {target?.associatedTasks.map((task) => (
-            <div key={task}>{task}</div>
+          {task?.subtask_list.map((subtask, i) => (
+            <div key={i}>{subtask}</div>
           ))}
         </div>
       )}
-      {editForm && <AddTargetForm targetDetails={target} />}
+      {editForm && <AddTaskForm taskDetails={task} />}
     </div>
   );
 }
 
-export default TargetRow;
+export default TaskRow;

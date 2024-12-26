@@ -21,7 +21,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearTaskQueue, getTaskQueue } from "./utility/reconnectionUpdates";
 import TaskList from "./features/task/TaskList";
 import AddTaskForm from "./features/task/AddTaskForm";
-import { addTaskRemote } from "./services/apiTasks";
+import {
+  addTaskRemote,
+  getTaskRemote,
+  updateTaskRemote,
+  deleteTaskRemote,
+} from "./services/apiTasks";
+import { fetchedTaskGlobal } from "./features/task/taskSlice";
 
 function App() {
   const dispatch = useDispatch();
@@ -32,13 +38,21 @@ function App() {
     }
     foo();
   }, []);
+  useEffect(function () {
+    async function foo() {
+      const tasksData = await getTaskRemote();
+      dispatch(fetchedTaskGlobal(tasksData));
+    }
+    foo();
+  }, []);
 
   const availableTasks = [
     updateTarget,
     addTarget,
     deleteTarget,
-    null,
+    updateTaskRemote,
     addTaskRemote,
+    deleteTaskRemote,
   ];
 
   useEffect(() => {
@@ -60,6 +74,9 @@ function App() {
       //add sync global state to remote state if required
       const targetsData = await getTargets();
       dispatch(fetched(targetsData));
+
+      const tasksData = await getTaskRemote();
+      dispatch(fetchedTaskGlobal(tasksData));
 
       // Clear the queue after execution
       clearTaskQueue();

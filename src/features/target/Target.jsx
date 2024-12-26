@@ -37,7 +37,7 @@ function Target() {
       "postgres_changes",
       { event: "*", schema: "public", table: "targets" },
       (payload) => {
-        // console.log("update received");
+        console.log("target update received");
         // console.log(payload);
         if (payload.eventType === "INSERT") {
           const exists = targets.some(
@@ -51,6 +51,7 @@ function Target() {
             if (target.id === payload.old.id) {
               dispatch(remove(target.global_id));
             }
+            return;
           });
         } else if (payload.eventType === "UPDATE") {
           const updatedTargets = targets.map((target) =>

@@ -35,5 +35,6 @@ export async function deleteTarget(global_id) {
     .from("targets")
     .delete()
     .eq("global_id", global_id);
+  if (error) console.error(error);
 }
 // updateTarget(false, 3);
