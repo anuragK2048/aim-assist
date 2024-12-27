@@ -1,5 +1,3 @@
-import { act } from "react";
-
 const initialState = {
   targets: [],
   test: "",
@@ -12,6 +10,8 @@ export default function targetsReducer(state = initialState, action) {
     case "targets/update":
       return { ...state, targets: action.payload };
     case "targets/add":
+      // console.log("Adding target:", action.payload);
+      // console.log("Previous targets:", state.targets);
       return { ...state, targets: [...state.targets, action.payload] };
     case "targets/delete":
       const newTarget = state.targets.filter(

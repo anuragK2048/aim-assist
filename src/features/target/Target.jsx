@@ -31,37 +31,37 @@ function Target() {
     }
   }
 
-  const targetsTableUpdates = supabase
-    .channel("custom-all-channel")
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "targets" },
-      (payload) => {
-        console.log("target update received");
-        // console.log(payload);
-        if (payload.eventType === "INSERT") {
-          const exists = targets.some(
-            (target) => target.global_id === payload.new.global_id
-          );
-          if (!exists) {
-            dispatch(add(payload.new));
-          }
-        } else if (payload.eventType === "DELETE") {
-          targets.forEach((target) => {
-            if (target.id === payload.old.id) {
-              dispatch(remove(target.global_id));
-            }
-            return;
-          });
-        } else if (payload.eventType === "UPDATE") {
-          const updatedTargets = targets.map((target) =>
-            target.global_id == payload.new.global_id ? payload.new : target
-          );
-          dispatch(update(updatedTargets));
-        }
-      }
-    )
-    .subscribe();
+  // const targetsTableUpdates = supabase
+  //   .channel("custom-all-channel")
+  //   .on(
+  //     "postgres_changes",
+  //     { event: "*", schema: "public", table: "targets" },
+  //     (payload) => {
+  //       console.log("target update received");
+  //       // console.log(payload);
+  //       if (payload.eventType === "INSERT") {
+  //         const exists = targets.some(
+  //           (target) => target.global_id === payload.new.global_id
+  //         );
+  //         if (!exists) {
+  //           dispatch(add(payload.new));
+  //         }
+  //       } else if (payload.eventType === "DELETE") {
+  //         targets.forEach((target) => {
+  //           if (target.id === payload.old.id) {
+  //             dispatch(remove(target.global_id));
+  //           }
+  //           return;
+  //         });
+  //       } else if (payload.eventType === "UPDATE") {
+  //         const updatedTargets = targets.map((target) =>
+  //           target.global_id == payload.new.global_id ? payload.new : target
+  //         );
+  //         dispatch(update(updatedTargets));
+  //       }
+  //     }
+  //   )
+  //   .subscribe();
 
   function handleAddTarget() {
     setAddTarget((cur) => !cur);

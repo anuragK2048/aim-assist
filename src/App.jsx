@@ -16,7 +16,7 @@ import {
   getTargets,
   updateTarget,
 } from "./services/apiTargets";
-import { fetched } from "./features/target/targetSlice";
+import { add, fetched, remove, update } from "./features/target/targetSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { clearTaskQueue, getTaskQueue } from "./utility/reconnectionUpdates";
 import TaskList from "./features/task/TaskList";
@@ -27,10 +27,18 @@ import {
   updateTaskRemote,
   deleteTaskRemote,
 } from "./services/apiTasks";
-import { fetchedTaskGlobal } from "./features/task/taskSlice";
+import {
+  addTaskGlobal,
+  deleteTaskGlobal,
+  fetchedTaskGlobal,
+  updateTaskGlobal,
+} from "./features/task/taskSlice";
+import supabase from "./services/supabase";
 
 function App() {
   const dispatch = useDispatch();
+  const { targets } = useSelector((store) => store.targets);
+  const { tasks } = useSelector((store) => store.tasks);
   useEffect(function () {
     async function foo() {
       const targetsData = await getTargets();
@@ -45,6 +53,77 @@ function App() {
     }
     foo();
   }, []);
+
+  // useEffect(() => {
+  //   dispatch({ type: "SUPABASE_INIT" });
+  //   return () => {
+  //     dispatch({ type: "SUPABASE_CLEANUP" });
+  //   };
+  // }, [dispatch]);
+
+  const targetsTableUpdates = supabase
+    .channel("custom-all-channel1")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "targets" },
+      (payload) => {
+        // console.log("target update received", payload);
+        // console.log(payload);
+        if (payload.eventType === "INSERT") {
+          const exists = targets.some(
+            (target) => target.global_id === payload.new.global_id
+          );
+          if (!exists) {
+            dispatch(add(payload.new));
+          }
+        } else if (payload.eventType === "DELETE") {
+          targets.forEach((target) => {
+            if (target.global_id === payload.old.global_id) {
+              dispatch(remove(target.global_id));
+            }
+            return;
+          });
+        } else if (payload.eventType === "UPDATE") {
+          const updatedTargets = targets.map((target) =>
+            target.global_id == payload.new.global_id ? payload.new : target
+          );
+          dispatch(update(updatedTargets));
+        }
+      }
+    )
+    .subscribe();
+
+  const tasksTableUpdates = supabase
+    .channel("custom-all-channel2")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "tasks" },
+      (payload) => {
+        // console.log("task update received");
+        // console.log(payload);
+        if (payload.eventType === "INSERT") {
+          const exists = tasks.some(
+            (tasks) => tasks.global_id === payload.new.global_id
+          );
+          if (!exists) {
+            dispatch(addTaskGlobal(payload.new));
+          }
+        } else if (payload.eventType === "DELETE") {
+          tasks.forEach((task) => {
+            if (task.id === payload.old.id) {
+              dispatch(deleteTaskGlobal(task.global_id));
+            }
+            return;
+          });
+        } else if (payload.eventType === "UPDATE") {
+          const updatedTasks = tasks.map((task) =>
+            task.global_id == payload.new.global_id ? payload.new : task
+          );
+          dispatch(updateTaskGlobal(updatedTasks));
+        }
+      }
+    )
+    .subscribe();
 
   const availableTasks = [
     updateTarget,
@@ -112,7 +191,6 @@ function App() {
         {
           path: "target",
           element: <Target />,
-          // action: addTargetAction,
         },
         {
           path: "task",

@@ -10,42 +10,42 @@ function Task() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { targets } = useSelector((store) => store.targets);
-  console.log("targets change received", targets);
+  // console.log("targets change received", targets);
   useEffect(() => {
-    console.log("Targets changed: ", targets);
+    // console.log("Targets changed: ", targets);
   }, [targets]);
   const { tasks } = useSelector((store) => store.tasks);
-  const tasksTableUpdates = supabase
-    .channel("custom-all-channel")
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "tasks" },
-      (payload) => {
-        console.log("task update received");
-        // console.log(payload);
-        if (payload.eventType === "INSERT") {
-          const exists = tasks.some(
-            (tasks) => tasks.global_id === payload.new.global_id
-          );
-          if (!exists) {
-            dispatch(addTaskGlobal(payload.new));
-          }
-        } else if (payload.eventType === "DELETE") {
-          tasks.forEach((task) => {
-            if (task.id === payload.old.id) {
-              dispatch(deleteTaskGlobal(task.global_id));
-            }
-            return;
-          });
-        } else if (payload.eventType === "UPDATE") {
-          const updatedTasks = tasks.map((task) =>
-            task.global_id == payload.new.global_id ? payload.new : task
-          );
-          dispatch(updateTaskGlobal(updatedTasks));
-        }
-      }
-    )
-    .subscribe();
+  // const tasksTableUpdates = supabase
+  //   .channel("custom-all-channel")
+  //   .on(
+  //     "postgres_changes",
+  //     { event: "*", schema: "public", table: "tasks" },
+  //     (payload) => {
+  //       console.log("task update received");
+  //       // console.log(payload);
+  //       if (payload.eventType === "INSERT") {
+  //         const exists = tasks.some(
+  //           (tasks) => tasks.global_id === payload.new.global_id
+  //         );
+  //         if (!exists) {
+  //           dispatch(addTaskGlobal(payload.new));
+  //         }
+  //       } else if (payload.eventType === "DELETE") {
+  //         tasks.forEach((task) => {
+  //           if (task.id === payload.old.id) {
+  //             dispatch(deleteTaskGlobal(task.global_id));
+  //           }
+  //           return;
+  //         });
+  //       } else if (payload.eventType === "UPDATE") {
+  //         const updatedTasks = tasks.map((task) =>
+  //           task.global_id == payload.new.global_id ? payload.new : task
+  //         );
+  //         dispatch(updateTaskGlobal(updatedTasks));
+  //       }
+  //     }
+  //   )
+  //   .subscribe();
 
   return (
     <div className={style.mainContainer}>
