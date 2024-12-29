@@ -1,7 +1,7 @@
 import { useFieldArray, useForm } from "react-hook-form";
 import style from "./ScheduleDay.module.css";
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PiTimerDuotone } from "react-icons/pi";
 
 function ScheduleDay() {
@@ -73,10 +73,25 @@ function ScheduleDay() {
   function timerSymbolClicked(taskId) {
     setExpandTimer(taskId);
   }
+  const ref = useRef();
   function onSubmit(formData) {
     console.log(formData);
   }
   let taskIndex = 0;
+  useEffect(() => {
+    function handleClick(e) {
+      // console.log(e.target.name);
+      const str = e.target.name;
+      // console.log(str?.split("."));
+      const targetName = str?.split(".");
+      // console.log(e);
+      if (targetName?.[0] !== "taskList" && targetName?.[2] !== "time")
+        setExpandTimer((cur) => {
+          if (cur !== null) return null;
+        });
+    }
+    document.addEventListener("click", handleClick, true);
+  }, []);
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className={style.mainContainer}>
