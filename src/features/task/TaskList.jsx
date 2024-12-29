@@ -39,10 +39,7 @@ function TaskList() {
   );
 
   function updateTasks(global_id, updatedTask) {
-    const updatedTasks = tasks.map((task) =>
-      task.global_id == global_id ? updatedTask : task
-    );
-    dispatch(updateTaskGlobal(updatedTasks)); //updating global context
+    dispatch(updateTaskGlobal(global_id, updatedTask)); //updating global context
 
     if (navigator.onLine) {
       updateTaskRemote(global_id, updatedTask); //updating remote state

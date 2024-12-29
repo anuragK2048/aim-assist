@@ -3,6 +3,7 @@ import { createStore } from "redux";
 import { configureStore } from "@reduxjs/toolkit";
 import targetsReducer from "../features/target/targetSlice";
 import tasksReducer from "../features/task/taskSlice";
+import scheduleDayReducer from "../features/scheduleDay/scheduleDaySlice";
 import { logger } from "./Logger";
 import { supabaseMiddleware } from "./supabaseMiddleware";
 
@@ -10,6 +11,7 @@ const store = configureStore({
   reducer: {
     targets: targetsReducer,
     tasks: tasksReducer,
+    scheduleDay: scheduleDayReducer,
   },
   // middleware: (getDefaultMiddleware) =>
   //   getDefaultMiddleware().concat(supabaseMiddleware),

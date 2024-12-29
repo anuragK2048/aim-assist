@@ -1,3 +1,20 @@
-.container {
+.mainContainer {
+  margin: 20px;
+}
+
+.mainHeading {
+  text-align: center;
+}
+
+.middleContainer {
   display: flex;
+  flex-wrap: wrap;
+}
+
+.targetElement {
+  margin: 10px 0;
+}
+
+.taskDisplay {
+  border: 2px solid blueviolet;
 }

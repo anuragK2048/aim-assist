@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import styles from "./AddTargetForm.module.css";
-import { addTarget } from "../../services/apiTargets";
+import { addTarget, updateTarget } from "../../services/apiTargets";
 import { useDispatch } from "react-redux";
-import { add } from "./targetSlice";
+import { add, update } from "./targetSlice";
 import { v4 as uuidv4 } from "uuid";
 import { addTaskToQueue } from "../../utility/reconnectionUpdates";
 
 function AddTargetForm({ targetDetails = {} }) {
   const dispatch = useDispatch();
+
   const {
     register,
     handleSubmit,
@@ -35,29 +36,58 @@ function AddTargetForm({ targetDetails = {} }) {
   });
 
   async function onSubmit(data) {
-    const newTarget = {
-      ...data,
-      completed: false,
-      progress: 0,
-      userId: 1,
-      tags: data.tags.split(",").map((tag) => tag.trim()), // Convert tags to array
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      status: "in-progress",
-      syncStatus: "unsynced",
-      deviceId: "device_123",
-      version: 1,
-      global_id: uuidv4(),
-    };
-    dispatch(add(newTarget));
-    if (navigator.onLine) {
-      await addTarget(newTarget); //updating remote state
+    console.log(Object.keys(targetDetails).length === 0);
+    if (Object.keys(targetDetails).length === 0) {
+      const newTarget = {
+        ...data,
+        completed: false,
+        progress: 0,
+        userId: 1,
+        tags: data.tags.split(",").map((tag) => tag.trim()), // Convert tags to array
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        status: "in-progress",
+        syncStatus: "unsynced",
+        deviceId: "device_123",
+        version: 1,
+        global_id: uuidv4(),
+      };
+      dispatch(add(newTarget));
+      if (navigator.onLine) {
+        await addTarget(newTarget); //updating remote state
+      } else {
+        addTaskToQueue({ values: [newTarget, null], functionNumber: 1 });
+        // console.log("task queued for later execution");
+      }
     } else {
-      addTaskToQueue({ values: [newTarget, null], functionNumber: 1 });
-      // console.log("task queued for later execution");
+      const updatedTarget = {
+        ...data,
+        // completed: false,
+        progress: 0,
+        userId: 1,
+        tags: data.tags.split(",").map((tag) => tag.trim()), // Convert tags to array
+        // created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        status: "in-progress",
+        syncStatus: "unsynced",
+        deviceId: "device_123",
+        version: 1,
+        // global_id: uuidv4(),
+      };
+      // const updatedTargets = targets.map((target) =>
+      //   target.global_id == global_id ? updatedTarget : target
+      // );
+      dispatch(update(targetDetails.global_id, updatedTarget));
+      if (navigator.onLine) {
+        await updateTarget(targetDetails.global_id, updatedTarget); //updating remote state
+      } else {
+        addTaskToQueue({
+          values: [targetDetails.global_id, updatedTarget],
+          functionNumber: 0,
+        });
+      }
     }
-
-    // console.log("target added successfully");
+    console.log("form submitted");
   }
 
   return (

@@ -1,9 +1,10 @@
 import { useForm, useFieldArray } from "react-hook-form";
 import styles from "./AddTaskForm.module.css";
 import { useDispatch, useSelector } from "react-redux";
-import { addTaskGlobal } from "./taskSlice";
+import { addTaskGlobal, updateTaskGlobal } from "./taskSlice";
 import { v4 as uuidv4 } from "uuid";
-import { addTaskRemote } from "../../services/apiTasks";
+import { addTaskRemote, updateTaskRemote } from "../../services/apiTasks";
+import { addTaskToQueue } from "../../utility/reconnectionUpdates";
 
 function AddTaskForm({ taskDetails = {} }) {
   const dispatch = useDispatch();
@@ -52,19 +53,40 @@ function AddTaskForm({ taskDetails = {} }) {
 
   async function onSubmit(formData) {
     // console.log(formData);
-    const newTask = {
-      ...formData,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      completed: false,
-      global_id: uuidv4(),
-    };
-    console.log("submitted");
-    dispatch(addTaskGlobal(newTask)); //adding task to global state
-    if (navigator.onLine) {
-      await addTaskRemote(newTask); //adding task to remote state
+    if (Object.keys(taskDetails).length === 0) {
+      const newTask = {
+        ...formData,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        completed: false,
+        global_id: uuidv4(),
+      };
+      console.log("submitted", formData);
+      dispatch(addTaskGlobal(newTask)); //adding task to global state
+      if (navigator.onLine) {
+        await addTaskRemote(newTask); //adding task to remote state
+      } else {
+        addTaskToQueue({ values: [newTask, null], functionNumber: 4 });
+      }
     } else {
-      addTaskToQueue({ values: [newTask, null], functionNumber: 4 });
+      const updatedTask = {
+        ...formData,
+        // created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        // completed: false,
+        // global_id: uuidv4(),
+      };
+      dispatch(updateTaskGlobal(taskDetails.global_id, updatedTask)); //updating global context
+
+      if (navigator.onLine) {
+        updateTaskRemote(taskDetails.global_id, updatedTask); //updating remote state
+      } else {
+        addTaskToQueue({
+          values: [taskDetails.global_id, updatedTask],
+          functionNumber: 3,
+        });
+        // console.log("task queued for later execution");
+      }
     }
   }
 

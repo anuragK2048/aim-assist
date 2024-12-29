@@ -8,7 +8,12 @@ export default function targetsReducer(state = initialState, action) {
     case "targets/fetched":
       return { ...state, targets: action.payload };
     case "targets/update":
-      return { ...state, targets: action.payload };
+      const updatedTargets = state.targets.map((target) =>
+        target.global_id == action.payload.global_id
+          ? { ...target, ...action.payload.updatedTarget }
+          : target
+      );
+      return { ...state, targets: updatedTargets };
     case "targets/add":
       // console.log("Adding target:", action.payload);
       // console.log("Previous targets:", state.targets);
@@ -28,8 +33,8 @@ export function fetched(targetsData) {
   return { type: "targets/fetched", payload: targetsData };
 }
 
-export function update(updatedTargets) {
-  return { type: "targets/update", payload: updatedTargets };
+export function update(global_id, updatedTarget) {
+  return { type: "targets/update", payload: { global_id, updatedTarget } };
 }
 
 export function add(newTarget) {

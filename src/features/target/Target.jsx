@@ -18,10 +18,7 @@ function Target() {
   const [addTarget, setAddTarget] = useState(false);
 
   function updateTargets(global_id, updatedTarget) {
-    const updatedTargets = targets.map((target) =>
-      target.global_id == global_id ? updatedTarget : target
-    );
-    dispatch(update(updatedTargets)); //updating global context
+    dispatch(update(global_id, updatedTarget)); //updating global context
 
     if (navigator.onLine) {
       updateTarget(global_id, updatedTarget); //updating remote state

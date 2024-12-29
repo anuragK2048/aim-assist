@@ -67,7 +67,7 @@ function App() {
       "postgres_changes",
       { event: "*", schema: "public", table: "targets" },
       (payload) => {
-        // console.log("target update received", payload);
+        console.log("target update received", payload);
         // console.log(payload);
         if (payload.eventType === "INSERT") {
           const exists = targets.some(
@@ -84,10 +84,10 @@ function App() {
             return;
           });
         } else if (payload.eventType === "UPDATE") {
-          const updatedTargets = targets.map((target) =>
-            target.global_id == payload.new.global_id ? payload.new : target
-          );
-          dispatch(update(updatedTargets));
+          // const updatedTargets = targets.map((target) =>
+          //   target.global_id == payload.new.global_id ? payload.new : target
+          // );
+          dispatch(update(payload.new.global_id, payload.new));
         }
       }
     )
@@ -116,10 +116,7 @@ function App() {
             return;
           });
         } else if (payload.eventType === "UPDATE") {
-          const updatedTasks = tasks.map((task) =>
-            task.global_id == payload.new.global_id ? payload.new : task
-          );
-          dispatch(updateTaskGlobal(updatedTasks));
+          dispatch(updateTaskGlobal(payload.new.global_id, payload.new));
         }
       }
     )
