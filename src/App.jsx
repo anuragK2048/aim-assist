@@ -34,6 +34,7 @@ import {
   updateTaskGlobal,
 } from "./features/task/taskSlice";
 import supabase from "./services/supabase";
+import { addSchedule } from "./services/apiDaySchedule";
 
 function App() {
   const dispatch = useDispatch();
@@ -129,6 +130,9 @@ function App() {
     updateTaskRemote,
     addTaskRemote,
     deleteTaskRemote,
+    null,
+    addSchedule,
+    null,
   ];
 
   useEffect(() => {

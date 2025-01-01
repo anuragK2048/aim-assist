@@ -1,12 +1,15 @@
 import { useFieldArray, useForm } from "react-hook-form";
 import style from "./ScheduleDay.module.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { PiTimerDuotone } from "react-icons/pi";
+import { updateScheduleDetails } from "./scheduleDaySlice";
+import { addSchedule } from "../../services/apiDaySchedule";
 
 function ScheduleDay() {
   const { targets } = useSelector((store) => store.targets);
   const { tasks } = useSelector((store) => store.tasks);
+  const dispatch = useDispatch();
 
   const scheduledTasks = tasks.filter((task) => task.type === "Schedule Task");
   const routineTasks = tasks.filter((task) => task.type === "Routine Task");
@@ -59,9 +62,10 @@ function ScheduleDay() {
   //   "537be5ff-4a99-4e47-8f1f-54a32d76dbc5"
 
   const { register, handleSubmit, control, watch } = useForm({
-    // defaultValues: {
-    //   taskList: tasks,
-    // },
+    defaultValues: {
+      // taskList: tasks,
+      sleepSchedule: {},
+    },
   });
   const { fields, append, remove } = useFieldArray({
     control,
@@ -75,7 +79,28 @@ function ScheduleDay() {
   }
   const ref = useRef();
   function onSubmit(formData) {
-    console.log(formData);
+    const data = {
+      ...formData,
+      taskList: formData.taskList.filter((task) => task.selected === true),
+    };
+
+    const scheduleData = {
+      schedule_details: data,
+      updated_at: new Date().toISOString(),
+    };
+
+    console.log(scheduleData);
+    dispatch(updateScheduleDetails(scheduleData)); //updating global state
+
+    if (navigator.onLine) {
+      addSchedule(scheduleData); //updating remote state
+    } else {
+      addTaskToQueue({
+        values: [scheduleData, null],
+        functionNumber: 7,
+      });
+      // console.log("task queued for later execution");
+    }
   }
   let taskIndex = 0;
   useEffect(() => {
@@ -96,7 +121,21 @@ function ScheduleDay() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className={style.mainContainer}>
         <h2 className={style.mainHeading}>Schedule your day</h2>
-        <div className={style.topContainer}></div>
+        <br></br>
+        <div className={style.topContainer}>
+          {/* <div className={style.sleepSchedule}>Schedule Sleep</div> */}
+          <label>Wake-up</label>
+          <input type="time" {...register("sleepSchedule.wake")} />
+          <label>Sleep</label>
+          <input type="time" {...register("sleepSchedule.sleep")} />
+          <div className={style.nap}>
+            Nap:
+            <label>from</label>
+            <input type="time" {...register(`sleepSchedule.nap.from`)} />
+            <label>to</label>
+            <input type="time" {...register(`sleepSchedule.nap.to`)} />
+          </div>
+        </div>
         <div className={style.middleContainer}>
           <div className={style.taskDisplay}>
             <h2>Target Tasks</h2>
@@ -234,7 +273,11 @@ function ScheduleDay() {
             </div>
           </div>
         </div>
-        <button type="submit">Submit Task</button>
+        <div className={style.submitContainer}>
+          <button type="submit" className={style.submitButton}>
+            Submit Schedule
+          </button>
+        </div>
       </div>
     </form>
   );
