@@ -3,81 +3,140 @@ import style from "./ScheduleDay.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { PiTimerDuotone } from "react-icons/pi";
-import { updateScheduleDetails } from "./scheduleDaySlice";
-import { addSchedule } from "../../services/apiDaySchedule";
+import { addScheduleDetails, updateScheduleDetails } from "./scheduleDaySlice";
+import {
+  addRemoteSchedule,
+  updateRemoteSchedule,
+} from "../../services/apiDaySchedule";
+import { getFullDate } from "../../utility/utilFunctions";
 
 function ScheduleDay() {
   const { targets } = useSelector((store) => store.targets);
   const { tasks } = useSelector((store) => store.tasks);
+  const { scheduleDetails } = useSelector((store) => store.scheduleDay);
   const dispatch = useDispatch();
+  // console.log("rendered");
+  const scheduleAlreadyExists = scheduleDetails.some(
+    (schedule) => schedule.global_id_date === getFullDate(new Date())
+  );
+
+  const [previousSchedule] = scheduleDetails.filter(
+    (schedule) => schedule.global_id_date === getFullDate(new Date())
+  );
+  // console.log(previousSchedule?.schedule_details?.taskList);
 
   const scheduledTasks = tasks.filter((task) => task.type === "Schedule Task");
   const routineTasks = tasks.filter((task) => task.type === "Routine Task");
 
-  // Step 1: Create a priority map for targets
-  const priorityMap = targets.reduce((map, target) => {
-    map[target.global_id] = target.priority;
-    return map;
-  }, {});
+  // // Step 1: Create a priority map for targets
+  // const priorityMap = targets.reduce((map, target) => {
+  //   map[target.global_id] = target.priority;
+  //   return map;
+  // }, {});
 
-  // Step 2: Filter tasks for "Target Task" and group them by target_global_id
-  const targetTasks = tasks
-    .filter((task) => task.type === "Target Task")
-    .reduce((acc, task) => {
-      const { target_global_id, global_id } = task;
-      if (!acc[target_global_id]) acc[target_global_id] = [];
-      acc[target_global_id].push(task);
-      return acc;
+  // // Step 2: Filter tasks for "Target Task" and group them by target_global_id
+  // const targetTasks = tasks
+  //   .filter((task) => task.type === "Target Task")
+  //   .reduce((acc, task) => {
+  //     const { target_global_id, global_id } = task;
+  //     if (!acc[target_global_id]) acc[target_global_id] = [];
+  //     acc[target_global_id].push(task);
+  //     return acc;
+  //   }, {});
+
+  // // Step 3: Sort target_global_ids by priority
+  // const sortedTargets = Object.keys(targetTasks).sort((a, b) => {
+  //   const priorities = { High: 1, Medium: 2, Low: 3 };
+  //   return (
+  //     (priorities[priorityMap[a]] || 4) - (priorities[priorityMap[b]] || 4)
+  //   );
+  // });
+
+  // // Step 4: Map sorted targets to their associated tasks
+  // const finalTargetWithTasks = sortedTargets.map((targetId) => ({
+  //   target_global_id: targetId,
+  //   associatedTasks: targetTasks[targetId],
+  // }));
+  // console.log(finalTargetWithTasks);
+  // console.log("tasks", tasks);
+  // console.log("targets", targets);
+  const infoExists = tasks?.[0] != undefined && targets?.[0] != undefined;
+  // console.log(infoExists);
+  const priorityMap =
+    infoExists &&
+    targets.reduce((map, target) => {
+      map[target.global_id] = target.priority || "Low"; // Default to "Low"
+      return map;
     }, {});
 
-  // Step 3: Sort target_global_ids by priority
-  const sortedTargets = Object.keys(targetTasks).sort((a, b) => {
-    const priorities = { High: 1, Medium: 2, Low: 3 };
-    return (
-      (priorities[priorityMap[a]] || 4) - (priorities[priorityMap[b]] || 4)
-    );
-  });
+  const targetTasks =
+    infoExists &&
+    tasks
+      .filter((task) => task.type === "Target Task")
+      .reduce((acc, task) => {
+        const { target_global_id } = task;
+        acc[target_global_id] = acc[target_global_id] || [];
+        acc[target_global_id].push(task);
+        return acc;
+      }, {});
 
-  // Step 4: Map sorted targets to their associated tasks
-  const finalTargetWithTasks = sortedTargets.map((targetId) => ({
-    target_global_id: targetId,
-    associatedTasks: targetTasks[targetId],
-  }));
+  const sortedTargets =
+    infoExists &&
+    Object.keys(targetTasks).sort((a, b) => {
+      const priorities = { High: 1, Medium: 2, Low: 3 };
+      return (
+        (priorities[priorityMap[a]] || 4) - (priorities[priorityMap[b]] || 4)
+      );
+    });
+
+  const finalTargetWithTasks = infoExists
+    ? sortedTargets.map((targetId) => ({
+        target_global_id: targetId,
+        associatedTasks: targetTasks[targetId],
+      }))
+    : [];
+
   // console.log(finalTargetWithTasks);
 
-  //   0
-  //   :
-  //   "a7fd4e57-03d7-43b2-8c29-b5efc45637ea"
-  //   1
-  //   :
-  //   "10f74787-21b6-4e9a-8d88-51e3f10b96a1"
-  //   2
-  //   :
-  //   "bd97af9c-2966-46ee-b2bd-16ce26430279"
-  //   3
-  //   :
-  //   "dad294c4-372d-4a79-a167-8ba039bd6a97"
-  //   4
-  //   :
-  //   "537be5ff-4a99-4e47-8f1f-54a32d76dbc5"
-
-  const { register, handleSubmit, control, watch } = useForm({
+  const { register, handleSubmit, reset, watch } = useForm({
     defaultValues: {
-      // taskList: tasks,
-      sleepSchedule: {},
+      sleepSchedule: previousSchedule?.schedule_details?.sleepSchedule,
     },
   });
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "taskList",
-  });
   const watchTaskDuration = watch(`taskList`);
+  console.log(watchTaskDuration?.[0]);
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (initialized.current) return;
+    if (watchTaskDuration && previousSchedule) {
+      initialized.current = true;
+    }
+    const updateDefaultTasks = watchTaskDuration?.map((taskValue) => {
+      const match = previousSchedule?.schedule_details?.taskList.find(
+        (sourceObj) => sourceObj.global_id === taskValue.global_id
+      );
+      return match
+        ? {
+            ...taskValue,
+            selected: match.selected,
+            time: match.time || taskValue.time,
+          }
+        : taskValue;
+    });
+    reset({
+      sleepSchedule: previousSchedule?.schedule_details?.sleepSchedule,
+      taskList: updateDefaultTasks,
+    });
+  }, [previousSchedule, reset, watchTaskDuration]);
+
+  console.log(watchTaskDuration);
 
   const [expandTimer, setExpandTimer] = useState(null);
   function timerSymbolClicked(taskId) {
     setExpandTimer(taskId);
   }
-  const ref = useRef();
+
   function onSubmit(formData) {
     const data = {
       ...formData,
@@ -87,19 +146,34 @@ function ScheduleDay() {
     const scheduleData = {
       schedule_details: data,
       updated_at: new Date().toISOString(),
+      global_id_date: getFullDate(new Date()),
     };
+    // console.log(scheduleAlreadyExists);
+    if (scheduleAlreadyExists) {
+      console.log(scheduleData);
+      dispatch(updateScheduleDetails(scheduleData)); //updating global state
 
-    console.log(scheduleData);
-    dispatch(updateScheduleDetails(scheduleData)); //updating global state
-
-    if (navigator.onLine) {
-      addSchedule(scheduleData); //updating remote state
+      if (navigator.onLine) {
+        updateRemoteSchedule(scheduleData); //updating remote state
+      } else {
+        addTaskToQueue({
+          values: [scheduleData, null],
+          functionNumber: 6,
+        });
+      }
     } else {
-      addTaskToQueue({
-        values: [scheduleData, null],
-        functionNumber: 7,
-      });
-      // console.log("task queued for later execution");
+      console.log(scheduleData);
+      dispatch(addScheduleDetails(scheduleData)); //updating global state
+
+      if (navigator.onLine) {
+        addRemoteSchedule(scheduleData); //updating remote state
+      } else {
+        addTaskToQueue({
+          values: [scheduleData, null],
+          functionNumber: 7,
+        });
+        // console.log("task queued for later execution");
+      }
     }
   }
   let taskIndex = 0;
@@ -117,9 +191,11 @@ function ScheduleDay() {
     }
     document.addEventListener("click", handleClick, true);
   }, []);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className={style.mainContainer}>
+        <h3>{getFullDate(new Date())}</h3>
         <h2 className={style.mainHeading}>Schedule your day</h2>
         <br></br>
         <div className={style.topContainer}>
@@ -140,7 +216,7 @@ function ScheduleDay() {
           <div className={style.taskDisplay}>
             <h2>Target Tasks</h2>
             <div>
-              {finalTargetWithTasks.map((targetInfo, i) => {
+              {finalTargetWithTasks?.map((targetInfo, i) => {
                 const temp = targets.filter(
                   (val) => val.global_id === targetInfo.target_global_id
                 );
@@ -197,85 +273,90 @@ function ScheduleDay() {
           <div className={style.taskDisplay}>
             <h2>Scheduled Tasks</h2>
             <div>
-              {scheduledTasks.map((task) => {
-                const currentTaskIndex = taskIndex++;
-                return (
-                  <div key={task.global_id}>
-                    <input
-                      type="checkbox"
-                      {...register(`taskList.${currentTaskIndex}.selected`)}
-                    ></input>
-                    <input
-                      type="hidden"
-                      value={task.global_id}
-                      {...register(`taskList.${currentTaskIndex}.global_id`)}
-                    />
-                    <div value={task.global_id} style={{ display: "inline" }}>
-                      {task.name}
-                    </div>
-                    {watchTaskDuration?.[currentTaskIndex]?.time ||
-                    expandTimer === task.global_id ? (
+              {infoExists &&
+                scheduledTasks.map((task) => {
+                  const currentTaskIndex = taskIndex++;
+                  return (
+                    <div key={task.global_id}>
                       <input
-                        type="time"
-                        {...register(`taskList.${currentTaskIndex}.time`)}
+                        type="checkbox"
+                        {...register(`taskList.${currentTaskIndex}.selected`)}
                       ></input>
-                    ) : (
-                      <PiTimerDuotone
-                        onClick={() => timerSymbolClicked(task.global_id)}
-                        style={{
-                          scale: "1.2",
-                          marginLeft: "5px",
-                        }}
+                      <input
+                        type="hidden"
+                        value={task.global_id}
+                        {...register(`taskList.${currentTaskIndex}.global_id`)}
                       />
-                    )}
-                  </div>
-                );
-              })}
+                      <div value={task.global_id} style={{ display: "inline" }}>
+                        {task.name}
+                      </div>
+                      {watchTaskDuration?.[currentTaskIndex]?.time ||
+                      expandTimer === task.global_id ? (
+                        <input
+                          type="time"
+                          {...register(`taskList.${currentTaskIndex}.time`)}
+                        ></input>
+                      ) : (
+                        <PiTimerDuotone
+                          onClick={() => timerSymbolClicked(task.global_id)}
+                          style={{
+                            scale: "1.2",
+                            marginLeft: "5px",
+                          }}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
             </div>
           </div>
           <div className={style.taskDisplay}>
             <h2>Routine Tasks</h2>
             <div>
-              {routineTasks.map((task) => {
-                const currentTaskIndex = taskIndex++;
-                return (
-                  <div key={task.global_id}>
-                    <input
-                      type="checkbox"
-                      {...register(`taskList.${currentTaskIndex}.selected`)}
-                    ></input>
-                    <input
-                      type="hidden"
-                      value={task.global_id}
-                      {...register(`taskList.${currentTaskIndex}.global_id`)}
-                    />
-                    <div value={task.global_id} style={{ display: "inline" }}>
-                      {task.name}
-                    </div>
-                    {watchTaskDuration?.[currentTaskIndex]?.time ||
-                    expandTimer === task.global_id ? (
+              {infoExists &&
+                routineTasks.map((task) => {
+                  const currentTaskIndex = taskIndex++;
+                  return (
+                    <div key={task.global_id}>
                       <input
-                        type="time"
-                        {...register(`taskList.${currentTaskIndex}.time`)}
+                        type="checkbox"
+                        {...register(`taskList.${currentTaskIndex}.selected`)}
                       ></input>
-                    ) : (
-                      <PiTimerDuotone
-                        onClick={() => timerSymbolClicked(task.global_id)}
-                        style={{
-                          scale: "1.2",
-                          marginLeft: "5px",
-                        }}
+                      <input
+                        type="hidden"
+                        value={task.global_id}
+                        {...register(`taskList.${currentTaskIndex}.global_id`)}
                       />
-                    )}
-                  </div>
-                );
-              })}
+                      <div value={task.global_id} style={{ display: "inline" }}>
+                        {task.name}
+                      </div>
+                      {watchTaskDuration?.[currentTaskIndex]?.time ||
+                      expandTimer === task.global_id ? (
+                        <input
+                          type="time"
+                          {...register(`taskList.${currentTaskIndex}.time`)}
+                        ></input>
+                      ) : (
+                        <PiTimerDuotone
+                          onClick={() => timerSymbolClicked(task.global_id)}
+                          style={{
+                            scale: "1.2",
+                            marginLeft: "5px",
+                          }}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </div>
         <div className={style.submitContainer}>
           <button type="submit" className={style.submitButton}>
-            Submit Schedule
+            {scheduleAlreadyExists ? "Update Schedule" : "Create Schedule"}
+          </button>
+          <button type="reset" className={style.submitButton}>
+            Reset
           </button>
         </div>
       </div>

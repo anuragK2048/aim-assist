@@ -34,12 +34,22 @@ import {
   updateTaskGlobal,
 } from "./features/task/taskSlice";
 import supabase from "./services/supabase";
-import { addSchedule } from "./services/apiDaySchedule";
+import {
+  addRemoteSchedule,
+  getRemoteSchedule,
+  updateRemoteSchedule,
+} from "./services/apiDaySchedule";
+import {
+  addScheduleDetails,
+  fetchedScheduleDetails,
+  updateScheduleDetails,
+} from "./features/scheduleDay/scheduleDaySlice";
 
 function App() {
   const dispatch = useDispatch();
   const { targets } = useSelector((store) => store.targets);
   const { tasks } = useSelector((store) => store.tasks);
+  const { scheduleDetails } = useSelector((store) => store.scheduleDay);
   useEffect(function () {
     async function foo() {
       const targetsData = await getTargets();
@@ -54,7 +64,13 @@ function App() {
     }
     foo();
   }, []);
-
+  useEffect(function () {
+    async function foo() {
+      const todaySchedule = await getRemoteSchedule();
+      dispatch(fetchedScheduleDetails([{ ...todaySchedule }]));
+    }
+    foo();
+  }, []);
   // useEffect(() => {
   //   dispatch({ type: "SUPABASE_INIT" });
   //   return () => {
@@ -100,7 +116,7 @@ function App() {
       "postgres_changes",
       { event: "*", schema: "public", table: "tasks" },
       (payload) => {
-        // console.log("task update received");
+        console.log("task update received");
         // console.log(payload);
         if (payload.eventType === "INSERT") {
           const exists = tasks.some(
@@ -123,6 +139,29 @@ function App() {
     )
     .subscribe();
 
+  const dayScheduleTableUpdates = supabase
+    .channel("custom-all-channel")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "day schedule" },
+      (payload) => {
+        console.log("schedule update received");
+        // console.log(payload);
+        if (payload.eventType === "INSERT") {
+          const exists = scheduleDetails.some(
+            (schedule) => schedule.global_id_date === payload.new.global_id_date
+          );
+          if (!exists) {
+            dispatch(addScheduleDetails(payload.new));
+          }
+        } else if (payload.eventType === "UPDATE") {
+          console.log("updated schedule received");
+          dispatch(updateScheduleDetails(payload.new));
+        }
+      }
+    )
+    .subscribe();
+
   const availableTasks = [
     updateTarget,
     addTarget,
@@ -130,8 +169,8 @@ function App() {
     updateTaskRemote,
     addTaskRemote,
     deleteTaskRemote,
-    null,
-    addSchedule,
+    updateRemoteSchedule,
+    addRemoteSchedule,
     null,
   ];
 
