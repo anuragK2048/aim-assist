@@ -20,12 +20,22 @@ function TaskRow({ task, updateTasks, handleDelete }) {
         <div className={style.topLeft}>
           {isExpanded ? (
             <IoIosArrowDropup
-              style={{ scale: "1.2", marginTop: "4px", cursor: "pointer" }}
+              style={{
+                scale: "1.2",
+                marginTop: "4px",
+                cursor: "pointer",
+                flexShrink: "0",
+              }}
               onClick={() => setIsExpanded(false)}
             />
           ) : (
             <IoIosArrowDropdownCircle
-              style={{ scale: "1.2", marginTop: "4px", cursor: "pointer" }}
+              style={{
+                scale: "1.2",
+                marginTop: "4px",
+                cursor: "pointer",
+                flexShrink: "0",
+              }}
               onClick={() => setIsExpanded(true)}
             />
           )}
