@@ -214,52 +214,57 @@ function App() {
     };
   }, []);
 
-  const router = createBrowserRouter([
+  const router = createBrowserRouter(
+    [
+      {
+        path: "/",
+        element: <HomePage />,
+      },
+      {
+        path: "/app",
+        element: <AppLayout />,
+        children: [
+          {
+            path: "",
+            element: <Display />,
+          },
+          {
+            path: "target",
+            element: <Target />,
+          },
+          {
+            path: "task",
+            element: <Task />,
+            children: [
+              {
+                path: ":taskType",
+                element: <TaskList />,
+              },
+              {
+                path: "addTask",
+                element: <AddTaskForm />,
+              },
+            ],
+          },
+          {
+            path: "scheduleDay",
+            element: <ScheduleDay />,
+          },
+          {
+            path: "daySchedule",
+            element: <DaySchedule />,
+          },
+          {
+            path: "journal",
+            element: <Journal />,
+          },
+        ],
+      },
+    ],
     {
-      path: "/",
-      element: <HomePage />,
-    },
-    {
-      path: "/app",
-      element: <AppLayout />,
-      children: [
-        {
-          path: "",
-          element: <Display />,
-        },
-        {
-          path: "target",
-          element: <Target />,
-        },
-        {
-          path: "task",
-          element: <Task />,
-          children: [
-            {
-              path: ":taskType",
-              element: <TaskList />,
-            },
-            {
-              path: "addTask",
-              element: <AddTaskForm />,
-            },
-          ],
-        },
-        {
-          path: "scheduleDay",
-          element: <ScheduleDay />,
-        },
-        {
-          path: "daySchedule",
-          element: <DaySchedule />,
-        },
-        {
-          path: "journal",
-          element: <Journal />,
-        },
-      ],
-    },
-  ]);
+      basename: "/",
+    }
+  );
 
   return (
     <>
