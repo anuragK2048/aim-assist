@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import style from "./DaySchedule.module.css";
 import { getFullDate } from "../../utility/utilFunctions";
-import TaskRow from "./taskRow";
+import TaskRow from "./TaskRow";
 import { updateScheduleDetails } from "../scheduleDay/scheduleDaySlice";
 import { updateRemoteSchedule } from "../../services/apiDaySchedule";
 import { addTaskToQueue } from "../../utility/reconnectionUpdates";
