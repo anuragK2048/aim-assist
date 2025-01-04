@@ -10,6 +10,7 @@ import {
 } from "../../services/apiDaySchedule";
 import { getFullDate } from "../../utility/utilFunctions";
 import Form from "./Form";
+import { addTaskToQueue } from "../../utility/reconnectionUpdates";
 
 function ScheduleDay() {
   const dispatch = useDispatch();
@@ -94,9 +95,14 @@ function ScheduleDay() {
   //   console.log(defaultTaskList);
 
   function onSubmit(formData) {
+    const updatedTaskList = formData.taskList
+      .filter((task) => task.selected === true)
+      .map((taskDetails) => {
+        return { ...taskDetails, complete_status: false, completed_at: "" };
+      });
     const data = {
       ...formData,
-      taskList: formData.taskList.filter((task) => task.selected === true),
+      taskList: updatedTaskList,
     };
 
     const scheduleData = {

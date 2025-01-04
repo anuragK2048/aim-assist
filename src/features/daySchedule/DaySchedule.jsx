@@ -1,22 +1,26 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import style from "./DaySchedule.module.css";
 import { getFullDate } from "../../utility/utilFunctions";
 import TaskRow from "./taskRow";
+import { updateScheduleDetails } from "../scheduleDay/scheduleDaySlice";
+import { updateRemoteSchedule } from "../../services/apiDaySchedule";
+import { addTaskToQueue } from "../../utility/reconnectionUpdates";
 
 function DaySchedule() {
   const nowDate = getFullDate(new Date());
   const { scheduleDetails } = useSelector((store) => store.scheduleDay);
   const { tasks } = useSelector((store) => store.tasks);
+  const dispatch = useDispatch();
   const schedule = scheduleDetails.find(
     (val) => val.global_id_date === nowDate
   );
+  // console.log("after update", schedule);
   if (!schedule || tasks.length === 0) {
     return <div>You have not scheduled your day</div>;
   }
   const { schedule_details } = schedule;
   const { sleepSchedule } = schedule_details;
   const { taskList } = schedule_details;
-  console.log(taskList);
   const timedTasks = taskList.filter((val) => val.time);
   const untimedTasks = taskList.filter((val) => !val.time);
   timedTasks.sort((a, b) => {
@@ -24,8 +28,30 @@ function DaySchedule() {
     const timeB = b.time.replace(":", "");
     return +timeA - +timeB;
   });
-  console.log(timedTasks);
-  console.log(untimedTasks);
+  // console.log(schedule);
+  function updateTaskStatus(global_id, updatedDetails) {
+    const updated_taskList = schedule.schedule_details.taskList.map((task) =>
+      task.global_id === global_id ? updatedDetails : task
+    );
+    const updatedSchedule = {
+      ...schedule,
+      schedule_details: {
+        ...schedule.schedule_details,
+        taskList: updated_taskList,
+      },
+    };
+    // console.log(updatedSchedule);
+    dispatch(updateScheduleDetails(updatedSchedule)); //updating global state
+
+    if (navigator.onLine) {
+      updateRemoteSchedule(updatedSchedule); //updating remote state
+    } else {
+      addTaskToQueue({
+        values: [updatedSchedule, null],
+        functionNumber: 6,
+      });
+    }
+  }
   return (
     <div className={style.mainContainer}>
       <div className={style.header}>
@@ -39,11 +65,13 @@ function DaySchedule() {
             const taskDetails = tasks.find(
               (val) => val.global_id === task.global_id
             );
+            if (!taskDetails?.name) return;
             return (
               <TaskRow
                 key={task.global_id}
                 taskDetails={taskDetails}
                 scheduleDetails={task}
+                updateTaskStatus={updateTaskStatus}
               />
             );
           })}
@@ -53,11 +81,13 @@ function DaySchedule() {
             const taskDetails = tasks.find(
               (val) => val.global_id === task.global_id
             );
+            if (!taskDetails?.name) return;
             return (
               <TaskRow
                 key={task.global_id}
                 taskDetails={taskDetails}
                 scheduleDetails={task}
+                updateTaskStatus={updateTaskStatus}
               />
             );
           })}

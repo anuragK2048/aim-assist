@@ -140,10 +140,10 @@ function App() {
     .subscribe();
 
   const dayScheduleTableUpdates = supabase
-    .channel("custom-all-channel")
+    .channel("custom-all-channel3")
     .on(
       "postgres_changes",
-      { event: "*", schema: "public", table: "day schedule" },
+      { event: "*", schema: "public", table: "day_schedule" },
       (payload) => {
         console.log("schedule update received");
         // console.log(payload);
@@ -155,7 +155,6 @@ function App() {
             dispatch(addScheduleDetails(payload.new));
           }
         } else if (payload.eventType === "UPDATE") {
-          console.log("updated schedule received");
           dispatch(updateScheduleDetails(payload.new));
         }
       }
