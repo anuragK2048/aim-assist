@@ -246,10 +246,6 @@ function App() {
           ],
         },
         {
-          path: "dailyTask",
-          element: <DailyTask />,
-        },
-        {
           path: "scheduleDay",
           element: <ScheduleDay />,
         },
