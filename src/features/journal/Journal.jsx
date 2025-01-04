@@ -1,5 +1,5 @@
 function Journal() {
-  return <div>Journal</div>;
+  return <div>Still developing</div>;
 }
 
 export default Journal;

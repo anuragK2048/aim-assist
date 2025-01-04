@@ -4,7 +4,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import targetsReducer from "../features/target/targetSlice";
 import tasksReducer from "../features/task/taskSlice";
 import scheduleDayReducer from "../features/scheduleDay/scheduleDaySlice";
-import { logger } from "./Logger";
+// import { logger } from "./logger";
 import { supabaseMiddleware } from "./supabaseMiddleware";
 
 const store = configureStore({
