@@ -21,6 +21,7 @@ function Target() {
   const [addTarget, setAddTarget] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const curSortParams = searchParams.get("sort") || "none";
 
   //Sorting targets
   function sortWithPriority(a, b) {
@@ -40,7 +41,6 @@ function Target() {
     completion: sortWithComplete,
     incompletion: sortWithIncomplete,
   };
-  console.log("rerendered");
   const sortedTargets = useSort(sortingDetails, curTargets, "sort");
 
   const floatingWindowRef = useRef();
@@ -101,7 +101,7 @@ function Target() {
         <select
           className={style.selectOptions}
           onChange={handleSelect}
-          defaultValue={"none"}
+          defaultValue={curSortParams}
         >
           <option value="none">None</option>
           <option value="priority">Priority</option>
