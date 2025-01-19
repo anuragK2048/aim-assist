@@ -31,3 +31,12 @@
   display: flex;
   gap: 15px;
 }
+
+.priority {
+  font-size: 14px;
+  background-color: rgb(185, 165, 140);
+  height: fit-content;
+  border-radius: 10%;
+  padding: 1px 2px;
+  color: rgb(13, 94, 94);
+}

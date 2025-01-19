@@ -53,7 +53,7 @@ function TargetRow({ target, updateTargets, handleDelete }) {
             onChange={handleCheckboxClick}
           />
           <div className={style.name}>{target.name}</div>
-          <div>{target.priority}</div>
+          <div className={style.priority}> {target.priority}</div>
         </div>
         <div className={style.topRight}>
           <FaRegEdit
