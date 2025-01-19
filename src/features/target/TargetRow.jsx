@@ -9,6 +9,7 @@ import AddTargetForm from "./AddTargetForm";
 
 function TargetRow({ target, updateTargets, handleDelete }) {
   // console.log(target);
+  console.log(target);
   const [isExpanded, setIsExpanded] = useState(false);
   const [editForm, setEditForm] = useState(false);
   function handleCheckboxClick(e) {
@@ -52,6 +53,7 @@ function TargetRow({ target, updateTargets, handleDelete }) {
             onChange={handleCheckboxClick}
           />
           <div className={style.name}>{target.name}</div>
+          <div>{target.priority}</div>
         </div>
         <div className={style.topRight}>
           <FaRegEdit

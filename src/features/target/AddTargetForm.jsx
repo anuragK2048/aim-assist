@@ -6,6 +6,8 @@ import { useDispatch } from "react-redux";
 import { add, update } from "./targetSlice";
 import { v4 as uuidv4 } from "uuid";
 import { addTaskToQueue } from "../../utility/reconnectionUpdates";
+import { addTaskGlobal } from "../task/taskSlice";
+import { addTaskRemote } from "../../services/apiTasks";
 
 function AddTargetForm({ targetDetails = {} }) {
   const dispatch = useDispatch();
@@ -36,7 +38,7 @@ function AddTargetForm({ targetDetails = {} }) {
   });
 
   async function onSubmit(data) {
-    console.log(Object.keys(targetDetails).length === 0);
+    console.log(data);
     if (Object.keys(targetDetails).length === 0) {
       const newTarget = {
         ...data,
@@ -52,31 +54,42 @@ function AddTargetForm({ targetDetails = {} }) {
         version: 1,
         global_id: uuidv4(),
       };
+      const tasks = data.associatedTasks.map((val) => {
+        const newTask = {
+          type: "Target Task",
+          name: val,
+          target_global_id: newTarget.global_id,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          completed: false,
+          global_id: uuidv4(),
+        };
+        return newTask;
+      });
       dispatch(add(newTarget));
+      tasks.forEach((val) => {
+        dispatch(addTaskGlobal(val));
+      });
       if (navigator.onLine) {
         await addTarget(newTarget); //updating remote state
+        await addTaskRemote(tasks);
       } else {
         addTaskToQueue({ values: [newTarget, null], functionNumber: 1 });
+        addTaskToQueue({ values: [tasks, null], functionNumber: 4 });
         // console.log("task queued for later execution");
       }
     } else {
       const updatedTarget = {
         ...data,
-        // completed: false,
         progress: 0,
         userId: 1,
         tags: data.tags.split(",").map((tag) => tag.trim()), // Convert tags to array
-        // created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         status: "in-progress",
         syncStatus: "unsynced",
         deviceId: "device_123",
         version: 1,
-        // global_id: uuidv4(),
       };
-      // const updatedTargets = targets.map((target) =>
-      //   target.global_id == global_id ? updatedTarget : target
-      // );
       dispatch(update(targetDetails.global_id, updatedTarget));
       if (navigator.onLine) {
         await updateTarget(targetDetails.global_id, updatedTarget); //updating remote state

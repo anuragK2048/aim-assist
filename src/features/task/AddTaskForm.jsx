@@ -52,7 +52,7 @@ function AddTaskForm({ taskDetails = {} }) {
   });
 
   async function onSubmit(formData) {
-    // console.log(formData);
+    console.log(formData);
     if (Object.keys(taskDetails).length === 0) {
       const newTask = {
         ...formData,

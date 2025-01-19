@@ -44,6 +44,7 @@ import {
   fetchedScheduleDetails,
   updateScheduleDetails,
 } from "./features/scheduleDay/scheduleDaySlice";
+import Error from "./ui/Error";
 
 function App() {
   const dispatch = useDispatch();
@@ -218,6 +219,7 @@ function App() {
     [
       {
         path: "/",
+        errorElement: <Error />,
         element: <HomePage />,
       },
       {

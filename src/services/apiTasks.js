@@ -7,14 +7,25 @@ export async function getTaskRemote() {
 }
 
 export async function addTaskRemote(newTask) {
-  const { data, error } = await supabase
-    .from("tasks")
-    .insert([newTask])
-    .select();
-  if (error) {
-    console.error(error);
+  if (Array.isArray(newTask)) {
+    const { data, error } = await supabase
+      .from("tasks")
+      .insert(newTask)
+      .select();
+    if (error) {
+      console.error(error);
+    }
+    return data;
+  } else {
+    const { data, error } = await supabase
+      .from("tasks")
+      .insert([newTask])
+      .select();
+    if (error) {
+      console.error(error);
+    }
+    return data;
   }
-  return data;
 }
 
 export async function updateTaskRemote(global_id, updatedTask) {

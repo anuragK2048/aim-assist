@@ -22,3 +22,15 @@
   flex-direction: column;
   gap: 10px;
 }
+
+.taskWindow {
+  position: absolute;
+  width: 100%;
+  max-width: 500px; /* Set a max width for the popup */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(121, 113, 113, 0.207); /* Optional: Add a background color */
+  /* margin: 40px 0; */
+  padding: 20px 0;
+}
