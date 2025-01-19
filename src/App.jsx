@@ -45,6 +45,7 @@ import {
   updateScheduleDetails,
 } from "./features/scheduleDay/scheduleDaySlice";
 import Error from "./ui/Error";
+import ProtectedRoute from "./ui/ProtectedRoute";
 
 function App() {
   const dispatch = useDispatch();
@@ -224,7 +225,11 @@ function App() {
       },
       {
         path: "/app",
-        element: <AppLayout />,
+        element: (
+          <ProtectedRoute>
+            <AppLayout />
+          </ProtectedRoute>
+        ),
         children: [
           {
             path: "",

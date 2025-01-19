@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { login } from "../../services/apiAuth";
+import { getCurrentUser, login } from "../../services/apiAuth";
 
 function Login() {
   const navigate = useNavigate();
@@ -13,8 +13,10 @@ function Login() {
       alert("invalid login credentials");
       return;
     }
-    console.log(loginData);
-    navigate("/app");
+    const sessionData = await getCurrentUser();
+    if (sessionData) {
+      navigate("/app");
+    }
   }
   return (
     <div>
@@ -25,7 +27,7 @@ function Login() {
         </div>
         <div>
           <div>Password</div>
-          <input type="password" defaultValue={"1"} />
+          <input type="password" defaultValue={"12"} />
         </div>
         <button
           type="submit"

@@ -8,7 +8,10 @@ function Sidebar() {
     <div className={style.container}>
       <div className={style.topPart}>
         <div className={style.left}>
-          <CgProfile className={style.profileLogo} />
+          <CgProfile
+            className={style.profileLogo}
+            onClick={() => navigate("/")}
+          />
           <h2>User</h2>
         </div>
         <div className={style.right}>
