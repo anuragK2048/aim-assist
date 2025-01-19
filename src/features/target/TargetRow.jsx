@@ -9,7 +9,6 @@ import AddTargetForm from "./AddTargetForm";
 
 function TargetRow({ target, updateTargets, handleDelete }) {
   // console.log(target);
-  console.log(target);
   const [isExpanded, setIsExpanded] = useState(false);
   const [editForm, setEditForm] = useState(false);
   function handleCheckboxClick(e) {

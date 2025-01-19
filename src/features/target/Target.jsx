@@ -12,6 +12,8 @@ import { addTaskToQueue } from "../../utility/reconnectionUpdates";
 import AddTargetForm from "./AddTargetForm";
 import { BiHandicap } from "react-icons/bi";
 import { useSearchParams } from "react-router";
+import useSort from "../../customHooks/useSort";
+import { current } from "@reduxjs/toolkit";
 
 function Target() {
   const dispatch = useDispatch();
@@ -21,7 +23,6 @@ function Target() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   //Sorting targets
-  const sortTargetsBasis = searchParams.get("sort") || "none";
   function sortWithPriority(a, b) {
     const priorities = { Low: 1, Medium: 2, High: 3 };
     return (priorities[b.priority] || 0) - (priorities[a.priority] || 0);
@@ -32,19 +33,15 @@ function Target() {
   function sortWithIncomplete(a, b) {
     return a.completed - b.completed;
   }
-  function sortTargets(basis, elements) {
-    if (basis === "none") return elements;
-    else if (basis === "priority") {
-      elements.sort(sortWithPriority);
-    } else if (basis === "completion") {
-      elements.sort(sortWithComplete);
-    } else if (basis === "incompletion") {
-      elements.sort(sortWithIncomplete);
-    }
-    return elements;
-  }
   const curTargets = [...targets];
-  const sortedTargets = sortTargets(sortTargetsBasis, curTargets);
+
+  const sortingDetails = {
+    priority: sortWithPriority,
+    completion: sortWithComplete,
+    incompletion: sortWithIncomplete,
+  };
+  console.log("rerendered");
+  const sortedTargets = useSort(sortingDetails, curTargets, "sort");
 
   const floatingWindowRef = useRef();
 
@@ -101,7 +98,12 @@ function Target() {
       </div>
       <div className={style.sortContainer}>
         <div className={style.sortTitle}>Sort By: </div>
-        <select className={style.selectOptions} onChange={handleSelect}>
+        <select
+          className={style.selectOptions}
+          onChange={handleSelect}
+          defaultValue={"none"}
+        >
+          <option value="none">None</option>
           <option value="priority">Priority</option>
           <option value="completion">Completion</option>
           <option value="incompletion">Incompletion</option>
