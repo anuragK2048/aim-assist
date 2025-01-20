@@ -1,3 +1,15 @@
 /* @tailwind base; */
 @tailwind components;
 @tailwind utilities;
+
+/* :root {
+  --blite: 133, 123, 123;
+} */
+
+.light {
+  --blite: 243, 233, 233;
+}
+
+.dark {
+  --blite: 133, 123, 123;
+}

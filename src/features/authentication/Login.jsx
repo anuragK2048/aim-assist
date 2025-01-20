@@ -31,7 +31,7 @@ function Login() {
         </div>
         <button
           type="submit"
-          className="bg-slate-400 w-fit p-1 rounded cursor-pointer"
+          className="w-fit cursor-pointer rounded bg-slate-400 p-1"
         >
           Login
         </button>

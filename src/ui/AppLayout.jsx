@@ -8,7 +8,7 @@ function AppLayout() {
       <div className={style.sidebar}>
         <Sidebar />
       </div>
-      <div className={style.display}>
+      <div className="bg-blite/90 relative flex w-full">
         <Outlet />
       </div>
     </div>
