@@ -1,19 +1,29 @@
 import supabase from "./supabase";
 
+export async function signUp(user_id, password) {
+  let { data, error } = await supabase.auth.signUp({
+    email: user_id,
+    password: password,
+  });
+  if (error) {
+    console.error(error);
+    return error;
+  }
+  return data;
+}
+
 export async function login(id, password) {
   let { data, error } = await supabase.auth.signInWithPassword({
     email: id,
     password: password,
   });
-  if (error) {
-    console.error(error);
-  }
+  if (error) console.log(error);
   return data;
 }
 
 export async function getCurrentUser() {
+  console.log("called");
   const { data: session } = await supabase.auth.getSession();
-  console.log(session);
   if (!session.session) return null;
   const {
     data: { user },

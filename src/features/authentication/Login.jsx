@@ -14,12 +14,11 @@ function Login() {
     if (!loginData.user) {
       alert("invalid login credentials");
       return;
-    }
-    const sessionData = await getCurrentUser();
-    if (sessionData) {
-      setUserData(sessionData); //updating userStateContext
+    } else {
+      setUserData(loginData); //updating userStateContext
       navigate("/app");
     }
+    // const sessionData = await getCurrentUser();
   }
   return (
     <div>

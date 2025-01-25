@@ -1,22 +1,48 @@
+import { useNavigate } from "react-router";
+import { useUserState } from "../../context/UserStateContext";
+import { getCurrentUser, login, signUp } from "../../services/apiAuth";
+
 function Signup() {
-  function handleSignup(e) {
+  const { setUserData } = useUserState();
+  const navigate = useNavigate();
+  async function handleSignup(e) {
     e.preventDefault();
-    console.log(e.target.value[0]);
+    const id = e.target[0].value;
+    const password = e.target[1].value;
+    if (!id || !password) return;
+    const signUpData = await signUp(id, password);
+    console.log(signUpData);
+    if (!signUpData.user) {
+      alert(signUpData);
+      return;
+    } else {
+      setUserData(signUpData); //updating userStateContext
+      navigate("/app");
+      // const loginData = await login(id, password);
+      // if (!loginData.user) {
+      //   alert("invalid login credentials");
+      //   return;
+      // } else {
+      //   setUserData(loginData); //updating userStateContext
+      //   navigate("/app");
+      // }
+    }
+    // const sessionData = await getCurrentUser();
   }
   return (
     <div>
       <form onSubmit={handleSignup} className="flex flex-col gap-3">
         <div>
           <div>User ID</div>
-          <input type="text" />
+          <input type="text" defaultValue={"hello@gmail.com"} />
         </div>
         <div>
           <div>Password</div>
-          <input type="password" />
+          <input type="password" defaultValue={"qwerty"} />
         </div>
         <button
           type="submit"
-          className="bg-slate-400 w-fit p-1 rounded cursor-pointer"
+          className="w-fit cursor-pointer rounded bg-slate-400 p-1"
         >
           Sign Up
         </button>
@@ -24,5 +50,4 @@ function Signup() {
     </div>
   );
 }
-
 export default Signup;
