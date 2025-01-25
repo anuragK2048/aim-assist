@@ -4,9 +4,10 @@
 }
 
 .sidebar {
-  width: 20vw;
-  background-color: rgb(195, 208, 97);
+  width: 15vw;
+  background-color: rgb(82 105 112);
   height: 100vh;
+  min-width: 130px;
 }
 
 .display {

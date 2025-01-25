@@ -2,38 +2,13 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
-  /* margin: 20px; */
-  height: auto;
-}
-
-.topPart {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.right {
-  margin-top: 30px;
-}
-
-.right h2 {
-  color: rgb(58, 148, 124);
-}
-
-.profileLogo {
-  margin: 30px;
-  margin-bottom: 5px;
-  scale: 2.5;
-}
-
-.topPart h2 {
-  margin-left: 10px;
 }
 
 .list h2 {
   text-align: center;
   border: solid black 2px;
-  background-color: rgb(246, 218, 181);
-  color: rgba(138, 62, 138, 0.819);
+  background-color: rgb(140, 106, 61);
+  color: rgba(248, 241, 248, 0.819);
   border-radius: 10px;
   cursor: pointer;
   margin: 10px;
