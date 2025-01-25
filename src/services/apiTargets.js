@@ -1,7 +1,10 @@
 import supabase from "./supabase";
 
 export async function getTargets() {
-  let { data: targets, error } = await supabase.from("targets").select("*");
+  let { data: targets, error } = await supabase
+    .from("targets")
+    .select("*")
+    .eq("user_id", "5de3135d-5942-4b3c-96b0-38bddbc8f83c");
   if (error) {
     console.error(error);
     throw new Error("targets cant be loaded");

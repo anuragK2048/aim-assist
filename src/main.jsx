@@ -1,17 +1,17 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
-import { AppStateProvider } from "./context/AppStateContext.jsx";
 import store from "./services/store.js";
 import { Provider } from "react-redux";
+import { UserStateProvider } from "./context/UserStateContext.jsx";
 import "./index.css";
 
 createRoot(document.getElementById("root")).render(
   // <StrictMode>
-  <Provider store={store}>
-    <AppStateProvider>
+  <UserStateProvider>
+    <Provider store={store}>
       <App />
-    </AppStateProvider>
-  </Provider>
+    </Provider>
+  </UserStateProvider>,
   // </StrictMode>
 );

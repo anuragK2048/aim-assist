@@ -13,3 +13,7 @@
 .dark {
   --blite: 133, 123, 123;
 }
+
+* {
+  @apply transition-colors duration-500;
+}

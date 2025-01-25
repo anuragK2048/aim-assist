@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router";
 import { getCurrentUser, login } from "../../services/apiAuth";
+import { useUserState } from "../../context/UserStateContext";
 
 function Login() {
+  const { setUserData } = useUserState();
   const navigate = useNavigate();
   async function handleLogin(e) {
     e.preventDefault();
@@ -15,6 +17,7 @@ function Login() {
     }
     const sessionData = await getCurrentUser();
     if (sessionData) {
+      setUserData(sessionData); //updating userStateContext
       navigate("/app");
     }
   }
