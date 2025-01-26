@@ -13,7 +13,11 @@ function ProtectedRoute({ children }) {
     }
     // checkAuth();
   }, []);
-  return <div>{authorize ? children : "Not authorized"}</div>;
+  return (
+    <div className="h-full w-full">
+      {authorize ? children : "Not authorized"}
+    </div>
+  );
 }
 
 export default ProtectedRoute;

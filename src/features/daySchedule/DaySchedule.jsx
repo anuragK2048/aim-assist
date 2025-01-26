@@ -12,12 +12,14 @@ function DaySchedule() {
   const { tasks } = useSelector((store) => store.tasks);
   const dispatch = useDispatch();
   const schedule = scheduleDetails.find(
-    (val) => val.global_id_date === nowDate
+    (val) => val.global_id_date === nowDate,
   );
-  // console.log("after update", schedule);
+
+  // RETURN
   if (!schedule || tasks.length === 0) {
-    return <div>You have not scheduled your day</div>;
+    return <div className="m-4">You have not scheduled your day</div>;
   }
+
   const { schedule_details } = schedule;
   const { sleepSchedule } = schedule_details;
   const { taskList } = schedule_details;
@@ -31,7 +33,7 @@ function DaySchedule() {
   // console.log(schedule);
   function updateTaskStatus(global_id, updatedDetails) {
     const updated_taskList = schedule.schedule_details.taskList.map((task) =>
-      task.global_id === global_id ? updatedDetails : task
+      task.global_id === global_id ? updatedDetails : task,
     );
     const updatedSchedule = {
       ...schedule,
@@ -53,7 +55,7 @@ function DaySchedule() {
     }
   }
   return (
-    <div className={style.mainContainer}>
+    <div className="m-4">
       <div className={style.header}>
         <h4 className={style.mainDate}>{nowDate}</h4>
         <h3 className={style.mainTitle}>Schedule for Today</h3>
@@ -63,7 +65,7 @@ function DaySchedule() {
         <div className={style.timedTasks}>
           {timedTasks.map((task) => {
             const taskDetails = tasks.find(
-              (val) => val.global_id === task.global_id
+              (val) => val.global_id === task.global_id,
             );
             if (!taskDetails?.name) return;
             return (
@@ -79,7 +81,7 @@ function DaySchedule() {
         <div className={style.untimedTasks}>
           {untimedTasks.map((task) => {
             const taskDetails = tasks.find(
-              (val) => val.global_id === task.global_id
+              (val) => val.global_id === task.global_id,
             );
             if (!taskDetails?.name) return;
             return (

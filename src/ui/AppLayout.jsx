@@ -1,7 +1,6 @@
 import { Outlet } from "react-router";
-import style from "./AppLayout.module.css";
 import Sidebar from "./Sidebar";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   addTarget,
   deleteTarget,
@@ -34,8 +33,11 @@ import {
   fetchedScheduleDetails,
   updateScheduleDetails,
 } from "../features/scheduleDay/scheduleDaySlice";
+import { RiMenuUnfoldLine } from "react-icons/ri";
+import { RiMenuFoldLine } from "react-icons/ri";
 
 function AppLayout() {
+  const [showSidebar, setShowsidebar] = useState(false);
   const dispatch = useDispatch();
   const { targets } = useSelector((store) => store.targets);
   const { tasks } = useSelector((store) => store.tasks);
@@ -204,12 +206,46 @@ function AppLayout() {
       window.removeEventListener("offline", handleOffline);
     };
   }, []);
+
+  //Sidebar window click logic
+  const sidebarRef = useRef();
+  function handleWindowClick(e) {
+    if (!sidebarRef.current.contains(e.target)) {
+      setShowsidebar(false);
+    }
+  }
+  useEffect(() => {
+    if (showSidebar) {
+      window.addEventListener("click", handleWindowClick, true);
+      return () => window.removeEventListener("click", handleWindowClick, true);
+    }
+  }, [showSidebar]);
   return (
-    <div className={style.container}>
-      <div className={style.sidebar}>
+    <div className="relative flex h-full">
+      <div className="absolute z-30 md:hidden">
+        {showSidebar ? (
+          <RiMenuFoldLine
+            onClick={() => setShowsidebar(false)}
+            className="my-4 -mr-2 ml-1 h-10 w-auto"
+          />
+        ) : (
+          <RiMenuUnfoldLine
+            onClick={() => setShowsidebar(true)}
+            className="my-4 -mr-2 ml-1 h-10 w-auto"
+          />
+        )}
+      </div>
+      <div
+        className={`${showSidebar ? "" : "hidden"} fixed z-20 h-[100vh] w-[15vw] min-w-[130px] bg-[#526970] pt-10 md:static md:block md:h-full md:pt-0`}
+        ref={sidebarRef}
+      >
         <Sidebar />
       </div>
-      <div className="relative flex w-full bg-blite/90">
+      <div className="relative flex w-full overflow-y-auto bg-blite/90 pt-10 md:pt-0">
+        {showSidebar && (
+          <div className="pointer-events-none absolute inset-0 z-10 bg-black/50 backdrop-blur-2xl"></div>
+        )}
+
         <Outlet />
       </div>
     </div>

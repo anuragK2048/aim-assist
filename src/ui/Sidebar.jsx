@@ -29,7 +29,7 @@ function Sidebar() {
   return (
     <div className={style.container}>
       <div className="flex flex-col items-center justify-center gap-2 md:flex-col">
-        <div className="flex w-full flex-col items-center justify-evenly sm:flex-row sm:gap-10">
+        <div className="flex w-full flex-col items-center justify-evenly 2xl:flex-row 2xl:gap-10">
           <div className="mt-6 flex flex-col items-center justify-center">
             <CgProfile className="h-12 w-auto" onClick={() => navigate("/")} />
             <h2>User</h2>

@@ -4,7 +4,6 @@ import HomePage from "./ui/HomePage";
 import AppLayout from "./ui/AppLayout";
 import Target from "./features/target/Target";
 import Task from "./features/task/Task";
-import DailyTask from "./features/dailyTask/DailyTask";
 import ScheduleDay from "./features/scheduleDay/ScheduleDay";
 import DaySchedule from "./features/daySchedule/DaySchedule";
 import Journal from "./features/journal/Journal";

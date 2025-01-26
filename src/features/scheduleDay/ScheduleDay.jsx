@@ -19,11 +19,11 @@ function ScheduleDay() {
   const { scheduleDetails } = useSelector((store) => store.scheduleDay);
 
   const scheduleAlreadyExists = scheduleDetails.some(
-    (schedule) => schedule.global_id_date === getFullDate(new Date())
+    (schedule) => schedule.global_id_date === getFullDate(new Date()),
   );
 
   const [previousSchedule] = scheduleDetails?.filter(
-    (schedule) => schedule.global_id_date === getFullDate(new Date())
+    (schedule) => schedule.global_id_date === getFullDate(new Date()),
   );
 
   const scheduledTasks = tasks.filter((task) => task.type === "Schedule Task");
@@ -82,11 +82,11 @@ function ScheduleDay() {
     scheduleAlreadyExists &&
     allTasks.map((task) => {
       const exists = previousSchedule.schedule_details.taskList.some(
-        (val) => val.global_id === task.global_id
+        (val) => val.global_id === task.global_id,
       );
       const defaultTime =
         previousSchedule.schedule_details.taskList.find(
-          (val) => val.global_id === task.global_id
+          (val) => val.global_id === task.global_id,
         )?.time || null;
       if (exists)
         return { selected: true, time: defaultTime, global_id: task.global_id };
@@ -140,7 +140,7 @@ function ScheduleDay() {
   }
 
   return (
-    <div>
+    <div className="mx-2 my-4 h-full w-full">
       <h3>{getFullDate(new Date())}</h3>
       <h2 className={style.mainHeading}>Schedule your day</h2>
       {infoExists && (

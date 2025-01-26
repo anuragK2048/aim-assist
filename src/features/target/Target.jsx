@@ -63,7 +63,7 @@ function Target() {
   function handleClick(e) {
     if (
       floatingWindowRef.current &&
-      !floatingWindowRef.current.contains(e.target)
+      !floatingWindowRef.current.contains(e.target) //IMPPPPPP
     ) {
       setAddTarget(false);
     }
