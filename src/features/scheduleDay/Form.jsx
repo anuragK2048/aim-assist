@@ -2,6 +2,9 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { PiTimerDuotone } from "react-icons/pi";
 import style from "./Form.module.css";
 import { useEffect, useRef, useState } from "react";
+import Checkbox from "../../utility/Checkbox";
+import React, { memo } from "react";
+import { Controller } from "react-hook-form";
 
 function Form({
   onSubmit,
@@ -13,8 +16,9 @@ function Form({
   previousSchedule,
   defaultTaskList,
 }) {
+  console.log("rerendered");
   //   console.log(previousSchedule);
-  const { register, handleSubmit, reset, watch } = useForm({
+  const { register, handleSubmit, reset, watch, control } = useForm({
     defaultValues: {
       sleepSchedule: previousSchedule?.schedule_details.sleepSchedule || {},
       taskList: defaultTaskList || [],
@@ -66,7 +70,7 @@ function Form({
               <div>
                 {finalTargetWithTasks?.map((targetInfo, i) => {
                   const temp = targets.filter(
-                    (val) => val.global_id === targetInfo.target_global_id
+                    (val) => val.global_id === targetInfo.target_global_id,
                   );
                   const targetObj = temp[0];
                   return (
@@ -75,18 +79,28 @@ function Form({
                       {targetInfo.associatedTasks.map((task, index) => {
                         const currentTaskIndex = taskIndex++;
                         return (
-                          <div key={task.global_id}>
-                            <input
+                          <div
+                            key={task.global_id}
+                            className="flex items-center gap-1"
+                          >
+                            {/* <input
                               type="checkbox"
                               {...register(
-                                `taskList.${currentTaskIndex}.selected`
+                                `taskList.${currentTaskIndex}.selected`,
                               )}
-                            ></input>
+                            ></input> */}
+                            {/* TODO //Causing unnecessary rerenders */}
+                            <Checkbox
+                              {...register(
+                                `taskList.${currentTaskIndex}.selected`,
+                              )}
+                              scale="0.7"
+                            ></Checkbox>
                             <input
                               type="hidden"
                               value={task.global_id}
                               {...register(
-                                `taskList.${currentTaskIndex}.global_id`
+                                `taskList.${currentTaskIndex}.global_id`,
                               )}
                             />
                             <div
@@ -100,7 +114,7 @@ function Form({
                               <input
                                 type="time"
                                 {...register(
-                                  `taskList.${currentTaskIndex}.time`
+                                  `taskList.${currentTaskIndex}.time`,
                                 )}
                               ></input>
                             ) : (
@@ -110,7 +124,6 @@ function Form({
                                 }
                                 style={{
                                   scale: "1.2",
-                                  marginLeft: "5px",
                                 }}
                               />
                             )}
@@ -215,4 +228,4 @@ function Form({
   );
 }
 
-export default Form;
+export default memo(Form);

@@ -11,6 +11,7 @@ import { addTaskRemote } from "../../services/apiTasks";
 import Button from "../../utility/Button";
 
 const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
+  console.log(ref);
   const { targetDetails = {} } = props;
   const dispatch = useDispatch();
 

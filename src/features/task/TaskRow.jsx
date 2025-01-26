@@ -4,6 +4,7 @@ import style from "./TaskRow.module.css";
 import { IoIosArrowDropdownCircle, IoIosArrowDropup } from "react-icons/io";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import Checkbox from "../../utility/Checkbox";
 
 function TaskRow({ task, updateTasks, handleDelete }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -39,8 +40,7 @@ function TaskRow({ task, updateTasks, handleDelete }) {
               onClick={() => setIsExpanded(true)}
             />
           )}
-          <input
-            className={style.checkbox}
+          <Checkbox
             type="checkbox"
             name={`${task.global_id}`}
             checked={task.completed}
