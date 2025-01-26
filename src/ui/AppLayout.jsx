@@ -240,7 +240,7 @@ function AppLayout() {
         className={`${showSidebar ? "" : "hidden"} fixed z-20 h-[100vh] w-[15vw] min-w-[130px] bg-[#526970] pt-10 md:static md:block md:h-full md:pt-0`}
         ref={sidebarRef}
       >
-        <Sidebar />
+        <Sidebar setShowSidebar={setShowsidebar} />
       </div>
       <div className="relative flex w-full overflow-auto bg-blite/90 pt-10 md:pt-0">
         {showSidebar && <Blur />}

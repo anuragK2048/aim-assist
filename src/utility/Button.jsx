@@ -6,12 +6,12 @@ function Button(props) {
     ...otherProps
   } = props;
   return (
-    <div
+    <button
       {...otherProps}
-      className={`w-${width} rounded-3xl border-4 border-blue-500 ${bgColor} py-2 text-center font-sans text-xl text-slate-200`}
+      className={`w-${width} border-1 rounded-3xl border-blue-500 ${bgColor} py-2 text-center font-sans text-xl text-slate-200`}
     >
       {text}
-    </div>
+    </button>
   );
 }
 

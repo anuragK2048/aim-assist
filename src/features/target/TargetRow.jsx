@@ -6,6 +6,7 @@ import { IoIosArrowDropdownCircle } from "react-icons/io";
 import { IoIosArrowDropup } from "react-icons/io";
 import { useState } from "react";
 import AddTargetForm from "./AddTargetForm";
+import Checkbox from "../../utility/Checkbox";
 
 function TargetRow({ target, updateTargets, handleDelete }) {
   // console.log(target);
@@ -44,9 +45,14 @@ function TargetRow({ target, updateTargets, handleDelete }) {
               onClick={() => setIsExpanded(true)}
             />
           )}
-          <input
+          {/* <input
             className={style.checkbox}
             type="checkbox"
+            name={`${target.global_id}`}
+            checked={target.completed}
+            onChange={handleCheckboxClick}
+          /> */}
+          <Checkbox
             name={`${target.global_id}`}
             checked={target.completed}
             onChange={handleCheckboxClick}

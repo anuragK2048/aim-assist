@@ -16,7 +16,7 @@ const MenuItem = ({ children, onClick }) => (
   </div>
 );
 
-function Sidebar() {
+function Sidebar({ setShowSidebar }) {
   const navigate = useNavigate();
   const [theme, setTheme] = useState("dark");
   useEffect(
@@ -51,15 +51,27 @@ function Sidebar() {
         )}
       </div>
       <div className="md:3 mx-2 flex flex-col items-center justify-center gap-3">
-        <MenuItem onClick={() => navigate("target")}>Target</MenuItem>
-        <MenuItem onClick={() => navigate("task/all_tasks")}>Task</MenuItem>
-        <MenuItem onClick={() => navigate("scheduleDay")}>
+        <MenuItem onClick={() => navigate("target") && setShowSidebar(false)}>
+          Target
+        </MenuItem>
+        <MenuItem
+          onClick={() => navigate("task/all_tasks") && setShowSidebar(false)}
+        >
+          Task
+        </MenuItem>
+        <MenuItem
+          onClick={() => navigate("scheduleDay") && setShowSidebar(false)}
+        >
           Schedule Day
         </MenuItem>
-        <MenuItem onClick={() => navigate("daySchedule")}>
+        <MenuItem
+          onClick={() => navigate("daySchedule") && setShowSidebar(false)}
+        >
           Day Schedule
         </MenuItem>
-        <MenuItem onClick={() => navigate("journal")}>Journal</MenuItem>
+        <MenuItem onClick={() => navigate("journal") && setShowSidebar(false)}>
+          Journal
+        </MenuItem>
       </div>
     </div>
   );

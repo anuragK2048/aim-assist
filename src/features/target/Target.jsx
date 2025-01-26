@@ -4,7 +4,6 @@ import {
   getTargets,
   updateTarget,
 } from "../../services/apiTargets";
-import style from "./Target.module.css";
 import TargetRow from "./TargetRow";
 import { useDispatch, useSelector } from "react-redux";
 import { add, remove, update } from "./targetSlice";
@@ -63,7 +62,6 @@ function Target() {
   }
 
   function handleClick(e) {
-    console.log(e.target);
     if (
       floatingWindowRef.current &&
       !floatingWindowRef.current.contains(e.target) //IMPPPPPP
@@ -100,9 +98,9 @@ function Target() {
         <h1 className="">Targets</h1>
       </div>
       <div className="flex items-center">
-        <div className={style.sortTitle}>Sort By: </div>
+        <div className="">Sort By: </div>
         <select
-          className="mb-0 ml-2 max-w-40"
+          className="mb-0 ml-2 max-w-40 bg-[#c8b362]"
           onChange={handleSelect}
           defaultValue={curSortParams}
         >

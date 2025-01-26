@@ -104,6 +104,9 @@ const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
     }
     console.log("form submitted");
   }
+  const ErrorDisplay = ({ type, errors }) => {
+    return <span className="text-sm text-red-600">{errors[type].message}</span>;
+  };
 
   return (
     <form
@@ -121,9 +124,7 @@ const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
           {...register("name", { required: "Target name is required" })}
           placeholder="E.g., Learn DBMS"
         />
-        {errors.name && (
-          <span className={styles.error}>{errors.name.message}</span>
-        )}
+        {errors.name && <ErrorDisplay type="name" errors={errors} />}
       </label>
 
       <label className="flex flex-wrap items-center gap-1 text-lg font-medium">
@@ -134,9 +135,6 @@ const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
           placeholder="Briefly describe your target"
           className="mb-0"
         ></textarea>
-        {/* {errors.description && (
-          <span className={styles.error}>{errors.description.message}</span>
-        )} */}
       </label>
 
       <label className="flex flex-wrap items-center gap-1 text-lg font-medium">
@@ -156,9 +154,6 @@ const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
           {...register("category")}
           placeholder="E.g., Personal Development, Work"
         />
-        {/* {errors.category && (
-          <span className={styles.error}>{errors.category.message}</span>
-        )} */}
       </label>
 
       <label className="flex flex-wrap items-center gap-1 text-lg font-medium">
@@ -168,9 +163,6 @@ const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
           {...register("deadline")}
           className="h-9 flex-grow"
         />
-        {/* {errors.deadline && (
-          <span className={styles.error}>{errors.deadline.message}</span>
-        )} */}
       </label>
 
       <label className="flex flex-wrap items-center gap-1 text-lg font-medium">
@@ -222,7 +214,6 @@ const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
           + Add Task
         </button>
       </label>
-
       <Button text="+ Add Target" type="submit" />
       <Button text="Reset" type="reset" bgColor="bg-red-500" />
     </form>

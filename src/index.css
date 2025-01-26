@@ -8,10 +8,14 @@
 
 .light {
   --blite: 243, 233, 233;
+  --checkbox-tick: rgb(173, 149, 70);
+  --checkbox-border: rgb(100, 63, 155);
 }
 
 .dark {
   --blite: 133, 123, 123;
+  --checkbox-tick: rgb(160, 241, 156);
+  --checkbox-border: rgb(218, 165, 241);
 }
 
 * {
