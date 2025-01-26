@@ -14,6 +14,8 @@ import { BiHandicap } from "react-icons/bi";
 import { useSearchParams } from "react-router";
 import useSort from "../../customHooks/useSort";
 import { current } from "@reduxjs/toolkit";
+import Button from "../../utility/Button";
+import Blur from "../../utility/Blur";
 
 function Target() {
   const dispatch = useDispatch();
@@ -61,6 +63,7 @@ function Target() {
   }
 
   function handleClick(e) {
+    console.log(e.target);
     if (
       floatingWindowRef.current &&
       !floatingWindowRef.current.contains(e.target) //IMPPPPPP
@@ -92,14 +95,14 @@ function Target() {
   }
 
   return (
-    <div className={style.container}>
+    <div className="flex w-full flex-col gap-5 p-5">
       <div>
-        <h1 className={style.title}>Targets</h1>
+        <h1 className="">Targets</h1>
       </div>
-      <div className={style.sortContainer}>
+      <div className="flex items-center">
         <div className={style.sortTitle}>Sort By: </div>
         <select
-          className={style.selectOptions}
+          className="mb-0 ml-2 max-w-40"
           onChange={handleSelect}
           defaultValue={curSortParams}
         >
@@ -109,7 +112,7 @@ function Target() {
           <option value="incompletion">Incompletion</option>
         </select>
       </div>
-      <div className={style.table}>
+      <div className="flex flex-col gap-2.5">
         {sortedTargets.map((target) => (
           <TargetRow
             target={target}
@@ -119,13 +122,15 @@ function Target() {
           />
         ))}
       </div>
-      <div className={style.addTarget}>
-        <button onClick={handleAddTarget}>Add target +</button>
-      </div>
+      <Button text="Add Target +" onClick={handleAddTarget} />
+
       {addTarget && (
-        <div className={style.taskWindow} ref={floatingWindowRef}>
-          {<AddTargetForm />}
-        </div>
+        <>
+          <Blur />
+          <div className="absolute left-0 z-20 flex w-full justify-center self-center text-center">
+            {<AddTargetForm ref={floatingWindowRef} />}
+          </div>
+        </>
       )}
     </div>
   );

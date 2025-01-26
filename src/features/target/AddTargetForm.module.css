@@ -1,4 +1,4 @@
-.form {
+/* .form {
   width: 90%;
   max-width: 600px;
   margin: 0 auto;
@@ -33,12 +33,6 @@
   font-size: 14px;
 }
 
-.task {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
 .addTaskButton,
 .submitButton {
   display: inline-block;
@@ -62,7 +56,7 @@
 
 .submitButton:hover {
   background: #218838;
-}
+} */
 
 .error {
   color: red;

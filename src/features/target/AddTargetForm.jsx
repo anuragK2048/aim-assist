@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import styles from "./AddTargetForm.module.css";
 import { addTarget, updateTarget } from "../../services/apiTargets";
@@ -8,8 +8,10 @@ import { v4 as uuidv4 } from "uuid";
 import { addTaskToQueue } from "../../utility/reconnectionUpdates";
 import { addTaskGlobal } from "../task/taskSlice";
 import { addTaskRemote } from "../../services/apiTasks";
+import Button from "../../utility/Button";
 
-function AddTargetForm({ targetDetails = {} }) {
+const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
+  const { targetDetails = {} } = props;
   const dispatch = useDispatch();
 
   const {
@@ -104,13 +106,18 @@ function AddTargetForm({ targetDetails = {} }) {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-      <h2>Add New Target</h2>
+    <form
+      ref={ref}
+      className="form mx-2 flex max-h-[70vh] max-w-[500px] flex-grow flex-col gap-5 overflow-scroll rounded bg-[#e4cc5e] p-3 text-[#666358] md:max-h-full"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <h2 className="text-[#294878]">Add New Target</h2>
 
-      <label>
+      <label className="flex flex-wrap items-center gap-1 text-lg font-medium">
         Target Name:
         <input
           type="text"
+          className="h-9 flex-grow"
           {...register("name", { required: "Target name is required" })}
           placeholder="E.g., Learn DBMS"
         />
@@ -119,30 +126,32 @@ function AddTargetForm({ targetDetails = {} }) {
         )}
       </label>
 
-      <label>
+      <label className="flex flex-wrap items-center gap-1 text-lg font-medium">
         Description:
         <textarea
           {...register("description")}
           rows="3"
           placeholder="Briefly describe your target"
+          className="mb-0"
         ></textarea>
         {/* {errors.description && (
           <span className={styles.error}>{errors.description.message}</span>
         )} */}
       </label>
 
-      <label>
+      <label className="flex flex-wrap items-center gap-1 text-lg font-medium">
         Priority:
-        <select {...register("priority")}>
+        <select {...register("priority")} className="mb-0">
           <option value="High">High</option>
           <option value="Medium">Medium</option>
           <option value="Low">Low</option>
         </select>
       </label>
 
-      <label>
+      <label className="flex flex-wrap items-center gap-1 text-lg font-medium">
         Category:
         <input
+          className="h-9 flex-grow"
           type="text"
           {...register("category")}
           placeholder="E.g., Personal Development, Work"
@@ -152,75 +161,72 @@ function AddTargetForm({ targetDetails = {} }) {
         )} */}
       </label>
 
-      <label>
+      <label className="flex flex-wrap items-center gap-1 text-lg font-medium">
         Deadline:
-        <input type="datetime-local" {...register("deadline")} />
+        <input
+          type="datetime-local"
+          {...register("deadline")}
+          className="h-9 flex-grow"
+        />
         {/* {errors.deadline && (
           <span className={styles.error}>{errors.deadline.message}</span>
         )} */}
       </label>
 
-      <label>
+      <label className="flex flex-wrap items-center gap-1 text-lg font-medium">
         Tags (comma-separated):
         <input
+          className="h-9 flex-grow"
           type="text"
           {...register("tags")}
           placeholder="E.g., Learning, Development"
         />
       </label>
 
-      <label>
+      <label className="flex flex-wrap items-center gap-1 text-lg font-medium">
         Reward:
         <input
+          className="h-9 flex-grow"
           type="text"
           {...register("reward")}
           placeholder="reward yourself after successfully completing task"
         />
       </label>
 
-      <label>Tasks</label>
-      {fields.map((task, index) => (
-        <div key={index} className={styles.task}>
-          <input
-            type="text"
-            placeholder={`Task ${index + 1} Name`}
-            {...register(`associatedTasks.${index}`, {
-              required: "Task name is required",
-            })}
-          />
-          <button
-            type="button"
-            className={styles.addTaskButton}
-            style={{ height: "45px" }}
-            onClick={() => remove(index)}
-          >
-            Remove
-          </button>
-          <button
-            type="button"
-            className={styles.addTaskButton}
-            style={{ height: "45px" }}
-          >
-            configure
-          </button>
-        </div>
-      ))}
-      <button
-        type="button"
-        onClick={() => append("")}
-        className={styles.addTaskButton}
-      >
-        + Add Task
-      </button>
+      <label className="flex flex-col gap-0 text-lg font-medium">
+        Tasks
+        {fields.map((task, index) => (
+          <div key={index} className="mb-2.5 flex gap-2.5">
+            <input
+              className="h-9 flex-grow"
+              type="text"
+              placeholder={`Task ${index + 1} Name`}
+              {...register(`associatedTasks.${index}`, {
+                required: "Task name is required",
+              })}
+            />
+            <button
+              type="button"
+              className="h-9 rounded-lg bg-red-400 px-3 text-base"
+              onClick={() => remove(index)}
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={() => append("")}
+          className="h-9 rounded-lg bg-green-400 text-base"
+        >
+          + Add Task
+        </button>
+      </label>
 
-      <button type="submit" className={styles.submitButton}>
-        Submit Target
-      </button>
-      <button type="reset" className={styles.submitButton}>
-        Reset form
-      </button>
+      <Button text="+ Add Target" type="submit" />
+      <Button text="Reset" type="reset" bgColor="bg-red-500" />
     </form>
   );
-}
+});
 
 export default AddTargetForm;

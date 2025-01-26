@@ -35,6 +35,7 @@ import {
 } from "../features/scheduleDay/scheduleDaySlice";
 import { RiMenuUnfoldLine } from "react-icons/ri";
 import { RiMenuFoldLine } from "react-icons/ri";
+import Blur from "../utility/Blur";
 
 function AppLayout() {
   const [showSidebar, setShowsidebar] = useState(false);
@@ -241,10 +242,8 @@ function AppLayout() {
       >
         <Sidebar />
       </div>
-      <div className="relative flex w-full overflow-y-auto bg-blite/90 pt-10 md:pt-0">
-        {showSidebar && (
-          <div className="pointer-events-none absolute inset-0 z-10 bg-black/50 backdrop-blur-2xl"></div>
-        )}
+      <div className="relative flex w-full overflow-auto bg-blite/90 pt-10 md:pt-0">
+        {showSidebar && <Blur />}
 
         <Outlet />
       </div>
