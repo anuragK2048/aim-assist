@@ -11,16 +11,18 @@ export default function targetsReducer(state = initialState, action) {
       const updatedTargets = state.targets.map((target) =>
         target.global_id == action.payload.global_id
           ? { ...target, ...action.payload.updatedTarget }
-          : target
+          : target,
       );
       return { ...state, targets: updatedTargets };
     case "targets/add":
       // console.log("Adding target:", action.payload);
       // console.log("Previous targets:", state.targets);
-      return { ...state, targets: [...state.targets, action.payload] };
+      const res = { ...state, targets: [...state.targets, action.payload] };
+      console.log(res);
+      return res;
     case "targets/delete":
       const newTarget = state.targets.filter(
-        (target) => target.global_id != action.payload
+        (target) => target.global_id != action.payload,
       );
       return { ...state, targets: newTarget };
     default:

@@ -5,10 +5,12 @@ import { addTaskGlobal, updateTaskGlobal } from "./taskSlice";
 import { v4 as uuidv4 } from "uuid";
 import { addTaskRemote, updateTaskRemote } from "../../services/apiTasks";
 import { addTaskToQueue } from "../../utility/reconnectionUpdates";
+import useTaskOperations from "../../customHooks/useTaskOperations";
 
 function AddTaskForm({ taskDetails = {} }) {
   const dispatch = useDispatch();
   const { targets } = useSelector((store) => store.targets);
+  const { updateTasks, addTask } = useTaskOperations();
 
   const {
     register,
@@ -62,12 +64,13 @@ function AddTaskForm({ taskDetails = {} }) {
         global_id: uuidv4(),
       };
       console.log("submitted", formData);
-      dispatch(addTaskGlobal(newTask)); //adding task to global state
-      if (navigator.onLine) {
-        await addTaskRemote(newTask); //adding task to remote state
-      } else {
-        addTaskToQueue({ values: [newTask, null], functionNumber: 4 });
-      }
+      addTask(newTask);
+      // dispatch(addTaskGlobal(newTask)); //adding task to global state
+      // if (navigator.onLine) {
+      //   await addTaskRemote(newTask); //adding task to remote state
+      // } else {
+      //   addTaskToQueue({ values: [newTask, null], functionNumber: 4 });
+      // }
     } else {
       const updatedTask = {
         ...formData,
@@ -76,17 +79,18 @@ function AddTaskForm({ taskDetails = {} }) {
         // completed: false,
         // global_id: uuidv4(),
       };
-      dispatch(updateTaskGlobal(taskDetails.global_id, updatedTask)); //updating global context
+      updateTasks(taskDetails.global_id, updatedTask);
+      // dispatch(updateTaskGlobal(taskDetails.global_id, updatedTask)); //updating global context
 
-      if (navigator.onLine) {
-        updateTaskRemote(taskDetails.global_id, updatedTask); //updating remote state
-      } else {
-        addTaskToQueue({
-          values: [taskDetails.global_id, updatedTask],
-          functionNumber: 3,
-        });
-        // console.log("task queued for later execution");
-      }
+      // if (navigator.onLine) {
+      //   updateTaskRemote(taskDetails.global_id, updatedTask); //updating remote state
+      // } else {
+      //   addTaskToQueue({
+      //     values: [taskDetails.global_id, updatedTask],
+      //     functionNumber: 3,
+      //   });
+      //   // console.log("task queued for later execution");
+      // }
     }
   }
 

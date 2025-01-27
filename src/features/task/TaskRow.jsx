@@ -5,8 +5,10 @@ import { IoIosArrowDropdownCircle, IoIosArrowDropup } from "react-icons/io";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import Checkbox from "../../utility/Checkbox";
+import useTaskOperations from "../../customHooks/useTaskOperations";
 
-function TaskRow({ task, updateTasks, handleDelete }) {
+function TaskRow({ task }) {
+  const { updateTasks, handleDelete } = useTaskOperations();
   const [isExpanded, setIsExpanded] = useState(false);
   const [editForm, setEditForm] = useState(false);
   function handleCheckboxClick(e) {

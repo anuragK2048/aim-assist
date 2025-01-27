@@ -10,7 +10,6 @@ import Checkbox from "../../utility/Checkbox";
 import Blur from "../../utility/Blur";
 
 function TargetRow({ target, updateTargets, handleDelete }) {
-  // console.log(target);
   const [isExpanded, setIsExpanded] = useState(false);
   const [editForm, setEditForm] = useState(false);
   function handleCheckboxClick(e) {
@@ -23,7 +22,6 @@ function TargetRow({ target, updateTargets, handleDelete }) {
   // popup close in window click
   const floatingRef = useRef();
   function handleDocumentClick(e) {
-    console.log(e.target);
     if (!floatingRef.current.contains(e.target)) {
       setEditForm(false);
     }
@@ -31,7 +29,6 @@ function TargetRow({ target, updateTargets, handleDelete }) {
   useEffect(() => {
     if (!editForm) return;
     if (floatingRef.current) {
-      console.log("added");
       document.addEventListener("click", handleDocumentClick, true);
     }
     return () =>
@@ -95,7 +92,7 @@ function TargetRow({ target, updateTargets, handleDelete }) {
         {isExpanded && (
           <div className={style.bottom}>
             {target?.associatedTasks.map((task) => (
-              <div key={task}>{task}</div>
+              <div key={task.taskGlobalId}>{task.name}</div>
             ))}
           </div>
         )}

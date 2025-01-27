@@ -17,54 +17,54 @@ function TaskList() {
       if (taskType === "all_tasks") setTaskToBeDisplayed(tasks);
       else if (taskType === "routine_tasks")
         setTaskToBeDisplayed(
-          tasks.filter((task) => task.type === "Routine Task")
+          tasks.filter((task) => task.type === "Routine Task"),
         );
       else if (taskType === "scheduled_tasks")
         setTaskToBeDisplayed(
-          tasks.filter((task) => task.type === "Schedule Task")
+          tasks.filter((task) => task.type === "Schedule Task"),
         );
       else {
         targets.forEach((target) => {
           if (target.name === taskType) {
             const id = target.global_id;
             setTaskToBeDisplayed(
-              tasks.filter((task) => task.target_global_id === id)
+              tasks.filter((task) => task.target_global_id === id),
             );
           }
           return;
         });
       }
     },
-    [tasks, taskType]
+    [tasks, taskType],
   );
 
-  function updateTasks(global_id, updatedTask) {
-    dispatch(updateTaskGlobal(global_id, updatedTask)); //updating global context
+  // function updateTasks(global_id, updatedTask) {
+  //   dispatch(updateTaskGlobal(global_id, updatedTask)); //updating global context
 
-    if (navigator.onLine) {
-      updateTaskRemote(global_id, updatedTask); //updating remote state
-    } else {
-      addTaskToQueue({ values: [global_id, updatedTask], functionNumber: 3 });
-      // console.log("task queued for later execution");
-    }
-  }
-  async function handleDelete(global_id) {
-    dispatch(deleteTaskGlobal(global_id));
-    if (navigator.onLine) {
-      deleteTaskRemote(global_id); //updating remote state
-    } else {
-      addTaskToQueue({ values: [global_id, null], functionNumber: 5 });
-      // console.log("task queued for later execution");
-    }
-  }
+  //   if (navigator.onLine) {
+  //     updateTaskRemote(global_id, updatedTask); //updating remote state
+  //   } else {
+  //     addTaskToQueue({ values: [global_id, updatedTask], functionNumber: 3 });
+  //     // console.log("task queued for later execution");
+  //   }
+  // }
+  // async function handleDelete(global_id) {
+  //   dispatch(deleteTaskGlobal(global_id));
+  //   if (navigator.onLine) {
+  //     deleteTaskRemote(global_id); //updating remote state
+  //   } else {
+  //     addTaskToQueue({ values: [global_id, null], functionNumber: 5 });
+  //     // console.log("task queued for later execution");
+  //   }
+  // }
   return (
     <div>
       {taskToBeDisplayed.map((task) => (
         <TaskRow
           key={task.global_id}
           task={task}
-          updateTasks={updateTasks}
-          handleDelete={handleDelete}
+          // updateTasks={updateTasks}
+          // handleDelete={handleDelete}
         />
       ))}
     </div>
