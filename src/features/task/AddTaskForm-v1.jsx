@@ -1,4 +1,5 @@
 import { useForm, useFieldArray } from "react-hook-form";
+import styles from "./AddTaskForm.module.css";
 import { useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import useTaskOperations from "../../customHooks/useTaskOperations";
@@ -41,6 +42,9 @@ function AddTaskForm({ taskDetails = {}, setShowPopup }) {
   });
 
   async function onSubmit(formData) {
+    // console.log(formData);
+
+    //logic for updating associated tasks in selected target
     let selectedTarget;
     let prevAssociatedTasks;
     if (formData.type === "Target Task") {
@@ -59,19 +63,22 @@ function AddTaskForm({ taskDetails = {}, setShowPopup }) {
         completed: false,
         global_id: uuidv4(),
       };
+      console.log("submitted", formData);
       addTask(newTask);
 
+      // adding task to target associated tasks
       if (formData.type === "Target Task") {
         const newSelectedTarget = {
           ...selectedTarget,
           associatedTasks: [
-            ...prevAssociatedTasks,
+            ...selectedTarget.prevAssociatedTasks,
             { name: formData.name, taskGlobalId: newTask.global_id },
           ],
         };
         updateTargets(selectedTarget.global_id, newSelectedTarget);
       }
     } else {
+      // updating target associated tasks
       if (formData.type === "Target Task") {
         const { prevName } = prevAssociatedTasks.find(
           (val) => val.taskGlobalId === taskDetails.global_id,
@@ -90,6 +97,7 @@ function AddTaskForm({ taskDetails = {}, setShowPopup }) {
         }
       }
 
+      //updating task
       const updatedTask = {
         ...formData,
         updated_at: new Date().toISOString(),
@@ -98,6 +106,7 @@ function AddTaskForm({ taskDetails = {}, setShowPopup }) {
     }
   }
 
+  //Adding window click for popup disappear
   const formRef = useRef();
   function handleDocumentClick(e) {
     if (!formRef.current.contains(e.target)) {
@@ -113,50 +122,42 @@ function AddTaskForm({ taskDetails = {}, setShowPopup }) {
   return (
     <form
       ref={formRef}
-      className="form z-30 mx-2 flex max-h-[70vh] max-w-[500px] flex-grow flex-col gap-5 overflow-auto rounded bg-yellow-300 p-3 text-gray-700 shadow-lg md:max-h-full"
+      className="form z-30 mx-2 flex max-h-[70vh] max-w-[500px] flex-grow flex-col gap-5 overflow-auto rounded bg-[#e4cc5e] p-3 text-[#666358] md:max-h-full"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <h2 className="text-2xl font-bold">
-        {`${edit_task ? "Edit Task" : "Add New Task"}`}
-      </h2>
-      <label className="flex flex-col gap-1">
+      <h2>Add New Task</h2>
+      <label>
         Type:
-        <select
-          className="rounded border border-gray-400 p-1"
-          {...register("type", { required: "Task type is required" })}
-        >
+        <select {...register("type", { required: "Task type is required" })}>
           <option value="Target Task">Target Task</option>
           <option value="Routine Task">Routine Task</option>
           <option value="Schedule Task">Schedule Task</option>
         </select>
       </label>
-      <label className="flex flex-col gap-1">
+      <label>
         Task Name:
         <input
           type="text"
-          className="rounded border border-gray-400 p-1"
           {...register("name", { required: "Task name required" })}
           placeholder="E.g., Watch tutorial"
         />
         {errors.name && (
-          <span className="text-sm text-red-500">{errors.name.message}</span>
+          <span className={styles.error}>{errors.name.message}</span>
         )}
       </label>
-      <label className="flex flex-col gap-1">
+      <label>
         Note:
         <textarea
-          className="rounded border border-gray-400 p-1"
           {...register("note")}
           placeholder="Add any additional notes about the task"
         ></textarea>
       </label>
 
       {watchTaskType === "Target Task" && (
-        <div className="flex flex-col gap-5">
-          <label className="flex flex-col gap-1">
+        <div>
+          <label>
             Associated Target:
             <select
-              className="rounded border border-gray-400 p-1"
               {...register("target_global_id", {
                 required: "Target is required",
               })}
@@ -168,152 +169,121 @@ function AddTaskForm({ taskDetails = {}, setShowPopup }) {
               ))}
             </select>
             {errors.target_global_id && (
-              <div className="text-sm text-red-500">
+              <div className={styles.error}>
                 {errors.target_global_id.message}
               </div>
             )}
           </label>
-          <label className="flex flex-col gap-1">
+          <label>
             Deadline:
-            <input
-              type="datetime-local"
-              className="rounded border border-gray-400 p-1"
-              {...register("deadline")}
-            />
+            <input type="datetime-local" {...register("deadline")} />
           </label>
         </div>
       )}
       {(watchTaskType === "Target Task" ||
         watchTaskType === "Routine Task") && (
-        <div className="flex flex-col gap-5">
-          <label className="flex flex-col gap-1">
+        <div>
+          <label>
             Duration (in hours):
             <input
               type="number"
               step="0.5"
-              className="rounded border border-gray-400 p-1"
               {...register("duration")}
               placeholder="E.g., 2.5"
             />
           </label>
-          <label className="flex flex-col gap-1">
+          <label>
             Time Preference:
-            <select
-              className="rounded border border-gray-400 p-1"
-              {...register("time_preference")}
-            >
-              <option value="No preference">No preference</option>
-              <option value="Morning">Morning</option>
-              <option value="Afternoon">Afternoon</option>
-              <option value="Evening">Evening</option>
-              <option value="Night">Night</option>
+            <select {...register("time_preference")}>
+              <option value={"No preference"}>No preference</option>
+              <option value={"Morning"}>Morning</option>
+              <option value={"Afternoon"}>Afternoon</option>
+              <option value={"Evening"}>Evening</option>
+              <option value={"Night"}>Night</option>
             </select>
           </label>
         </div>
       )}
       {watchTaskType === "Schedule Task" && (
-        <label className="flex flex-col gap-1">
+        <label>
           Date and Time of schedule
           <input
             type="datetime-local"
-            className="rounded border border-gray-400 p-1"
-            {...register("date_time", { required: "Provide schedule time" })}
+            {...register("date_time", { required: "provide schedule time" })}
           />
           {errors.date_time && (
-            <span className="text-sm text-red-500">
-              {errors.date_time.message}
-            </span>
+            <span className={styles.error}>{errors.date_time.message}</span>
           )}
         </label>
       )}
       {watchTaskType === "Routine Task" && (
-        <div className="flex flex-col gap-2">
-          <label className="flex flex-col gap-1">
+        <div>
+          <label>
             Recurrence:
             <select
-              className="rounded border border-gray-400 p-1"
               {...register("recurrence", {
-                required: "Recurrence is required",
+                required: "recurrence is required",
               })}
             >
-              <option value="Daily">Daily</option>
-              <option value="Weekly">Weekly</option>
-              <option value="Monthly">Monthly</option>
+              <option value={"Daily"}>Daily</option>
+              <option value={"Weekly"}>Weekly</option>
+              <option value={"Monthly"}>Monthly</option>
             </select>
             {errors.recurrence && (
-              <span className="text-sm text-red-500">
-                {errors.recurrence.message}
-              </span>
+              <span className={styles.error}>{errors.recurrence.message}</span>
             )}
           </label>
-          <label className="flex flex-col gap-1">
+          <label>
             Counter:
             <input
               type="number"
-              className="rounded border border-gray-400 p-1"
               {...register("counter")}
               placeholder="e.g., count 8 glass of water"
             />
           </label>
         </div>
       )}
-      <label className="flex flex-col gap-1">
+      <label>
         Priority:
-        <select
-          className="rounded border border-gray-400 p-1"
-          {...register("priority")}
-        >
+        <select {...register("priority")}>
           <option value="No priority">No priority</option>
           <option value="High">High</option>
           <option value="Medium">Medium</option>
           <option value="Low">Low</option>
         </select>
       </label>
-      <div>
-        <label className="flex flex-col gap-2">
-          Subtasks:
-          {fields.map((subtask, index) => (
-            <div key={subtask.id} className="flex items-center gap-2">
-              <input
-                type="text"
-                placeholder={`Subtask ${index + 1}`}
-                className="flex-1 rounded border border-gray-400 p-1"
-                {...register(`subtask_list.${index}`, {
-                  required: "Subtask name is required",
-                })}
-              />
-              <button
-                type="button"
-                className="rounded bg-red-500 px-2 py-1 text-white"
-                onClick={() => remove(index)}
-              >
-                Remove
-              </button>
-            </div>
-          ))}
+      <label>Subtasks:</label>
+      {fields.map((subtask, index) => (
+        <div key={subtask.id} className={styles.subtaskRow}>
+          <input
+            type="text"
+            placeholder={`Subtask ${index + 1}`}
+            {...register(`subtask_list.${index}`, {
+              required: "Subtask name is required",
+            })}
+          />
           <button
             type="button"
-            className="w-full rounded bg-blue-500 px-4 py-2 text-white"
-            onClick={() => append("")}
+            className={styles.removeButton}
+            onClick={() => remove(index)}
           >
-            + Add Subtask
+            Remove
           </button>
-        </label>
-      </div>
-      <div className="flex justify-between">
-        <button
-          type="submit"
-          className="rounded bg-green-500 px-4 py-2 text-white"
-        >
-          {`${edit_task ? "Edit Task" : "Submit Task"}`}
-        </button>
-        <button
-          type="reset"
-          className="rounded bg-gray-500 px-4 py-2 text-white"
-        >
-          Reset Form
-        </button>
-      </div>
+        </div>
+      ))}
+      <button
+        type="button"
+        className={styles.addButton}
+        onClick={() => append("")}
+      >
+        + Add Subtask
+      </button>
+      <button type="submit" className={styles.submitButton}>
+        Submit Task
+      </button>
+      <button type="reset" className={styles.resetButton}>
+        Reset Form
+      </button>
     </form>
   );
 }

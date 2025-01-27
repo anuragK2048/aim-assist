@@ -58,7 +58,7 @@ function TaskList() {
   //   }
   // }
   return (
-    <div>
+    <div className="">
       {taskToBeDisplayed.map((task) => (
         <TaskRow
           key={task.global_id}

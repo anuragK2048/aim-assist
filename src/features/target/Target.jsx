@@ -89,7 +89,7 @@ function Target() {
       <div className="flex items-center">
         <div className="">Sort By: </div>
         <select
-          className="mb-0 ml-2 max-w-40 bg-[#c8b362]"
+          className="ml-2 w-full max-w-40 rounded-md bg-[#c8b362] p-1.5 text-[0.925rem]"
           onChange={handleSelect}
           defaultValue={curSortParams}
         >

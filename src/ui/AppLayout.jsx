@@ -242,9 +242,8 @@ function AppLayout() {
       >
         <Sidebar setShowSidebar={setShowsidebar} />
       </div>
-      <div className="relative flex w-full overflow-auto bg-blite/90 pt-10 md:pt-0">
+      <div className="relative flex w-full justify-center overflow-auto bg-blite/90 pt-10 md:pt-0">
         {showSidebar && <Blur />}
-
         <Outlet />
       </div>
     </div>

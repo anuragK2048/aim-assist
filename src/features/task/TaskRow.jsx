@@ -8,6 +8,7 @@ import Checkbox from "../../utility/Checkbox";
 import useTaskOperations from "../../customHooks/useTaskOperations";
 import useTargetOperations from "../../customHooks/useTargetOperations";
 import { useSelector } from "react-redux";
+import Blur from "../../utility/Blur";
 
 function TaskRow({ task }) {
   const { updateTasks, handleDelete } = useTaskOperations();
@@ -37,59 +38,70 @@ function TaskRow({ task }) {
     handleDelete(taskGlobalId);
   }
   return (
-    <div className={`${task.completed && style.completed} ${style.container}`}>
-      <div className={style.top}>
-        <div className={style.topLeft}>
-          {isExpanded ? (
-            <IoIosArrowDropup
-              style={{
-                scale: "1.2",
-                marginTop: "4px",
-                cursor: "pointer",
-                flexShrink: "0",
-              }}
-              onClick={() => setIsExpanded(false)}
+    <>
+      <div
+        className={`${task.completed && style.completed} ${style.container}`}
+      >
+        <div className={style.top}>
+          <div className={style.topLeft}>
+            {isExpanded ? (
+              <IoIosArrowDropup
+                style={{
+                  scale: "1.2",
+                  marginTop: "4px",
+                  cursor: "pointer",
+                  flexShrink: "0",
+                }}
+                onClick={() => setIsExpanded(false)}
+              />
+            ) : (
+              <IoIosArrowDropdownCircle
+                style={{
+                  scale: "1.2",
+                  marginTop: "4px",
+                  cursor: "pointer",
+                  flexShrink: "0",
+                }}
+                onClick={() => setIsExpanded(true)}
+              />
+            )}
+            <Checkbox
+              type="checkbox"
+              name={`${task.global_id}`}
+              checked={task.completed}
+              onChange={handleCheckboxClick}
             />
-          ) : (
-            <IoIosArrowDropdownCircle
-              style={{
-                scale: "1.2",
-                marginTop: "4px",
-                cursor: "pointer",
-                flexShrink: "0",
-              }}
-              onClick={() => setIsExpanded(true)}
+            <div className={style.name}>{task.name}</div>
+          </div>
+          <div className={style.topRight}>
+            <FaRegEdit
+              style={{ scale: "1.3", cursor: "pointer" }}
+              onClick={() => setEditForm((cur) => !cur)}
             />
-          )}
-          <Checkbox
-            type="checkbox"
-            name={`${task.global_id}`}
-            checked={task.completed}
-            onChange={handleCheckboxClick}
-          />
-          <div className={style.name}>{task.name}</div>
+            <MdDelete
+              style={{ scale: "1.7", cursor: "pointer" }}
+              name={`${task.global_id}`}
+              onClick={() => onDeleteClick(task.global_id)}
+            />
+          </div>
         </div>
-        <div className={style.topRight}>
-          <FaRegEdit
-            style={{ scale: "1.3", cursor: "pointer" }}
-            onClick={() => setEditForm((cur) => !cur)}
-          />
-          <MdDelete
-            style={{ scale: "1.7", cursor: "pointer" }}
-            name={`${task.global_id}`}
-            onClick={() => onDeleteClick(task.global_id)}
-          />
-        </div>
+        {isExpanded && (
+          <div className={style.bottom}>
+            {task?.subtask_list.map((subtask, i) => (
+              <div key={i}>{subtask}</div>
+            ))}
+          </div>
+        )}
       </div>
-      {isExpanded && (
-        <div className={style.bottom}>
-          {task?.subtask_list.map((subtask, i) => (
-            <div key={i}>{subtask}</div>
-          ))}
+      {editForm && (
+        <div>
+          <Blur />
+          <div className="absolute left-0 top-0 z-20 flex h-full w-full items-center justify-center self-center text-center">
+            <AddTaskForm taskDetails={task} setShowPopup={setEditForm} />
+          </div>
         </div>
       )}
-      {editForm && <AddTaskForm taskDetails={task} />}
-    </div>
+    </>
   );
 }
 

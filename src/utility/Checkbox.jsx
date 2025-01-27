@@ -5,7 +5,7 @@ import style from "./Checkbox.module.css";
 const Checkbox = forwardRef((props, ref) => {
   const { scale = "1", ...otherProps } = props;
   return (
-    <div className="relative h-[25px] w-[25px]">
+    <div className="relative h-[25px] min-w-[25px]">
       <label className={style.label}>
         <input
           ref={ref}

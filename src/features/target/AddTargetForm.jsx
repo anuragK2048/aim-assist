@@ -214,13 +214,16 @@ const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
           {...register("description")}
           rows="3"
           placeholder="Briefly describe your target"
-          className="mb-0"
+          className="w-full rounded-md p-1.5 text-[0.925rem]"
         ></textarea>
       </label>
 
       <label className="flex flex-wrap items-center gap-1 text-lg font-medium">
         Priority:
-        <select {...register("priority")} className="mb-0">
+        <select
+          {...register("priority")}
+          className="w-full rounded-md p-1.5 text-[0.925rem]"
+        >
           <option value="High">High</option>
           <option value="Medium">Medium</option>
           <option value="Low">Low</option>
