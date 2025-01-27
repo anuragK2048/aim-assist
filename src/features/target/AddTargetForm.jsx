@@ -11,8 +11,8 @@ import { addTaskRemote } from "../../services/apiTasks";
 import Button from "../../utility/Button";
 
 const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
-  console.log(ref);
   const { targetDetails = {} } = props;
+  const edit_target = Object.keys(targetDetails).length === 0;
   const dispatch = useDispatch();
 
   const {
@@ -42,7 +42,7 @@ const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
 
   async function onSubmit(data) {
     console.log(data);
-    if (Object.keys(targetDetails).length === 0) {
+    if (edit_target) {
       const newTarget = {
         ...data,
         completed: false,
@@ -112,10 +112,13 @@ const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
   return (
     <form
       ref={ref}
-      className="form mx-2 flex max-h-[70vh] max-w-[500px] flex-grow flex-col gap-5 overflow-scroll rounded bg-[#e4cc5e] p-3 text-[#666358] md:max-h-full"
+      className="form mx-2 flex max-h-[70vh] max-w-[500px] flex-grow flex-col gap-5 overflow-auto rounded bg-[#e4cc5e] p-3 text-[#666358] md:max-h-full"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <h2 className="text-[#294878]">Add New Target</h2>
+      {console.log("form rendered")}
+      <h2 className="text-[#294878]">
+        {edit_target ? "Add New Target" : "Edit Target"}
+      </h2>
 
       <label className="flex flex-wrap items-center gap-1 text-lg font-medium">
         Target Name:

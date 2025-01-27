@@ -125,10 +125,11 @@ function Target() {
       {addTarget && (
         <>
           <Blur />
-          <div className="absolute left-0 z-20 flex w-full justify-center self-center text-center">
+          <div className="absolute left-0 top-0 z-20 flex h-full w-full items-center justify-center self-center text-center">
             {<AddTargetForm ref={floatingWindowRef} />}
           </div>
         </>
+        // <Popup PopupElement={AddTargetForm} /> //TODO
       )}
     </div>
   );

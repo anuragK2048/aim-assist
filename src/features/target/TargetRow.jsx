@@ -4,9 +4,10 @@ import { MdDelete } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
 import { IoIosArrowDropdownCircle } from "react-icons/io";
 import { IoIosArrowDropup } from "react-icons/io";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AddTargetForm from "./AddTargetForm";
 import Checkbox from "../../utility/Checkbox";
+import Blur from "../../utility/Blur";
 
 function TargetRow({ target, updateTargets, handleDelete }) {
   // console.log(target);
@@ -18,69 +19,97 @@ function TargetRow({ target, updateTargets, handleDelete }) {
     const newTarget = { ...target, completed: updatedValue };
     updateTargets(global_id, newTarget);
   }
+
+  // popup close in window click
+  const floatingRef = useRef();
+  function handleDocumentClick(e) {
+    console.log(e.target);
+    if (!floatingRef.current.contains(e.target)) {
+      setEditForm(false);
+    }
+  }
+  useEffect(() => {
+    if (!editForm) return;
+    if (floatingRef.current) {
+      console.log("added");
+      document.addEventListener("click", handleDocumentClick, true);
+    }
+    return () =>
+      document.removeEventListener("click", handleDocumentClick, true);
+  }, [editForm]);
   return (
-    <div
-      className={`${target.completed && style.completed} ${style.container}`}
-    >
-      <div className={style.top}>
-        <div className={style.topLeft}>
-          {isExpanded ? (
-            <IoIosArrowDropup
-              style={{
-                scale: "1.2",
-                marginTop: "4px",
-                cursor: "pointer",
-                flexShrink: "0",
-              }}
-              onClick={() => setIsExpanded(false)}
-            />
-          ) : (
-            <IoIosArrowDropdownCircle
-              style={{
-                scale: "1.2",
-                marginTop: "4px",
-                cursor: "pointer",
-                flexShrink: "0",
-              }}
-              onClick={() => setIsExpanded(true)}
-            />
-          )}
-          {/* <input
+    <>
+      <div
+        className={`${target.completed && style.completed} ${style.container}`}
+      >
+        <div className={style.top}>
+          <div className={style.topLeft}>
+            {isExpanded ? (
+              <IoIosArrowDropup
+                style={{
+                  scale: "1.2",
+                  marginTop: "4px",
+                  cursor: "pointer",
+                  flexShrink: "0",
+                }}
+                onClick={() => setIsExpanded(false)}
+              />
+            ) : (
+              <IoIosArrowDropdownCircle
+                style={{
+                  scale: "1.2",
+                  marginTop: "4px",
+                  cursor: "pointer",
+                  flexShrink: "0",
+                }}
+                onClick={() => setIsExpanded(true)}
+              />
+            )}
+            {/* <input
             className={style.checkbox}
             type="checkbox"
             name={`${target.global_id}`}
             checked={target.completed}
             onChange={handleCheckboxClick}
           /> */}
-          <Checkbox
-            name={`${target.global_id}`}
-            checked={target.completed}
-            onChange={handleCheckboxClick}
-          />
-          <div className={style.name}>{target.name}</div>
-          <div className={style.priority}> {target.priority}</div>
+            <Checkbox
+              name={`${target.global_id}`}
+              checked={target.completed}
+              onChange={handleCheckboxClick}
+            />
+            <div className={style.name}>{target.name}</div>
+            <div className={style.priority}> {target.priority}</div>
+          </div>
+          <div className={style.topRight}>
+            <FaRegEdit
+              style={{ scale: "1.3", cursor: "pointer" }}
+              onClick={() => setEditForm((cur) => !cur)}
+            />
+            <MdDelete
+              style={{ scale: "1.7", cursor: "pointer" }}
+              name={`${target.global_id}`}
+              onClick={() => handleDelete(target.global_id)}
+            />
+          </div>
         </div>
-        <div className={style.topRight}>
-          <FaRegEdit
-            style={{ scale: "1.3", cursor: "pointer" }}
-            onClick={() => setEditForm((cur) => !cur)}
-          />
-          <MdDelete
-            style={{ scale: "1.7", cursor: "pointer" }}
-            name={`${target.global_id}`}
-            onClick={() => handleDelete(target.global_id)}
-          />
-        </div>
+        {isExpanded && (
+          <div className={style.bottom}>
+            {target?.associatedTasks.map((task) => (
+              <div key={task}>{task}</div>
+            ))}
+          </div>
+        )}
       </div>
-      {isExpanded && (
-        <div className={style.bottom}>
-          {target?.associatedTasks.map((task) => (
-            <div key={task}>{task}</div>
-          ))}
-        </div>
+      {editForm && (
+        <>
+          <Blur />
+          <div className="absolute left-0 top-0 z-50 flex h-full w-full items-center justify-center self-center text-center">
+            {<AddTargetForm targetDetails={target} ref={floatingRef} />}
+          </div>
+        </>
       )}
-      {editForm && <AddTargetForm targetDetails={target} />}
-    </div>
+      {/* {editForm && <AddTargetForm targetDetails={target} />} */}
+    </>
   );
 }
 

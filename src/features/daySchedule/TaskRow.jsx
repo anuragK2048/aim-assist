@@ -1,10 +1,11 @@
 import { PiTimerDuotone } from "react-icons/pi";
 import style from "./TaskRow.module.css";
 import { useEffect, useState } from "react";
+import Checkbox from "../../utility/Checkbox";
 
 function TaskRow({ taskDetails, scheduleDetails, updateTaskStatus }) {
   const [taskCheckbox, setTaskCheckbox] = useState(
-    scheduleDetails.complete_status
+    scheduleDetails.complete_status,
   );
   useEffect(() => {
     //this concept is important
@@ -42,12 +43,7 @@ function TaskRow({ taskDetails, scheduleDetails, updateTaskStatus }) {
 
       <div className={style.name}>{taskDetails.name}</div>
       {/* counter ; duration ; note ; priority ; type || target_name */}
-      <input
-        type="checkbox"
-        className={style.checkbox}
-        checked={taskCheckbox}
-        onChange={handleCheckboxClick}
-      />
+      <Checkbox checked={taskCheckbox} onChange={handleCheckboxClick} />
     </div>
   );
 }
