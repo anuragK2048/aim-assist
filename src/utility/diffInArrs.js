@@ -4,8 +4,6 @@ export function diffInArrs(arr1, arr2, ...compParameters) {
     delete: [],
     edit: [],
   };
-  console.log(arr1);
-  console.log(arr2);
   for (let i = 0, i2 = 0; i < Math.max(arr2.length, arr1.length); i++, i2++) {
     // console.log("outer");
     if (i > arr1.length - 1) {
@@ -36,7 +34,6 @@ export function diffInArrs(arr1, arr2, ...compParameters) {
       }
     }
   }
-  console.log(res);
   return res;
 }
 

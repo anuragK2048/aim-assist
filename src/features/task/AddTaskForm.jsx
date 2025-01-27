@@ -1,16 +1,15 @@
 import { useForm, useFieldArray } from "react-hook-form";
 import styles from "./AddTaskForm.module.css";
-import { useDispatch, useSelector } from "react-redux";
-import { addTaskGlobal, updateTaskGlobal } from "./taskSlice";
+import { useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import { addTaskRemote, updateTaskRemote } from "../../services/apiTasks";
-import { addTaskToQueue } from "../../utility/reconnectionUpdates";
 import useTaskOperations from "../../customHooks/useTaskOperations";
+import useTargetOperations from "../../customHooks/useTargetOperations";
 
 function AddTaskForm({ taskDetails = {} }) {
-  const dispatch = useDispatch();
   const { targets } = useSelector((store) => store.targets);
   const { updateTasks, addTask } = useTaskOperations();
+  const { updateTargets } = useTargetOperations();
+  const edit_task = !(Object.keys(taskDetails).length === 0);
 
   const {
     register,
@@ -19,18 +18,6 @@ function AddTaskForm({ taskDetails = {} }) {
     control,
     formState: { errors },
   } = useForm({
-    // defaultValues: {
-    //   type: taskDetails.type || "Target Task",
-    //   name: taskDetails.name || "",
-    //   note: taskDetails.note || "",
-    //   target_global_id: null,
-    //   deadline: "",
-    //   priority: "No priority",
-    //   duration: "",
-    //   time_preference: "No preference",
-    //   subtask_list: [""],
-    //   date_time: "",
-    // },
     defaultValues: {
       type: taskDetails.type || "Target Task",
       name: taskDetails.name || "",
@@ -54,8 +41,20 @@ function AddTaskForm({ taskDetails = {} }) {
   });
 
   async function onSubmit(formData) {
-    console.log(formData);
-    if (Object.keys(taskDetails).length === 0) {
+    // console.log(formData);
+
+    //logic for updating associated tasks in selected target
+    let selectedTarget;
+    let prevAssociatedTasks;
+    if (formData.type === "Target Task") {
+      selectedTarget = targets.find(
+        (targetDetails) =>
+          targetDetails.global_id === formData.target_global_id,
+      );
+      prevAssociatedTasks = selectedTarget.associatedTasks;
+    }
+
+    if (!edit_task) {
       const newTask = {
         ...formData,
         created_at: new Date().toISOString(),
@@ -65,32 +64,44 @@ function AddTaskForm({ taskDetails = {} }) {
       };
       console.log("submitted", formData);
       addTask(newTask);
-      // dispatch(addTaskGlobal(newTask)); //adding task to global state
-      // if (navigator.onLine) {
-      //   await addTaskRemote(newTask); //adding task to remote state
-      // } else {
-      //   addTaskToQueue({ values: [newTask, null], functionNumber: 4 });
-      // }
+
+      // adding task to target associated tasks
+      if (formData.type === "Target Task") {
+        const newSelectedTarget = {
+          ...selectedTarget,
+          associatedTasks: [
+            ...selectedTarget.prevAssociatedTasks,
+            { name: formData.name, taskGlobalId: newTask.global_id },
+          ],
+        };
+        updateTargets(selectedTarget.global_id, newSelectedTarget);
+      }
     } else {
+      // updating target associated tasks
+      if (formData.type === "Target Task") {
+        const { prevName } = prevAssociatedTasks.find(
+          (val) => val.taskGlobalId === taskDetails.global_id,
+        );
+        if (prevName !== formData.name) {
+          const newAssociatedTasks = prevAssociatedTasks.map((val) => {
+            return val.taskGlobalId === taskDetails.global_id
+              ? { ...val, name: formData.name }
+              : val;
+          });
+          const newSelectedTarget = {
+            ...selectedTarget,
+            associatedTasks: newAssociatedTasks,
+          };
+          updateTargets(selectedTarget.global_id, newSelectedTarget);
+        }
+      }
+
+      //updating task
       const updatedTask = {
         ...formData,
-        // created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        // completed: false,
-        // global_id: uuidv4(),
       };
       updateTasks(taskDetails.global_id, updatedTask);
-      // dispatch(updateTaskGlobal(taskDetails.global_id, updatedTask)); //updating global context
-
-      // if (navigator.onLine) {
-      //   updateTaskRemote(taskDetails.global_id, updatedTask); //updating remote state
-      // } else {
-      //   addTaskToQueue({
-      //     values: [taskDetails.global_id, updatedTask],
-      //     functionNumber: 3,
-      //   });
-      //   // console.log("task queued for later execution");
-      // }
     }
   }
 

@@ -6,9 +6,13 @@ import { FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import Checkbox from "../../utility/Checkbox";
 import useTaskOperations from "../../customHooks/useTaskOperations";
+import useTargetOperations from "../../customHooks/useTargetOperations";
+import { useSelector } from "react-redux";
 
 function TaskRow({ task }) {
   const { updateTasks, handleDelete } = useTaskOperations();
+  const { updateTargets } = useTargetOperations();
+  const { targets } = useSelector((store) => store.targets);
   const [isExpanded, setIsExpanded] = useState(false);
   const [editForm, setEditForm] = useState(false);
   function handleCheckboxClick(e) {
@@ -16,6 +20,21 @@ function TaskRow({ task }) {
     const updatedValue = e.target.checked;
     const updatedTask = { ...task, completed: updatedValue };
     updateTasks(global_id, updatedTask);
+  }
+  function onDeleteClick(taskGlobalId) {
+    if (task.type === "Target Task") {
+      const targetToBeUpdated = targets.find(
+        (val) => val.global_id === task.target_global_id,
+      );
+      const newTarget = {
+        ...targetToBeUpdated,
+        associatedTasks: targetToBeUpdated.associatedTasks.filter(
+          (val) => val.taskGlobalId !== task.global_id,
+        ),
+      };
+      updateTargets(targetToBeUpdated.global_id, newTarget);
+    }
+    handleDelete(taskGlobalId);
   }
   return (
     <div className={`${task.completed && style.completed} ${style.container}`}>
@@ -58,7 +77,7 @@ function TaskRow({ task }) {
           <MdDelete
             style={{ scale: "1.7", cursor: "pointer" }}
             name={`${task.global_id}`}
-            onClick={() => handleDelete(task.global_id)}
+            onClick={() => onDeleteClick(task.global_id)}
           />
         </div>
       </div>

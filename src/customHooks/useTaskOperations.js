@@ -33,7 +33,7 @@ function useTaskOperations() {
     }
   }
 
-  async function handleDelete(global_id) {
+  function handleDelete(global_id) {
     dispatch(deleteTaskGlobal(global_id));
     if (navigator.onLine) {
       deleteTaskRemote(global_id); //updating remote state

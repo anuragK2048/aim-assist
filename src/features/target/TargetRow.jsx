@@ -8,8 +8,10 @@ import { useEffect, useRef, useState } from "react";
 import AddTargetForm from "./AddTargetForm";
 import Checkbox from "../../utility/Checkbox";
 import Blur from "../../utility/Blur";
+import useTargetOperations from "../../customHooks/useTargetOperations";
 
-function TargetRow({ target, updateTargets, handleDelete }) {
+function TargetRow({ target }) {
+  const { updateTargets, deleteTarget } = useTargetOperations();
   const [isExpanded, setIsExpanded] = useState(false);
   const [editForm, setEditForm] = useState(false);
   function handleCheckboxClick(e) {
@@ -85,7 +87,7 @@ function TargetRow({ target, updateTargets, handleDelete }) {
             <MdDelete
               style={{ scale: "1.7", cursor: "pointer" }}
               name={`${target.global_id}`}
-              onClick={() => handleDelete(target.global_id)}
+              onClick={() => deleteTarget(target.global_id)}
             />
           </div>
         </div>

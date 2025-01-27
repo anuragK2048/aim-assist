@@ -17,7 +17,6 @@ import Button from "../../utility/Button";
 import Blur from "../../utility/Blur";
 
 function Target() {
-  const dispatch = useDispatch();
   const { targets } = useSelector((store) => store.targets);
   const [addTarget, setAddTarget] = useState(false);
 
@@ -46,16 +45,16 @@ function Target() {
 
   const floatingWindowRef = useRef();
 
-  function updateTargets(global_id, updatedTarget) {
-    dispatch(update(global_id, updatedTarget)); //updating global context
+  // function updateTargets(global_id, updatedTarget) {
+  //   dispatch(update(global_id, updatedTarget)); //updating global context
 
-    if (navigator.onLine) {
-      updateTarget(global_id, updatedTarget); //updating remote state
-    } else {
-      addTaskToQueue({ values: [global_id, updatedTarget], functionNumber: 0 });
-      // console.log("task queued for later execution");
-    }
-  }
+  //   if (navigator.onLine) {
+  //     updateTarget(global_id, updatedTarget); //updating remote state
+  //   } else {
+  //     addTaskToQueue({ values: [global_id, updatedTarget], functionNumber: 0 });
+  //     // console.log("task queued for later execution");
+  //   }
+  // }
 
   function handleAddTarget() {
     setAddTarget((cur) => !cur);
@@ -75,16 +74,6 @@ function Target() {
     document.addEventListener("click", handleClick, true);
     return () => document.removeEventListener("click", handleClick, true);
   }, [addTarget]);
-
-  async function handleDelete(global_id) {
-    dispatch(remove(global_id));
-    if (navigator.onLine) {
-      deleteTarget(global_id); //updating remote state
-    } else {
-      addTaskToQueue({ values: [global_id, null], functionNumber: 2 });
-      // console.log("task queued for later execution");
-    }
-  }
 
   function handleSelect(e) {
     const selected = e.target.value;
@@ -112,12 +101,7 @@ function Target() {
       </div>
       <div className="flex flex-col gap-2.5">
         {sortedTargets.map((target) => (
-          <TargetRow
-            target={target}
-            updateTargets={updateTargets}
-            handleDelete={handleDelete}
-            key={target.global_id}
-          />
+          <TargetRow target={target} key={target.global_id} />
         ))}
       </div>
       <Button text="Add Target +" onClick={handleAddTarget} />

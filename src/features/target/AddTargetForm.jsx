@@ -155,7 +155,7 @@ const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
         };
         return updatedTaskDetails;
       });
-      console.log(updatedTasks);
+
       updatedTasks?.forEach((taskDetails) => {
         updateTasks(taskDetails.global_id, taskDetails);
       });
