@@ -243,7 +243,7 @@ const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
       <label className="flex flex-wrap items-center gap-1 text-lg font-medium">
         Deadline:
         <input
-          type="datetime-local"
+          type="date"
           {...register("deadline")}
           className="h-9 flex-grow"
         />

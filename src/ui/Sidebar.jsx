@@ -32,10 +32,12 @@ function Sidebar({ setShowSidebar }) {
         <div className="flex w-full flex-col items-center justify-evenly 2xl:flex-row 2xl:gap-10">
           <div className="mt-6 flex flex-col items-center justify-center">
             <CgProfile className="h-12 w-auto" onClick={() => navigate("/")} />
-            <h2>User</h2>
+            <h2 className="text-xl">User</h2>
           </div>
           <div className="">
-            <div className="text-2xl text-yellow-500/60">AimAssist</div>
+            <div className="text-2xl text-yellow-500/60 md:text-3xl">
+              AimAssist
+            </div>
           </div>
         </div>
         {theme === "light" ? (

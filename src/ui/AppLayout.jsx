@@ -64,12 +64,6 @@ function AppLayout() {
     }
     foo();
   }, []);
-  // useEffect(() => {
-  //   dispatch({ type: "SUPABASE_INIT" });
-  //   return () => {
-  //     dispatch({ type: "SUPABASE_CLEANUP" });
-  //   };
-  // }, [dispatch]);
 
   const targetsTableUpdates = supabase
     .channel("custom-all-channel1")

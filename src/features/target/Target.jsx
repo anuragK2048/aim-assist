@@ -82,12 +82,12 @@ function Target() {
   }
 
   return (
-    <div className="flex w-full flex-col gap-5 p-5">
+    <div className="flex w-full flex-col gap-5 px-2 py-5 md:px-5">
       <div>
-        <h1 className="">Targets</h1>
+        <h1 className="text-3xl">Targets</h1>
       </div>
       <div className="flex items-center">
-        <div className="">Sort By: </div>
+        <div className="text-xl">Sort By: </div>
         <select
           className="ml-2 w-full max-w-40 rounded-md bg-[#c8b362] p-1.5 text-[0.925rem]"
           onChange={handleSelect}
@@ -99,7 +99,7 @@ function Target() {
           <option value="incompletion">Incompletion</option>
         </select>
       </div>
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-4">
         {sortedTargets.map((target) => (
           <TargetRow target={target} key={target.global_id} />
         ))}

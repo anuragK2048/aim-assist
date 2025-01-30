@@ -81,7 +81,7 @@ function Form({
                         return (
                           <div
                             key={task.global_id}
-                            className="flex items-center gap-1"
+                            className="flex items-center gap-1.5"
                           >
                             {/* <input
                               type="checkbox"
@@ -94,7 +94,7 @@ function Form({
                               {...register(
                                 `taskList.${currentTaskIndex}.selected`,
                               )}
-                              scale="0.7"
+                              // scale="0.7"
                             ></Checkbox>
                             <input
                               type="hidden"

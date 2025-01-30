@@ -87,7 +87,7 @@ function TaskRow({ task }) {
         </div>
         {isExpanded && (
           <div className={style.bottom}>
-            {task?.subtask_list.map((subtask, i) => (
+            {task?.subtask_list?.map((subtask, i) => (
               <div key={i}>{subtask}</div>
             ))}
           </div>

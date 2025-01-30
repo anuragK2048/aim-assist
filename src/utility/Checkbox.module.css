@@ -32,7 +32,7 @@
     opacity 0.2s;
 }
 .checkbox:checked ~ span::after {
-  width: 5px;
+  width: 8px;
   height: 20px;
   opacity: 1;
 }

@@ -36,7 +36,6 @@ export function fetched(targetsData) {
 }
 
 export function update(global_id, updatedTarget) {
-  console.log(global_id, updatedTarget);
   return { type: "targets/update", payload: { global_id, updatedTarget } };
 }
 
