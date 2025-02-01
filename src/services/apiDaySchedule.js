@@ -1,10 +1,9 @@
 import { getFullDate } from "../utility/utilFunctions";
+import getUserId from "./getUserId";
 import supabase from "./supabase";
 
 export async function getRemoteSchedule() {
-  const user_id = JSON.parse(
-    localStorage.getItem("sb-guhajgofwwntarznvykd-auth-token"),
-  ).user.id; //getting user_id from local storage
+  const user_id = getUserId();
   let { data: daySchedule, error } = await supabase
     .from("day_schedule")
     .select("*")
@@ -17,9 +16,7 @@ export async function getRemoteSchedule() {
 }
 
 export async function addRemoteSchedule(newSchedule) {
-  const user_id = JSON.parse(
-    localStorage.getItem("sb-guhajgofwwntarznvykd-auth-token"),
-  ).user.id;
+  const user_id = getUserId();
   const { data, error } = await supabase
     .from("day_schedule")
     .insert([{ ...newSchedule, user_id: user_id }])
@@ -28,9 +25,7 @@ export async function addRemoteSchedule(newSchedule) {
 }
 
 export async function updateRemoteSchedule(updatedSchedule) {
-  const user_id = JSON.parse(
-    localStorage.getItem("sb-guhajgofwwntarznvykd-auth-token"),
-  ).user.id;
+  const user_id = getUserId();
   const { data, error } = await supabase
     .from("day_schedule")
     .update(updatedSchedule)

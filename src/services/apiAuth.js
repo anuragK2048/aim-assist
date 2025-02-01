@@ -22,12 +22,10 @@ export async function login(id, password) {
 }
 
 export async function getCurrentUser() {
-  console.log("called");
   const { data: session } = await supabase.auth.getSession();
   if (!session.session) return null;
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  console.log(user);
   return user;
 }

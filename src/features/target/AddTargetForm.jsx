@@ -91,7 +91,6 @@ const AddTargetForm = forwardRef(function AddTargetForm(props, ref) {
         version: 1,
         global_id: new_target_id,
       };
-      console.log(newTarget);
 
       dispatch(add(newTarget));
       assoTasks.forEach((val) => {

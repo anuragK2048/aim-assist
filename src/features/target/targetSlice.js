@@ -18,7 +18,6 @@ export default function targetsReducer(state = initialState, action) {
       // console.log("Adding target:", action.payload);
       // console.log("Previous targets:", state.targets);
       const res = { ...state, targets: [...state.targets, action.payload] };
-      console.log(res);
       return res;
     case "targets/delete":
       const newTarget = state.targets.filter(

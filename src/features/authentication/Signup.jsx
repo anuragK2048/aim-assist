@@ -34,11 +34,19 @@ function Signup() {
       <form onSubmit={handleSignup} className="flex flex-col gap-3">
         <div>
           <div>User ID</div>
-          <input type="text" defaultValue={"hello@gmail.com"} />
+          <input
+            type="text"
+            defaultValue={"hello@gmail.com"}
+            className="border-2 border-[var(--theme-yellow)]"
+          />
         </div>
         <div>
           <div>Password</div>
-          <input type="password" defaultValue={"qwerty"} />
+          <input
+            type="password"
+            defaultValue={"qwerty"}
+            className="border-2 border-[var(--theme-yellow)]"
+          />
         </div>
         <button
           type="submit"

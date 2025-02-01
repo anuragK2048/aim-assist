@@ -3,7 +3,7 @@ import Sidebar from "./Sidebar";
 import { useEffect, useRef, useState } from "react";
 import {
   addTarget,
-  deleteTarget,
+  deleteTargetRemote,
   getTargets,
   updateTarget,
 } from "../services/apiTargets";
@@ -152,7 +152,7 @@ function AppLayout() {
   const availableTasks = [
     updateTarget,
     addTarget,
-    deleteTarget,
+    deleteTargetRemote,
     updateTaskRemote,
     addTaskRemote,
     deleteTaskRemote,

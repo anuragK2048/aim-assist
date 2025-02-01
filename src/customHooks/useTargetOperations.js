@@ -1,6 +1,10 @@
 import { useDispatch } from "react-redux";
 import { add, remove, update } from "../features/target/targetSlice";
-import { addTarget, deleteTarget, updateTarget } from "../services/apiTargets";
+import {
+  addTarget,
+  deleteTargetRemote,
+  updateTarget,
+} from "../services/apiTargets";
 import { addTaskToQueue } from "../utility/reconnectionUpdates";
 
 function useTargetOperations() {
@@ -29,8 +33,9 @@ function useTargetOperations() {
 
   async function deleteTarget(global_id) {
     dispatch(remove(global_id));
+    console.log("hi");
     if (navigator.onLine) {
-      deleteTarget(global_id); //updating remote state
+      deleteTargetRemote(global_id); //updating remote state
     } else {
       addTaskToQueue({ values: [global_id, null], functionNumber: 2 });
       // console.log("task queued for later execution");

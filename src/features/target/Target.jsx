@@ -1,9 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  deleteTarget,
-  getTargets,
-  updateTarget,
-} from "../../services/apiTargets";
 import TargetRow from "./TargetRow";
 import { useDispatch, useSelector } from "react-redux";
 import { add, remove, update } from "./targetSlice";

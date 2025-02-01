@@ -1,5 +1,3 @@
-import { updateTarget } from "../../services/apiTargets";
-import style from "./TargetRow.module.css";
 import { MdDelete } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
@@ -46,7 +44,6 @@ function TargetRow({ target }) {
   function handleTaskClick(taskGlobalId) {
     const selectedTask = tasks.find((val) => val.global_id === taskGlobalId);
     setShowAddTask((cur) => !cur);
-    console.log(selectedTask);
     setSelectedTaskDetails(selectedTask);
   }
   return (
@@ -68,12 +65,19 @@ function TargetRow({ target }) {
             <div className="tags flex flex-wrap items-center gap-1.5">
               {/* <div className=""> {target.priority}</div> */}
               <Tag name={target.priority} />
-              <div className="h-4 w-0.5 bg-slate-600"></div>
-              <Tag name={target.category} />
-              <div className="h-4 w-0.5 bg-slate-600"></div>
-              {target.tags.map((tag, i) => (
-                <Tag key={i} name={tag}></Tag>
-              ))}
+              {target?.category && (
+                <>
+                  <div className="h-4 w-0.5 bg-slate-600"></div>
+                  <Tag name={target.category} />
+                </>
+              )}
+              {target?.tags[0] && (
+                <div className="h-4 w-0.5 bg-slate-600"></div>
+              )}
+              {target?.tags.map((tag, i) => {
+                if (!tag) return;
+                return <Tag key={i} name={tag}></Tag>;
+              })}
             </div>
             {isExpanded && (
               <div className="w-full">
@@ -110,7 +114,7 @@ function TargetRow({ target }) {
             <div className="mx-0 flex items-center gap-1 whitespace-nowrap rounded-lg bg-slate-500 px-1 text-stone-200 md:mx-3">
               <MdOutlineDateRange />
               <div className="text-sm md:text-base">
-                {formatDate(target.deadline)}
+                {target.deadline && formatDate(target.deadline)}
               </div>
             </div>
             <Progress value={68} />

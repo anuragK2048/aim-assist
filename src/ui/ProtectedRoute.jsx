@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getCurrentUser } from "../services/apiAuth";
 
 function ProtectedRoute({ children }) {
-  const [authorize, setAuthorize] = useState(true);
+  const [authorize, setAuthorize] = useState(false);
   useEffect(function () {
     async function checkAuth() {
       const curSession = await getCurrentUser();
@@ -11,7 +11,7 @@ function ProtectedRoute({ children }) {
         setAuthorize(true);
       }
     }
-    // checkAuth();
+    checkAuth();
   }, []);
   return (
     <div className="h-full w-full">
