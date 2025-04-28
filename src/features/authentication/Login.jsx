@@ -35,7 +35,7 @@ function Login() {
         <div>
           <div>Password</div>
           <input
-            type="password"
+            type="text"
             defaultValue={"12"}
             className="border-2 border-[var(--theme-yellow)]"
           />

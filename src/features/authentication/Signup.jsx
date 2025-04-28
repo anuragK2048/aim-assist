@@ -43,7 +43,7 @@ function Signup() {
         <div>
           <div>Password</div>
           <input
-            type="password"
+            type="text"
             defaultValue={"qwerty"}
             className="border-2 border-[var(--theme-yellow)]"
           />
