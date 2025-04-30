@@ -1,178 +1,189 @@
-import React, { useState } from "react";
+import TodoApp from "@/todo-app";
 
-export default function TodoApp({
-  targetDetails = [
+// Sample data that would normally be passed as props
+const sampleData = {
+  targetDetails: [
     {
-      id: "1",
-      name: "Prepare Presentation",
-      description:
-        "Keep the talk and slides simple: what are the three things about this that everyone should remember?",
+      id: "main",
+      title: "Main",
+      targets: [
+        {
+          id: "inbox",
+          title: "Inbox",
+          icon: "inbox",
+          count: 2,
+        },
+        {
+          id: "today",
+          title: "Today",
+          icon: "today",
+          count: 8,
+          highlighted: true,
+        },
+        {
+          id: "upcoming",
+          title: "Upcoming",
+          icon: "upcoming",
+        },
+        {
+          id: "anytime",
+          title: "Anytime",
+          icon: "anytime",
+        },
+        {
+          id: "someday",
+          title: "Someday",
+          icon: "someday",
+        },
+        {
+          id: "logbook",
+          title: "Logbook",
+          icon: "logbook",
+        },
+        {
+          id: "trash",
+          title: "Trash",
+          icon: "trash",
+        },
+      ],
     },
     {
-      id: "2",
-      name: "Onboard James",
-      description: "Tasks to onboard the new team member James.",
+      id: "family",
+      title: "Family",
+      targets: [
+        {
+          id: "vacation-rome",
+          title: "Vacation in Rome",
+          icon: "target",
+        },
+        {
+          id: "buy-new-car",
+          title: "Buy a New Car",
+          icon: "target",
+        },
+        {
+          id: "throw-party",
+          title: "Throw Party for Eve",
+          icon: "target",
+        },
+      ],
     },
     {
-      id: "3",
-      name: "Attend Conference",
-      description: "Prepare and attend the upcoming tech conference.",
+      id: "work",
+      title: "Work",
+      targets: [
+        {
+          id: "prepare-presentation",
+          title: "Prepare Presentation",
+          icon: "target",
+          description:
+            "Keep the talk and slides simple: what are the three things about this that everyone should remember?",
+          sections: [
+            {
+              id: "slides",
+              title: "Slides and notes",
+              tasks: [
+                {
+                  id: "task1",
+                  title: "Revise introduction",
+                  completed: false,
+                  hasAttachment: true,
+                },
+                {
+                  id: "task2",
+                  title: "Simplify slide layouts",
+                  completed: false,
+                },
+                {
+                  id: "task3",
+                  title: "Review quarterly data with Olivia",
+                  completed: false,
+                  starred: true,
+                },
+                {
+                  id: "task4",
+                  title: "Print handouts for attendees",
+                  completed: false,
+                  date: "May 25",
+                },
+              ],
+            },
+            {
+              id: "preparation",
+              title: "Preparation",
+              tasks: [
+                {
+                  id: "task5",
+                  title: "Email John for presentation tips",
+                  completed: false,
+                },
+                {
+                  id: "task6",
+                  title: "Check out book recommendations",
+                  completed: false,
+                  hasAttachment: true,
+                },
+                {
+                  id: "task7",
+                  title: "Time a full rehearsal",
+                  completed: false,
+                  important: true,
+                },
+                {
+                  id: "task8",
+                  title: "Do a practice run with Eric",
+                  completed: false,
+                },
+                {
+                  id: "task9",
+                  title: "Confirm presentation time",
+                  completed: false,
+                  important: true,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: "onboard-james",
+          title: "Onboard James",
+          icon: "target",
+        },
+        {
+          id: "attend-conference",
+          title: "Attend Conference",
+          icon: "target",
+        },
+        {
+          id: "order-tshirts",
+          title: "Order Team T-Shirts",
+          icon: "target",
+        },
+      ],
+    },
+    {
+      id: "hobbies",
+      title: "Hobbies",
+      targets: [
+        {
+          id: "learn-italian",
+          title: "Learn Basic Italian",
+          icon: "target",
+        },
+        {
+          id: "run-marathon",
+          title: "Run a Marathon",
+          icon: "target",
+        },
+      ],
     },
   ],
-  taskDetails = [
-    // For Prepare Presentation
-    {
-      id: "t1",
-      targetId: "1",
-      section: "Slides and notes",
-      title: "Revise introduction",
-      notes: "",
-      important: false,
-    },
-    {
-      id: "t2",
-      targetId: "1",
-      section: "Slides and notes",
-      title: "Simplify slide layouts",
-      notes: "",
-      important: false,
-    },
-    {
-      id: "t3",
-      targetId: "1",
-      section: "Slides and notes",
-      title: "Review quarterly data with Olivia",
-      notes: "",
-      important: true,
-    },
-    {
-      id: "t4",
-      targetId: "1",
-      section: "Slides and notes",
-      title: "Print handouts for attendees",
-      dueDate: "May 25",
-      notes: "",
-      important: false,
-    },
-    {
-      id: "t5",
-      targetId: "1",
-      section: "Preparation",
-      title: "Email John for presentation tips",
-      notes: "",
-      important: false,
-    },
-    {
-      id: "t6",
-      targetId: "1",
-      section: "Preparation",
-      title: "Check out book recommendations",
-      notes: "",
-      important: false,
-    },
-    {
-      id: "t7",
-      targetId: "1",
-      section: "Preparation",
-      title: "Time a full rehearsal",
-      notes: "",
-      important: true,
-    },
-    {
-      id: "t8",
-      targetId: "1",
-      section: "Preparation",
-      title: "Do a practice run with Eric",
-      notes: "",
-      important: false,
-    },
-    {
-      id: "t9",
-      targetId: "1",
-      section: "Preparation",
-      title: "Confirm presentation time",
-      notes: "",
-      important: true,
-    },
-  ],
-}) {
-  const [selectedTarget, setSelectedTarget] = useState(
-    targetDetails[0]?.id || null,
-  );
+};
 
-  const filteredTasks = taskDetails.filter(
-    (task) => task.targetId === selectedTarget,
-  );
-
+export default function Home() {
   return (
-    <div className="flex h-screen">
-      {/* Sidebar */}
-      <div className="w-64 overflow-y-auto border-r bg-gray-100">
-        <div className="p-4 text-lg font-semibold">Targets</div>
-        <ul>
-          {targetDetails.map((target) => (
-            <li
-              key={target.id}
-              className={`cursor-pointer px-4 py-2 hover:bg-gray-200 ${selectedTarget === target.id ? "bg-gray-300 font-bold" : ""}`}
-              onClick={() => setSelectedTarget(target.id)}
-            >
-              {target.name}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-y-auto p-6">
-        <h2 className="mb-2 text-2xl font-bold">
-          {targetDetails.find((t) => t.id === selectedTarget)?.name ||
-            "Select a Target"}
-        </h2>
-        <p className="mb-4 text-gray-600">
-          {targetDetails.find((t) => t.id === selectedTarget)?.description ||
-            ""}
-        </p>
-
-        <div className="space-y-6">
-          {["Slides and notes", "Preparation"].map((section) => (
-            <div key={section}>
-              <h3 className="mb-2 text-lg font-semibold text-blue-700">
-                {section}
-              </h3>
-              <ul className="space-y-2">
-                {filteredTasks
-                  .filter((task) => task.section === section)
-                  .map((task) => (
-                    <li
-                      key={task.id}
-                      className="flex items-start space-x-2 rounded border bg-white p-3 shadow-sm"
-                    >
-                      <input type="checkbox" className="mt-1" />
-                      <div>
-                        <div className="font-medium">
-                          {task.title}
-                          {task.important && (
-                            <span className="ml-2 text-xs font-semibold text-red-500">
-                              Important
-                            </span>
-                          )}
-                          {task.dueDate && (
-                            <span className="ml-2 rounded-full bg-gray-200 px-2 py-0.5 text-xs text-gray-500">
-                              {task.dueDate}
-                            </span>
-                          )}
-                        </div>
-                        {task.notes && (
-                          <p className="text-sm text-gray-600">{task.notes}</p>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+    <main>
+      <TodoApp targetDetails={sampleData.targetDetails} />
+    </main>
   );
 }

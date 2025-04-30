@@ -26,8 +26,8 @@ function App() {
         path: "/app",
         element: (
           <ProtectedRoute>
-            {/* <AppLayout /> */}
-            <Test_UI />
+            <AppLayout />
+            {/* <Test_UI /> */}
           </ProtectedRoute>
         ),
         children: [
