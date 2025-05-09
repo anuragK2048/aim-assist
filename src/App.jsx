@@ -12,6 +12,7 @@ import TaskList from "./features/task/TaskList";
 import AddTaskForm from "./features/task/AddTaskForm";
 import Error from "./ui/Error";
 import ProtectedRoute from "./ui/ProtectedRoute";
+import Home from "../app/Home";
 
 function App() {
   const router = createBrowserRouter(
@@ -19,7 +20,8 @@ function App() {
       {
         path: "/",
         errorElement: <Error />,
-        element: <HomePage />,
+        element: <Home />,
+        // element: <HomePage />,
       },
       {
         path: "/app",
