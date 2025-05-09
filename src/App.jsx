@@ -12,7 +12,7 @@ import TaskList from "./features/task/TaskList";
 import AddTaskForm from "./features/task/AddTaskForm";
 import Error from "./ui/Error";
 import ProtectedRoute from "./ui/ProtectedRoute";
-import Test_UI from "./components/ui/Test_UI";
+import Test from "../app/Test";
 
 function App() {
   const router = createBrowserRouter(
@@ -20,6 +20,7 @@ function App() {
       {
         path: "/",
         errorElement: <Error />,
+        // element: <Test />,
         element: <HomePage />,
       },
       {
@@ -27,7 +28,6 @@ function App() {
         element: (
           <ProtectedRoute>
             <AppLayout />
-            {/* <Test_UI /> */}
           </ProtectedRoute>
         ),
         children: [
