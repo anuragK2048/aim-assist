@@ -18,10 +18,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      // "@components/*": ["src/components/*"],
-      // "@store/*": ["src/store/*"],
-      // "@lib/*": ["src/lib/*"],
-      // "@types": ["src/types/index.ts"]
+      "@components/*": ["./src/components/*"],
+      "@store/*": ["./src/store/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@types": ["./src/types/index.ts"]
     }
   },
   "include": ["src"],
