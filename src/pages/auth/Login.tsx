@@ -2,7 +2,7 @@ import { LoginForm } from "@/components/login-form";
 
 function Login() {
   return (
-    <div>
+    <div className="w-1/4">
       <LoginForm />
     </div>
   );
