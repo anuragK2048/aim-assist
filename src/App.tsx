@@ -5,6 +5,8 @@ import AuthLayout from "./pages/AuthLayout";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Landing from "./pages/Landing";
+import AppLayout from "./pages/AppLayout";
+import AppScreen from "./pages/AppScreen";
 
 function App() {
   return (
@@ -13,7 +15,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route index element={<Landing />} />
-            <Route path="home" element={<Home />} />
+            <Route path="home" element={<AppScreen />} />
 
             <Route element={<AuthLayout />}>
               <Route path="login" element={<Login />} />

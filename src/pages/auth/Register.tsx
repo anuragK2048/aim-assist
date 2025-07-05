@@ -3,7 +3,7 @@ import { RegisterForm } from "@/components/register-form";
 
 function Register() {
   return (
-    <div className="w-1/4">
+    <div className="min-w-1/4">
       <RegisterForm />
     </div>
   );
