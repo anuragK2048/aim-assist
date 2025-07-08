@@ -1,12 +1,15 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router";
-import Home from "@/pages/Home";
+import HomeScreen from "@/pages/HomeScreen";
 import { ThemeProvider } from "./components/ThemeProvider";
-import AuthLayout from "./pages/AuthLayout";
+import AuthLayout from "./pages/layouts/AuthLayout";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
-import Landing from "./pages/Landing";
-import AppLayout from "./pages/AppLayout";
-import AppScreen from "./pages/AppScreen";
+import MainLayout from "./pages/layouts/MainLayout";
+import TargetScreen from "./pages/TargetScreen";
+import TodayScreen from "./pages/TodayScreen";
+import ScheduleDayScreen from "./pages/ScheduleDayScreen";
+import JournalScreen from "./pages/JournalScreen";
+import CalendarScreen from "./pages/CalendarScreen";
 
 function App() {
   return (
@@ -14,8 +17,19 @@ function App() {
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <BrowserRouter>
           <Routes>
-            <Route index element={<Landing />} />
-            <Route path="home" element={<AppScreen />} />
+            <Route element={<MainLayout />}>
+              <Route index element={<HomeScreen />} />
+              <Route path="targets/:targetId" element={<TargetScreen />} />
+              <Route
+                path="targets/:targetId/nodes/:nodeId"
+                element={<TargetScreen />}
+              />
+              <Route path="home" element={<HomeScreen />} />
+              <Route path="today" element={<TodayScreen />} />
+              <Route path="scheduleDay" element={<ScheduleDayScreen />} />
+              <Route path="journal" element={<JournalScreen />} />
+              <Route path="calendar" element={<CalendarScreen />} />
+            </Route>
 
             <Route element={<AuthLayout />}>
               <Route path="login" element={<Login />} />
