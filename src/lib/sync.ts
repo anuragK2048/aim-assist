@@ -1,13 +1,14 @@
 import { supabase } from "./supabase";
 import { useAppStore } from "@store/useAppStore";
 import { Goal, Target, Node, Task } from "@types";
+import { snapshot } from "./snapshot";
+import { client_id } from "./client";
 
 const tables = ["goals", "targets", "nodes", "tasks"] as const;
 
 const channelMap: Record<string, ReturnType<typeof supabase.channel>> = {};
 
 export function initRealtime(userId: string) {
-  console.log(userId);
   for (const table of tables) {
     const channelName = `${table}-changes`;
     if (!channelMap[channelName]) {
@@ -23,20 +24,21 @@ export function initRealtime(userId: string) {
           },
           (payload) => {
             console.log(payload);
-            const store = useAppStore.getState();
             const { eventType, new: newRow, old } = payload;
+            if (newRow?.client_id == client_id) return;
+            if (old?.client_id == client_id) return;
             switch (table) {
               case "goals":
-                applyChange(store, "goals", eventType, newRow, old);
+                applyChange("goals", eventType, newRow, old);
                 break;
               case "targets":
-                applyChange(store, "targets", eventType, newRow, old);
+                applyChange("targets", eventType, newRow, old);
                 break;
               case "nodes":
-                applyChange(store, "nodes", eventType, newRow, old);
+                applyChange("nodes", eventType, newRow, old);
                 break;
               case "tasks":
-                applyChange(store, "tasks", eventType, newRow, old);
+                applyChange("tasks", eventType, newRow, old);
                 break;
             }
           }
@@ -49,19 +51,29 @@ export function initRealtime(userId: string) {
 }
 
 function applyChange<T extends Goal | Target | Node | Task>(
-  store: ReturnType<typeof useAppStore.getState>,
   key: "goals" | "targets" | "nodes" | "tasks",
   type: string,
   newRow?: T,
   oldRow?: T
 ) {
-  if (type === "INSERT" && newRow) {
-    store[key] = [...store[key], newRow];
-  } else if (type === "UPDATE" && newRow) {
-    store[key] = store[key].map((item) =>
-      item.id === newRow.id ? newRow : item
-    );
-  } else if (type === "DELETE" && oldRow) {
-    store[key] = store[key].filter((item) => item.id !== oldRow.id);
-  }
+  useAppStore.setState((state) => {
+    const updatedArray = (() => {
+      if (type === "INSERT" && newRow) {
+        return [...state[key], newRow];
+      } else if (type === "UPDATE" && newRow) {
+        return state[key].map((item) =>
+          item.id === newRow.id ? newRow : item
+        );
+      } else if (type === "DELETE" && oldRow) {
+        return state[key].filter((item) => item.id !== oldRow.id);
+      }
+      return state[key];
+    })();
+
+    return {
+      [key]: updatedArray,
+      history: [...state.history, snapshot(state)],
+      future: [],
+    };
+  });
 }
