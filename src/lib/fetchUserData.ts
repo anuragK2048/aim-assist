@@ -13,7 +13,7 @@ export async function fetchUserData(user_id: string) {
     goalsRes.error || targetsRes.error || nodesRes.error || tasksRes.error;
   if (error) throw error;
 
-  useAppStore.getState().setAll({
+  useAppStore.getState().setInitialData({
     goals: goalsRes.data ?? [],
     targets: targetsRes.data ?? [],
     nodes: nodesRes.data ?? [],

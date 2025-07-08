@@ -3,10 +3,12 @@ import TestGoal from "@/components/testGoal";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAppStore } from "@/store/useAppStore";
 import { shallow } from "zustand/shallow";
-import TargetScreen from "../TargetScreen";
+import TargetScreen from "../screens/TargetScreen";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
+import { fetchUserData } from "@/lib/fetchUserData";
+import { initRealtime } from "@/lib/sync";
 
 export default function MainLayout() {
   const [loading, setLoading] = useState(true);
@@ -19,8 +21,16 @@ export default function MainLayout() {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
         // Already signed in
+        const { data } = await supabase.auth.getUser();
+        if (data?.user?.id) {
+          await fetchUserData(data.user.id);
+          initRealtime(data.user.id);
+        }
       } else {
-        navigate("/register");
+        const id = "1cb1c31b-7e8e-448c-b766-662ac7dfdb16";
+        await fetchUserData(id);
+        initRealtime(id);
+        // navigate("/register");
       }
       setLoading(false);
     };

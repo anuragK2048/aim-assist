@@ -52,3 +52,10 @@ export interface Task {
   updated_at: string;
   completed_at?: string;
 }
+
+export type AppData = {
+  goals: Goal[];
+  targets: Target[];
+  nodes: Node[];
+  tasks: Task[];
+};

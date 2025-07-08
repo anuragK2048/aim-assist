@@ -1,15 +1,16 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router";
-import HomeScreen from "@/pages/HomeScreen";
+import HomeScreen from "@/pages/screens/HomeScreen";
 import { ThemeProvider } from "./components/ThemeProvider";
 import AuthLayout from "./pages/layouts/AuthLayout";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import MainLayout from "./pages/layouts/MainLayout";
-import TargetScreen from "./pages/TargetScreen";
-import TodayScreen from "./pages/TodayScreen";
-import ScheduleDayScreen from "./pages/ScheduleDayScreen";
-import JournalScreen from "./pages/JournalScreen";
-import CalendarScreen from "./pages/CalendarScreen";
+import TargetScreen from "./pages/screens/TargetScreen";
+import TodayScreen from "./pages/screens/TodayScreen";
+import ScheduleDayScreen from "./pages/screens/ScheduleDayScreen";
+import JournalScreen from "./pages/screens/JournalScreen";
+import CalendarScreen from "./pages/screens/CalendarScreen";
+import VisualiseScreen from "./pages/screens/VisualiseScreen";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
               <Route path="scheduleDay" element={<ScheduleDayScreen />} />
               <Route path="journal" element={<JournalScreen />} />
               <Route path="calendar" element={<CalendarScreen />} />
+              <Route path="visualize" element={<VisualiseScreen />} />
             </Route>
 
             <Route element={<AuthLayout />}>

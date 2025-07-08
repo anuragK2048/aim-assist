@@ -1,437 +1,306 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { Goal, Target, Node, Task } from "@types";
-import { supabase } from "@lib/supabase";
+import { produce } from "immer";
+import { Goal, Target, Node, Task, AppData } from "../types"; // Adjust path to your types
+import { supabase } from "../lib/supabase"; // Adjust path to your supabase client
 import { client_id } from "@/lib/client";
-import { snapshot } from "@/lib/snapshot";
 
-export type AppData = {
-  goals: Goal[];
-  targets: Target[];
-  nodes: Node[];
-  tasks: Task[];
-};
+// --- TYPE DEFINITIONS ---
 
-export type AppState = AppData & {
-  history: HistoryEntry[];
-  future: HistoryEntry[];
-
-  // Core
-  setAll: (data: AppData) => void;
-  undo: () => Promise<void>;
-  redo: () => Promise<void>;
-  commit: (entry: HistoryEntry) => void;
-
-  // Goals
-  addGoal: (goal: Goal) => Promise<void>;
-  updateGoal: (goal: Goal) => Promise<void>;
-  removeGoal: (id: string) => Promise<void>;
-
-  // Targets
-  addTarget: (target: Target) => Promise<void>;
-  updateTarget: (target: Target) => Promise<void>;
-  removeTarget: (id: string) => Promise<void>;
-
-  // Nodes
-  addNode: (node: Node) => Promise<void>;
-  updateNode: (node: Node) => Promise<void>;
-  removeNode: (id: string) => Promise<void>;
-
-  // Tasks
-  addTask: (task: Task) => Promise<void>;
-  updateTask: (task: Task) => Promise<void>;
-  removeTask: (id: string) => Promise<void>;
-};
+type AllBlockTypes = Goal | Target | Node | Task;
 
 type Change<T> = {
-  table: "goals" | "targets" | "nodes" | "tasks";
+  table: keyof AppData;
   type: "INSERT" | "UPDATE" | "DELETE";
   row: T;
-  prevRow?: T; // for update and delete
+  prevRow?: T;
 };
 
 type HistoryEntry = {
   changes: Change<any>[];
+  description?: string;
 };
 
-export const useAppStore = create<AppState>()(
-  devtools((set, get) => ({
-    // Initial State
-    goals: [],
-    targets: [],
-    nodes: [],
-    tasks: [],
-    history: [],
-    future: [],
+// This is the single source of truth for your store's state and actions
+export type AppState = AppData & {
+  // We'll add a mock auth object for the example to work
+  auth: {
+    user: {
+      id: string;
+    } | null;
+  };
+  undoStack: HistoryEntry[];
+  redoStack: HistoryEntry[];
+  setInitialData: (data: AppData) => void;
+  setAuthUser: (user: { id: string }) => void;
+  undo: () => Promise<void>;
+  redo: () => Promise<void>;
+  // Corrected and type-safe action signatures
+  addBlock: <T extends AllBlockTypes>(
+    blockType: keyof AppData,
+    block: Omit<T, "id" | "created_at" | "updated_at" | "client_id" | "user_id">
+  ) => Promise<void>;
+  updateBlock: <T extends AllBlockTypes>(
+    blockType: keyof AppData,
+    updatedBlock: Partial<T> & { id: string }
+  ) => Promise<void>;
+  removeBlock: (blockType: keyof AppData, id: string) => Promise<void>;
+};
 
-    // Core
-    setAll: (data) =>
-      set((s) => ({
-        ...data,
-        history: [...s.history, { changes: [] }],
-        future: [],
-      })),
-
-    commit: (entry) => {
-      set((s) => ({
-        history: [...s.history, entry],
-        future: [],
-      }));
-    },
-
-    undo: async () => {
-      const { history, future } = get();
-      if (history.length === 0) return;
-
-      const entry = history[history.length - 1];
-
-      // Revert each change in reverse order
-      for (const change of [...entry.changes].reverse()) {
-        await revertChange(change);
-        set((s) => {
-          const table = change.table;
-          if (change.type === "INSERT") {
-            return {
-              [table]: s[table].filter((item) => item.id !== change.row.id),
-            };
-          } else if (change.type === "UPDATE") {
-            return {
-              [table]: s[table].map((item) =>
-                item.id === change.row.id ? change.prevRow : item
-              ),
-            };
-          } else if (change.type === "DELETE") {
-            return { [table]: [...s[table], change.row] };
-          }
-          return {};
-        });
-      }
-
-      set((s) => ({
-        history: history.slice(0, -1),
-        future: [entry, ...future],
-      }));
-    },
-
-    redo: async () => {
-      const { history, future } = get();
-      if (future.length === 0) return;
-
-      const entry = future[0];
-
-      for (const change of entry.changes) {
-        await applyChange(change);
-        set((s) => {
-          const table = change.table;
-          if (change.type === "INSERT") {
-            return { [table]: [...s[table], change.row] };
-          } else if (change.type === "UPDATE") {
-            return {
-              [table]: s[table].map((item) =>
-                item.id === change.row.id ? change.row : item
-              ),
-            };
-          } else if (change.type === "DELETE") {
-            return {
-              [table]: s[table].filter((item) => item.id !== change.row.id),
-            };
-          }
-          return {};
-        });
-      }
-
-      set((s) => ({
-        history: [...history, entry],
-        future: future.slice(1),
-      }));
-    },
-
-    addBlock: async <T extends Goal | Target | Node | Task>(
-      blockType: keyof AppData,
-      blockContent: T
-    ) => {
-      const fullContent = { ...blockContent, client_id };
-
-      const { error } = await supabase.from(blockType).insert(fullContent);
-      if (error) throw error;
-
-      set((s) => {
-        const newChange = {
-          table: blockType,
-          type: "INSERT",
-          row: fullContent,
-        };
-
-        return {
-          ...s,
-          [blockType]: [...s[blockType], fullContent],
-          history: [...s.history, { changes: [newChange] }],
-          future: [],
-        };
-      });
-    },
-
-    updateBlock: async <T extends Goal | Target | Node | Task>(
-      blockType: keyof AppData,
-      updatedBlock: T
-    ) => {
-      const prev = get()[blockType].find((b) => b.id === updatedBlock.id) as T;
-      if (!prev) return;
-
-      const fullBlock = { ...updatedBlock, client_id };
-
-      const { error } = await supabase
-        .from(blockType)
-        .update(fullBlock)
-        .eq("id", updatedBlock.id);
-
-      if (error) throw error;
-
-      set((s) => {
-        const updatedList = s[blockType].map((b) =>
-          b.id === updatedBlock.id ? updatedBlock : b
-        );
-
-        const newChange = {
-          table: blockType,
-          type: "UPDATE",
-          row: updatedBlock,
-          prevRow: prev,
-        };
-
-        return {
-          [blockType]: updatedList,
-          history: [...s.history, { changes: [newChange] }],
-          future: [],
-        };
-      });
-    },
-
-    removeBlock: async <T extends Goal | Target | Node | Task>(
-      blockType: keyof AppData,
-      id: string
-    ) => {
-      const prev = get()[blockType].find((b) => b.id === id) as T;
-      if (!prev) return;
-
-      const { error: updateError } = await supabase
-        .from(blockType)
-        .update({ client_id })
-        .eq("id", id);
-
-      if (updateError) throw updateError;
-
-      const { error: deleteError } = await supabase
-        .from(blockType)
-        .delete()
-        .eq("id", id);
-
-      if (deleteError) throw deleteError;
-
-      set((s) => {
-        const newChange = {
-          table: blockType,
-          type: "DELETE",
-          row: prev,
-        };
-
-        return {
-          [blockType]: s[blockType].filter((b) => b.id !== id),
-          history: [...s.history, { changes: [newChange] }],
-          future: [],
-        };
-      });
-    },
-
-    // // Targets
-    // addTarget: async (target) => {
-    //   const fullTarget = { ...target, client_id };
-    //   const { error } = await supabase.from("targets").insert(fullTarget);
-    //   if (error) throw error;
-    //   set((s) => ({
-    //     targets: [...s.targets, target],
-    //     history: [...s.history, snapshot(s)],
-    //     future: [],
-    //   }));
-    // },
-    // updateTarget: async (target) => {
-    //   const fullTarget = { ...target, client_id };
-    //   const { error } = await supabase
-    //     .from("targets")
-    //     .update(fullTarget)
-    //     .eq("id", target.id);
-    //   if (error) throw error;
-    //   set((s) => ({
-    //     targets: s.targets.map((t) => (t.id === target.id ? target : t)),
-    //     history: [...s.history, snapshot(s)],
-    //     future: [],
-    //   }));
-    // },
-    // removeTarget: async (id) => {
-    //   const { data: target, error: fetchError } = await supabase
-    //     .from("targets")
-    //     .select("*")
-    //     .eq("id", id)
-    //     .single();
-
-    //   if (fetchError) throw fetchError;
-    //   if (!target) throw new Error("target not found");
-
-    //   // Attach client_id before deletion using update
-    //   const { error: updateError } = await supabase
-    //     .from("targets")
-    //     .update({ client_id }) // <-- mark as self-change
-    //     .eq("id", id);
-
-    //   if (updateError) throw updateError;
-
-    //   // Now delete
-    //   const { error: deleteError } = await supabase
-    //     .from("targets")
-    //     .delete()
-    //     .eq("id", id);
-
-    //   if (deleteError) throw deleteError;
-    //   set((s) => ({
-    //     targets: s.targets.filter((t) => t.id !== id),
-    //     history: [...s.history, snapshot(s)],
-    //     future: [],
-    //   }));
-    // },
-
-    // // Nodes
-    // addNode: async (node) => {
-    //   const fullNode = { ...node, client_id };
-    //   const { error } = await supabase.from("nodes").insert(fullNode);
-    //   if (error) throw error;
-    //   set((s) => ({
-    //     nodes: [...s.nodes, node],
-    //     history: [...s.history, snapshot(s)],
-    //     future: [],
-    //   }));
-    // },
-    // updateNode: async (node) => {
-    //   const fullNode = { ...node, client_id };
-    //   const { error } = await supabase
-    //     .from("nodes")
-    //     .update(fullNode)
-    //     .eq("id", node.id);
-    //   if (error) throw error;
-    //   set((s) => ({
-    //     nodes: s.nodes.map((n) => (n.id === node.id ? node : n)),
-    //     history: [...s.history, snapshot(s)],
-    //     future: [],
-    //   }));
-    // },
-    // removeNode: async (id) => {
-    //   const { data: node, error: fetchError } = await supabase
-    //     .from("nodes")
-    //     .select("*")
-    //     .eq("id", id)
-    //     .single();
-
-    //   if (fetchError) throw fetchError;
-    //   if (!node) throw new Error("node not found");
-
-    //   // Attach client_id before deletion using update
-    //   const { error: updateError } = await supabase
-    //     .from("nodes")
-    //     .update({ client_id }) // <-- mark as self-change
-    //     .eq("id", id);
-
-    //   if (updateError) throw updateError;
-
-    //   // Now delete
-    //   const { error: deleteError } = await supabase
-    //     .from("nodes")
-    //     .delete()
-    //     .eq("id", id);
-
-    //   if (deleteError) throw deleteError;
-    //   set((s) => ({
-    //     nodes: s.nodes.filter((n) => n.id !== id),
-    //     history: [...s.history, snapshot(s)],
-    //     future: [],
-    //   }));
-    // },
-
-    // // Tasks
-    // addTask: async (task) => {
-    //   const fullTask = { ...task, client_id };
-    //   const { error } = await supabase.from("tasks").insert(fullTask);
-    //   if (error) throw error;
-    //   set((s) => ({
-    //     tasks: [...s.tasks, task],
-    //     history: [...s.history, snapshot(s)],
-    //     future: [],
-    //   }));
-    // },
-    // updateTask: async (task) => {
-    //   const fullTask = { ...task, client_id };
-    //   const { error } = await supabase
-    //     .from("tasks")
-    //     .update(fullTask)
-    //     .eq("id", task.id);
-    //   if (error) throw error;
-    //   set((s) => ({
-    //     tasks: s.tasks.map((t) => (t.id === task.id ? task : t)),
-    //     history: [...s.history, snapshot(s)],
-    //     future: [],
-    //   }));
-    // },
-    // removeTask: async (id) => {
-    //   const { data: task, error: fetchError } = await supabase
-    //     .from("tasks")
-    //     .select("*")
-    //     .eq("id", id)
-    //     .single();
-
-    //   if (fetchError) throw fetchError;
-    //   if (!task) throw new Error("task not found");
-
-    //   // Attach client_id before deletion using update
-    //   const { error: updateError } = await supabase
-    //     .from("tasks")
-    //     .update({ client_id }) // <-- mark as self-change
-    //     .eq("id", id);
-
-    //   if (updateError) throw updateError;
-
-    //   // Now delete
-    //   const { error: deleteError } = await supabase
-    //     .from("tasks")
-    //     .delete()
-    //     .eq("id", id);
-
-    //   if (deleteError) throw deleteError;
-    //   set((s) => ({
-    //     tasks: s.tasks.filter((t) => t.id !== id),
-    //     history: [...s.history, snapshot(s)],
-    //     future: [],
-    //   }));
-    // },
-  }))
-);
-
-async function applyChange<T>(change: Change<T>) {
+// --- DB HELPER FUNCTIONS ---
+// These helpers perform the actual database operations for undo/redo
+async function applyChange<T extends { id: string }>(change: Change<T>) {
   const { type, table, row } = change;
   if (type === "INSERT") {
     await supabase.from(table).insert(row);
   } else if (type === "UPDATE") {
+    // Only update the fields that are in the row object, not the whole thing
     await supabase.from(table).update(row).eq("id", row.id);
   } else if (type === "DELETE") {
     await supabase.from(table).delete().eq("id", row.id);
   }
 }
 
-async function revertChange<T>(change: Change<T>) {
+async function revertChange<T extends { id: string }>(change: Change<T>) {
   const { type, table, row, prevRow } = change;
   if (type === "INSERT") {
-    console.log("hiasox");
     await supabase.from(table).delete().eq("id", row.id);
   } else if (type === "UPDATE") {
-    await supabase.from(table).update(prevRow).eq("id", row.id);
+    // We need prevRow to revert an update
+    if (prevRow) {
+      await supabase.from(table).update(prevRow).eq("id", row.id);
+    }
   } else if (type === "DELETE") {
     await supabase.from(table).insert(row);
   }
 }
+
+// --- OPTIMISTIC UPDATE HELPER ---
+// This generic function orchestrates the optimistic update, DB call, and rollback logic.
+const performOptimisticUpdate = async (
+  get: () => AppState,
+  set: (fn: (state: AppState) => void) => void,
+  {
+    dbAction,
+    localUpdate,
+  }: {
+    dbAction: () => Promise<any>;
+    localUpdate: (draft: AppState) => void;
+  }
+) => {
+  const previousState = get();
+
+  // 1. Optimistically update the UI using Immer for safe mutations
+  set((draft) => {
+    localUpdate(draft);
+  });
+
+  // 2. Perform the database action
+  try {
+    const { error } = await dbAction();
+    if (error) throw error; // Throw to trigger the catch block
+  } catch (error) {
+    console.error("❌ Optimistic update failed. Rolling back UI.", error);
+    // 3. On failure, revert the store to its previous state
+    set(() => previousState);
+    // You would show an error toast to the user here
+  }
+};
+
+// --- ZUSTAND STORE CREATION ---
+export const useAppStore = create<AppState>()(
+  devtools(
+    // We pass `(set, get)` to `produce` to use Immer directly
+    (set, get) => ({
+      // Initial State
+      goals: [],
+      targets: [],
+      nodes: [],
+      tasks: [],
+      undoStack: [],
+      redoStack: [],
+      auth: { user: null }, // Start with no user
+
+      // --- CORE ACTIONS ---
+      setInitialData: (data) => set({ ...data, undoStack: [], redoStack: [] }),
+      setAuthUser: (user) =>
+        set(
+          produce((draft) => {
+            draft.auth.user = user;
+          })
+        ),
+
+      // --- GENERIC BLOCK ACTIONS ---
+      addBlock: async <T extends AllBlockTypes>(
+        blockType: keyof AppData,
+        blockContent: Omit<
+          T,
+          "id" | "created_at" | "updated_at" | "client_id" | "user_id"
+        >
+      ) => {
+        if (!get().auth.user) {
+          console.error("Cannot add block: no user authenticated.");
+          return;
+        }
+        const tempId = crypto.randomUUID();
+        const newBlock = {
+          ...blockContent,
+          id: tempId,
+          client_id,
+          user_id: get().auth.user!.id, // We know user is not null here
+        } as T;
+
+        await performOptimisticUpdate(get, (fn) => set(produce(fn)), {
+          localUpdate: (draft) => {
+            (draft[blockType] as T[]).push(newBlock);
+            draft.undoStack.push({
+              changes: [{ type: "INSERT", table: blockType, row: newBlock }],
+            });
+            draft.redoStack = [];
+          },
+          dbAction: async () => {
+            // Insert and select back to get the real ID generated by the DB
+            const { data, error } = await supabase
+              .from(blockType)
+              .insert(newBlock)
+              .select()
+              .single();
+            if (data) {
+              // Update the store with the permanent ID from the DB
+              set(
+                produce((draft) => {
+                  const item = (draft[blockType] as T[]).find(
+                    (b) => b.id === tempId
+                  );
+                  if (item) item.id = data.id;
+                })
+              );
+            }
+            return { error };
+          },
+        });
+      },
+
+      updateBlock: async <T extends AllBlockTypes>(
+        blockType: keyof AppData,
+        updatedBlock: Partial<T> & { id: string }
+      ) => {
+        const originalBlock = get()[blockType].find(
+          (b) => b.id === updatedBlock.id
+        );
+        if (!originalBlock) return;
+
+        const newBlock = { ...originalBlock, ...updatedBlock } as T;
+
+        await performOptimisticUpdate(get, (fn) => set(produce(fn)), {
+          localUpdate: (draft) => {
+            const table = draft[blockType] as T[];
+            const index = table.findIndex((b) => b.id === updatedBlock.id);
+            if (index !== -1) table[index] = newBlock;
+            draft.undoStack.push({
+              changes: [
+                {
+                  type: "UPDATE",
+                  table: blockType,
+                  row: newBlock,
+                  prevRow: originalBlock,
+                },
+              ],
+            });
+            draft.redoStack = [];
+          },
+          dbAction: () =>
+            supabase
+              .from(blockType)
+              .update({ ...updatedBlock, client_id })
+              .eq("id", updatedBlock.id),
+        });
+      },
+
+      removeBlock: async (blockType: keyof AppData, id: string) => {
+        const blockToRemove = get()[blockType].find((b) => b.id === id);
+        if (!blockToRemove) return;
+
+        await performOptimisticUpdate(get, (fn) => set(produce(fn)), {
+          localUpdate: (draft) => {
+            (draft[blockType] as AllBlockTypes[]) = draft[blockType].filter(
+              (b) => b.id !== id
+            );
+            draft.undoStack.push({
+              changes: [
+                { type: "DELETE", table: blockType, row: blockToRemove },
+              ],
+            });
+            draft.redoStack = [];
+          },
+          dbAction: () => supabase.from(blockType).delete().eq("id", id),
+        });
+      },
+
+      // --- UNDO/REDO ACTIONS ---
+      undo: async () => {
+        const { undoStack } = get();
+        if (undoStack.length === 0) return;
+        const entryToUndo = undoStack[undoStack.length - 1];
+
+        await performOptimisticUpdate(get, (fn) => set(produce(fn)), {
+          localUpdate: (draft) => {
+            for (const change of [...entryToUndo.changes].reverse()) {
+              if (change.type === "INSERT")
+                (draft[change.table] as AllBlockTypes[]) = draft[
+                  change.table
+                ].filter((item) => item.id !== change.row.id);
+              else if (change.type === "UPDATE") {
+                const table = draft[change.table] as AllBlockTypes[];
+                const index = table.findIndex(
+                  (item) => item.id === change.row.id
+                );
+                if (index !== -1) table[index] = change.prevRow;
+              } else if (change.type === "DELETE")
+                (draft[change.table] as AllBlockTypes[]).push(change.row);
+            }
+            draft.redoStack.unshift(draft.undoStack.pop()!);
+          },
+          dbAction: async () => {
+            for (const change of [...entryToUndo.changes].reverse()) {
+              await revertChange(change);
+            }
+            return { error: null };
+          },
+        });
+      },
+
+      redo: async () => {
+        const { redoStack } = get();
+        if (redoStack.length === 0) return;
+        const entryToRedo = redoStack[0];
+
+        await performOptimisticUpdate(get, (fn) => set(produce(fn)), {
+          localUpdate: (draft) => {
+            for (const change of entryToRedo.changes) {
+              if (change.type === "INSERT")
+                (draft[change.table] as AllBlockTypes[]).push(change.row);
+              else if (change.type === "UPDATE") {
+                const table = draft[change.table] as AllBlockTypes[];
+                const index = table.findIndex(
+                  (item) => item.id === change.row.id
+                );
+                if (index !== -1) table[index] = change.row;
+              } else if (change.type === "DELETE")
+                (draft[change.table] as AllBlockTypes[]) = draft[
+                  change.table
+                ].filter((item) => item.id !== change.row.id);
+            }
+            draft.undoStack.push(draft.redoStack.shift()!);
+          },
+          dbAction: async () => {
+            for (const change of entryToRedo.changes) {
+              await applyChange(change);
+            }
+            return { error: null };
+          },
+        });
+      },
+    })
+  )
+);

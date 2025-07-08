@@ -8,18 +8,10 @@ import { supabase } from "@/lib/supabase";
 import { initRealtime } from "@/lib/sync";
 import { useAppStore } from "@/store/useAppStore";
 import { fetchUserData } from "@/lib/fetchUserData";
+import TestGoal from "@/components/testGoal";
 
 function TargetScreen() {
-  useEffect(() => {
-    const setup = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (data?.user?.id) {
-        await fetchUserData(data.user.id);
-        initRealtime(data.user.id);
-      }
-    };
-    setup();
-  }, []);
+  // return <TestGoal />;
   return (
     <div className="flex justify-center items-start w-full h-full p-6">
       <div className="flex flex-col gap-6 w-1/2">
