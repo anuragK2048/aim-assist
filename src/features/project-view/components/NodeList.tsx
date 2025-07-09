@@ -1,5 +1,5 @@
+import Circle from "@/components/common/Circle";
 import { ChevronRight, Flag } from "lucide-react";
-import Circle from "./Circle";
 
 function NodeListItem() {
   return (

@@ -21,7 +21,10 @@
       "@components/*": ["./src/components/*"],
       "@store/*": ["./src/store/*"],
       "@lib/*": ["./src/lib/*"],
-      "@types": ["./src/types/index.ts"]
+      "@types": ["./src/types/index.ts"],
+      "@routes": ["src/routes/index.tsx"],
+      "@features": ["./src/features/*"],
+      "@providers": ["./src/providers/*"]
     }
   },
   "include": ["src"],

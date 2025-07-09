@@ -1,9 +1,6 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import TestGoal from "@/components/testGoal";
+import { AppSidebar } from "@/components/layouts/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAppStore } from "@/store/useAppStore";
-import { shallow } from "zustand/shallow";
-import TargetScreen from "../screens/TargetScreen";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";

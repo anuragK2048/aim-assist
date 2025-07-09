@@ -9,10 +9,12 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as React from "react";
-import { CalendarDemo } from "./Calendar";
-import { Calendar } from "./ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Button } from "./ui/button";
+import { Calendar } from "@components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@components/ui/popover";
 
 function TaskListItem() {
   const [isSelected, setIsSelected] = useState(false);

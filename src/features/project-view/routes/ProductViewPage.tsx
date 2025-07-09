@@ -1,16 +1,16 @@
-import UpperNav from "@/components/UpperNav";
-import TitleSection from "@/components/TitleSection";
-import SectionOptions from "@/components/SectionOptions";
-import TaskList from "@/components/TaskList";
-import NodeList from "@/components/NodeList";
+import UpperNav from "@/features/project-view/components/UpperNav";
+import TitleSection from "@features/project-view/components/TitleSection";
+import SectionOptions from "@/features/project-view/components/SectionOptions";
+import TaskList from "@/features/project-view/components/TaskList";
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { initRealtime } from "@/lib/sync";
 import { useAppStore } from "@/store/useAppStore";
 import { fetchUserData } from "@/lib/fetchUserData";
-import TestGoal from "@/components/testGoal";
+import TestGoal from "@/test/testGoal";
+import NodeList from "@/features/project-view/components/NodeList";
 
-function TargetScreen() {
+function ProjectViewPage() {
   // return <TestGoal />;
   return (
     <div className="flex justify-center items-start w-full h-full p-6">
@@ -27,4 +27,4 @@ function TargetScreen() {
   );
 }
 
-export default TargetScreen;
+export default ProjectViewPage;
