@@ -1,11 +1,18 @@
 import {
   Calendar,
+  CalendarCheck,
   ChevronDown,
   Home,
   Inbox,
+  Notebook,
+  NotebookPen,
+  NotebookText,
   Plus,
+  PlusIcon,
   Search,
   Settings,
+  Settings2,
+  View,
 } from "lucide-react";
 
 import {
@@ -30,8 +37,31 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@components/ui/collapsible";
+import { Link } from "react-router";
+import { Button } from "@components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@components/ui/popover";
+import { Separator } from "../ui/separator";
 
-const CustomSidebarGroupLabel = () => (
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ModeToggle } from "../common/ModeToggle";
+import ProjectList from "@/features/project-list/components/ProjectList";
+
+export const CustomSidebarGroupLabel = () => (
   <>
     <Home />
     Help
@@ -40,31 +70,36 @@ const CustomSidebarGroupLabel = () => (
 );
 
 // Menu items.
-const items = [
+const headerItems = [
   {
     title: "Home",
-    url: "#",
+    url: "/home",
     icon: Home,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
+    title: "Visualize",
+    url: "/visualize",
+    icon: View,
+  },
+  {
+    title: "Plan Your Day",
+    url: "/scheduleDay",
+    icon: NotebookPen,
+  },
+  {
+    title: "Today's Schedule",
+    url: "/today",
+    icon: NotebookText,
+  },
+  {
+    title: "Journal",
+    url: "/journal",
+    icon: Notebook,
   },
   {
     title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
+    url: "/calendar",
+    icon: CalendarCheck,
   },
 ];
 
@@ -72,73 +107,56 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        {/* <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
-          <SidebarGroupContent> */}
         <SidebarMenu>
-          {items.map((item) => (
+          {headerItems.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
-                <a href={item.url}>
+                <Link to={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
+              <SidebarMenuBadge>24</SidebarMenuBadge>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
-        {/* </SidebarGroupContent>
-        </SidebarGroup> */}
       </SidebarHeader>
 
       <SidebarSeparator />
 
       <SidebarContent>
-        <Collapsible defaultOpen className="group/collapsible">
-          <SidebarGroup>
-            <SidebarGroupLabel asChild>
-              <CollapsibleTrigger className="hover:bg-sidebar-accent">
-                <CustomSidebarGroupLabel />
-              </CollapsibleTrigger>
-            </SidebarGroupLabel>
-            <CollapsibleContent>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {items.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild>
-                        <a href={item.url}>
-                          <item.icon />
-                          <span>{item.title}</span>
-                        </a>
-                      </SidebarMenuButton>
-                      <SidebarMenuBadge>12/02/26</SidebarMenuBadge>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
+        <ProjectList />
       </SidebarContent>
+
       <SidebarFooter>
-        <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <div className="flex items-center justify-between">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost">
+                <PlusIcon /> New List
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="p-1 w-min">
+              <div className="flex flex-col gap-1">
+                <Button variant="ghost">Add New Goal</Button>
+                <Separator />
+                <Button variant="ghost">Add New Target</Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <Dialog>
+            <form>
+              <DialogTrigger asChild>
+                <Button variant="ghost">
+                  <Settings2 />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <ModeToggle />
+              </DialogContent>
+            </form>
+          </Dialog>
+        </div>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

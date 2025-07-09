@@ -17,17 +17,18 @@ function AppRoutes() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route index element={<HomeScreen />} />
+          <Route path="goals/:goalId" element={<ProductViewPage />} />
           <Route path="targets/:targetId" element={<ProductViewPage />} />
           <Route
             path="targets/:targetId/nodes/:nodeId"
             element={<ProductViewPage />}
           />
           <Route path="home" element={<HomeScreen />} />
-          <Route path="today" element={<TodayPage />} />
+          <Route path="visualize" element={<VisualiseScreen />} />
           <Route path="scheduleDay" element={<ScheduleDayScreen />} />
+          <Route path="today" element={<TodayPage />} />
           <Route path="journal" element={<JournalScreen />} />
           <Route path="calendar" element={<CalendarPage />} />
-          <Route path="visualize" element={<VisualiseScreen />} />
         </Route>
 
         <Route element={<AuthLayout />}>

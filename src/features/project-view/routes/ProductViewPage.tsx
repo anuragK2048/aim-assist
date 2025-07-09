@@ -2,12 +2,6 @@ import UpperNav from "@/features/project-view/components/UpperNav";
 import TitleSection from "@features/project-view/components/TitleSection";
 import SectionOptions from "@/features/project-view/components/SectionOptions";
 import TaskList from "@/features/project-view/components/TaskList";
-import { useEffect } from "react";
-import { supabase } from "@/lib/supabase";
-import { initRealtime } from "@/lib/sync";
-import { useAppStore } from "@/store/useAppStore";
-import { fetchUserData } from "@/lib/fetchUserData";
-import TestGoal from "@/test/testGoal";
 import NodeList from "@/features/project-view/components/NodeList";
 
 function ProjectViewPage() {
