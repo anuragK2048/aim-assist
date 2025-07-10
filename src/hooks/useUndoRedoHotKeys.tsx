@@ -7,13 +7,22 @@ export function useUndoRedoHotkeys() {
       const isMac = navigator.platform.toUpperCase().includes("MAC");
       const cmdOrCtrl = isMac ? e.metaKey : e.ctrlKey;
 
+      // ⛔ Ignore if focus is inside a form field
+      const active = document.activeElement;
+      const isEditable =
+        active &&
+        (active.tagName === "INPUT" ||
+          active.tagName === "TEXTAREA" ||
+          (active as HTMLElement).isContentEditable);
+
+      if (isEditable) return;
+
       if (cmdOrCtrl && e.key.toLowerCase() === "z") {
+        e.preventDefault();
         if (e.shiftKey) {
-          e.preventDefault();
-          useAppStore.getState().redo(); // Call your redo function
+          useAppStore.getState().redo();
         } else {
-          e.preventDefault();
-          useAppStore.getState().undo(); // Call your undo function
+          useAppStore.getState().undo();
         }
       }
     };

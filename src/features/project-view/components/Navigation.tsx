@@ -66,9 +66,17 @@ export default function NavigationMenuDemo() {
     }
 
     if (pathNodesDetails.length > 0) {
-      setBlock(pathNodesDetails.at(-1).selectedNode, "nodes");
+      setBlock(
+        pathNodesDetails.at(-1).selectedNode,
+        "nodes",
+        pathNodesDetails.at(-1).selectedNode.id
+      );
     } else if (targetObj.selectedTarget) {
-      setBlock(targetObj.selectedTarget, "targets");
+      setBlock(
+        targetObj.selectedTarget,
+        "targets",
+        targetObj.selectedTarget.id
+      );
     }
 
     setPathElementDetails({

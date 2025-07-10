@@ -209,11 +209,20 @@ export const useAppStore = create<AppState>()(
             });
             draft.redoStack = [];
           },
-          dbAction: () =>
-            supabase
+          dbAction: async () => {
+            console.log(updatedBlock);
+            const { data, error } = await supabase
               .from(blockType)
               .update({ ...updatedBlock, client_id })
-              .eq("id", updatedBlock.id),
+              .eq("id", updatedBlock.id)
+              .select();
+            console.log(data, error);
+            return { error };
+          },
+          // supabase
+          //   .from(blockType)
+          //   .update({ ...updatedBlock, client_id })
+          //   .eq("id", updatedBlock.id),
         });
       },
 

@@ -6,13 +6,10 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { fetchUserData } from "@/lib/fetchUserData";
 import { initRealtime } from "@/lib/sync";
-import { useUndoRedoHotkeys } from "@/features/project-view/hooks/useUndoRedoHotKeys";
+import { useUndoRedoHotkeys } from "@/hooks/useUndoRedoHotKeys";
 
 export default function MainLayout() {
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const undo = useAppStore((s) => s.undo);
-  const redo = useAppStore((s) => s.redo);
 
   useUndoRedoHotkeys();
 
@@ -24,7 +21,7 @@ export default function MainLayout() {
         const { data } = await supabase.auth.getUser();
         if (data?.user?.id) {
           await fetchUserData(data.user.id);
-          initRealtime(data.user.id);
+          // initRealtime(data.user.id);
         }
       } else {
         const id = "1cb1c31b-7e8e-448c-b766-662ac7dfdb16";

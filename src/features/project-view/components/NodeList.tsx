@@ -3,7 +3,7 @@ import { ChevronRight, Flag } from "lucide-react";
 
 function NodeListItem() {
   return (
-    <div className="flex items-center gap-1 px-2 py-2 border-b border-muted-foreground/10 hover:bg-muted/40 cursor-pointer">
+    <div className="flex items-center gap-1 px-2 py-1.5 border-b border-muted-foreground/10 hover:bg-muted/40 cursor-pointer">
       {/* Circle Icon */}
       <Circle className="w-4 h-4" />
 

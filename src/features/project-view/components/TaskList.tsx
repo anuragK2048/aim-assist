@@ -13,22 +13,42 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@components/ui/popover";
+import { useCurrentBlockStore } from "../hooks/useCurrentBlock";
+import { useAppStore } from "@/store/useAppStore";
+import { Task } from "@/types";
 
-function TaskListItem() {
+function TaskListItem({ task }) {
+  const updateBlock = useAppStore.getState().updateBlock;
   const [isSelected, setIsSelected] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
+
+  // Task Details
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [deadlineDate, setDeadlineDate] = useState<Date | undefined>(
     new Date()
   );
   const [whenDate, setWhenDate] = useState<Date | undefined>(new Date());
+
   const [isWhenPopoverOpen, setIsWhenPopoverOpen] = useState(false);
   const [isDeadlinePopoverOpen, setIsDeadlinePopoverOpen] = useState(false);
   const boxRef = useRef(null);
 
+  function saveChanges() {
+    console.log(title);
+    updateBlock("tasks", { id: task.id, title, description });
+  }
+
+  useEffect(() => {
+    setTitle(task.title);
+    setDescription(task.description);
+  }, []);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (boxRef.current && !boxRef.current.contains(event.target as Node)) {
-        console.log("ran");
+        console.log(title);
+        updateBlock("tasks", { id: task.id, title, description });
         setIsClicked(false);
         setIsSelected(false);
       }
@@ -39,7 +59,7 @@ function TaskListItem() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isSelected, isClicked]);
+  }, [isSelected, isClicked, title, description]);
 
   return (
     <div
@@ -66,12 +86,20 @@ function TaskListItem() {
         {isSelected ? (
           <input
             type="text"
-            className="font-medium mr-2 outline-none"
-            value={"This is a task"}
-            // onChange={e => setTitle(e.target.value)}
+            className="font-medium mr-2 outline-none w-full"
+            value={title}
+            placeholder="New Task"
+            onChange={(e) => setTitle(e.target.value)}
+            onBlur={saveChanges}
           />
         ) : (
-          <span className="mr-2 text-sm select-none">This is a task</span>
+          <span
+            className={`mr-2 text-sm select-none ${
+              !title ? "text-foreground/50" : ""
+            }`}
+          >
+            {title ? title : "New Task"}
+          </span>
         )}
 
         {!isSelected && (
@@ -102,7 +130,11 @@ function TaskListItem() {
       </div>
       {isSelected && (
         <div className="flex flex-col gap-2 ml-8 mr-2">
+          {/* Description */}
           <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            onBlur={saveChanges}
             placeholder="Notes"
             rows={2}
             className="text-foreground/85 outline-none text-sm"
@@ -182,12 +214,32 @@ function TaskListItem() {
 }
 
 function TaskList() {
+  const { currentBlock, currentBlockType } = useCurrentBlockStore();
+  const tasks = useAppStore((s) => s.tasks);
+  const nodes = useAppStore((s) => s.nodes);
+  const [taskList, setTaskList] = useState<Task[] | []>([]);
+
+  useEffect(() => {
+    if (currentBlockType === "targets") {
+      // filter all tasks whose parent is target
+      const filteredTasks = tasks.filter(
+        (task) => task.target_id === currentBlock.id && task.node_id === null
+      );
+      setTaskList(filteredTasks);
+    } else if (currentBlockType === "nodes") {
+      // filter all tasks whose parent is target
+      const filteredTasks = tasks.filter(
+        (task) => task.node_id === currentBlock.id
+      );
+      setTaskList(filteredTasks);
+    }
+  }, [currentBlock, currentBlockType]);
+
   return (
     <div className="flex flex-col gap-1">
-      <TaskListItem />
-      <TaskListItem />
-      <TaskListItem />
-      <TaskListItem />
+      {taskList.map((task) => (
+        <TaskListItem key={task.id} task={task} />
+      ))}
     </div>
   );
 }

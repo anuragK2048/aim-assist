@@ -8,16 +8,20 @@ type Block = Goal | Target | Node | Task | null;
 interface CurrentBlockState {
   currentBlock: Block;
   currentBlockType: BlockType;
-  setBlock: (block: Block, type: BlockType) => void;
+  currentBlockId: string | null;
+  setBlock: (block: Block, type: BlockType, blockId: string) => void;
   clearBlock: () => void;
 }
 
 export const useCurrentBlockStore = create<CurrentBlockState>((set) => ({
   currentBlock: null,
   currentBlockType: "",
-  setBlock: (block, type) =>
-    set({ currentBlock: block, currentBlockType: type }),
-  setBlockContent: (block) =>
-    set({ currentBlock: block, currentBlockType: type }),
+  currentBlockId: null,
+  setBlock: (block, type, blockId) =>
+    set({
+      currentBlock: block,
+      currentBlockType: type,
+      currentBlockId: blockId,
+    }),
   clearBlock: () => set({ currentBlock: null, currentBlockType: "" }),
 }));
