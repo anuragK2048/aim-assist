@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Link, useLocation, useParams } from "react-router";
 import { BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppStore } from "@/store/useAppStore";
 
 export default function NavigationMenuDemo() {
@@ -24,10 +24,10 @@ export default function NavigationMenuDemo() {
   const targets = useAppStore((s) => s.targets);
   const nodes = useAppStore((s) => s.nodes);
   const [pathElementsDetails, setPathElementDetails] = useState(null);
+  const [pathNodeIds, setPathNodeIds] = useState<string[]>([]);
   const params = useParams();
 
   useEffect(() => {
-    console.log(location);
     console.log(params);
     const selectedGoal = goals.find((goal) => goal.id === params.goalId);
     const otherGoals = goals.filter((goal) => goal.id !== params.goalId);
@@ -50,9 +50,10 @@ export default function NavigationMenuDemo() {
 
     const pathNodesDetails: any = [];
     if (params["*"]) {
-      const pathNodeIds = params["*"].split("/");
-      console.log(pathNodeIds);
-      pathNodeIds.forEach((nodeId, i, arr) => {
+      const calculatePathNodeIds = params["*"].split("/");
+      setPathNodeIds(calculatePathNodeIds);
+      console.log(calculatePathNodeIds);
+      calculatePathNodeIds.forEach((nodeId, i, arr) => {
         const selectedNode = nodes.find((node) => node.id === nodeId);
         const relatedNodes = nodes.filter((node) =>
           node.target_id
@@ -72,8 +73,15 @@ export default function NavigationMenuDemo() {
       target: targetObj,
       nodes: pathNodesDetails,
     });
-    console.log({ goal: goalObj, target: targetObj, nodes: pathNodesDetails });
   }, [params]);
+
+  function determineNodesPath(index, selectedNodeId) {
+    let nodePath = "";
+    for (let i = 0; i < index; i++) {
+      nodePath += `/${pathNodeIds[i]}`;
+    }
+    nodePath += `/${selectedNodeId}`;
+  }
 
   return (
     <>
@@ -141,43 +149,62 @@ export default function NavigationMenuDemo() {
               </>
             )}
 
-            {/* Node/s */}
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>Simple</NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <ul className="grid w-[200px] gap-4">
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link href="#">Components</Link>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <Link href="#">Documentation</Link>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <Link href="#">Blocks</Link>
-                    </NavigationMenuLink>
-                  </li>
-                </ul>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>Simple</NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <ul className="grid w-[200px] gap-4">
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link href="#">Components</Link>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <Link href="#">Documentation</Link>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <Link href="#">Blocks</Link>
-                    </NavigationMenuLink>
-                  </li>
-                </ul>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
+            {/* Nodes */}
+            {pathElementsDetails.nodes.length > 0 &&
+              pathElementsDetails.nodes.map((nodeObj, i, arr) => (
+                <React.Fragment key={nodeObj.selectedNode.id}>
+                  <BreadcrumbSeparator>
+                    <SlashIcon />
+                  </BreadcrumbSeparator>
+                  <NavigationMenuItem>
+                    {nodeObj.relatedNodes.length ? (
+                      <>
+                        <NavigationMenuTrigger>
+                          <Link
+                            to={`/goals/${params.goalId}/targets/${
+                              params.targetId
+                            }/nodes${determineNodesPath(
+                              i,
+                              nodeObj.selectedNode.id
+                            )}`}
+                          >
+                            {nodeObj.selectedNode.title}
+                          </Link>
+                        </NavigationMenuTrigger>
+                        <NavigationMenuContent>
+                          {nodeObj.relatedNodes.map((node) => (
+                            <NavigationMenuLink key={node.id} asChild>
+                              <Link
+                                to={`/goals/${params.goalId}/targets/${
+                                  params.targetId
+                                }/nodes${determineNodesPath(i, node.id)}`}
+                              >
+                                {node.title}
+                              </Link>
+                            </NavigationMenuLink>
+                          ))}
+                        </NavigationMenuContent>
+                      </>
+                    ) : (
+                      <NavigationMenuLink
+                        asChild
+                        className={navigationMenuTriggerStyle()}
+                      >
+                        <Link
+                          to={`/goals/${params.goalId}/targets/${
+                            params.targetId
+                          }/nodes${determineNodesPath(
+                            i,
+                            nodeObj.selectedNode.id
+                          )}`}
+                        >
+                          {nodeObj.selectedNode.title}
+                        </Link>
+                      </NavigationMenuLink>
+                    )}
+                  </NavigationMenuItem>
+                </React.Fragment>
+              ))}
           </NavigationMenuList>
         </NavigationMenu>
       ) : (
