@@ -1,4 +1,3 @@
-import { da } from "date-fns/locale";
 import {
   CheckSquare,
   FileText,
@@ -8,7 +7,6 @@ import {
   Calendar as CalendarIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as React from "react";
 import { Calendar } from "@components/ui/calendar";
 import {
   Popover,
@@ -46,19 +44,19 @@ function TaskListItem() {
   return (
     <div
       ref={boxRef}
-      className={`${isSelected ? "my-3 bg-muted py-4" : "py-1 select-none"} ${
-        isClicked ? "bg-blue-800" : ""
-      } flex flex-col justify-center px-2  rounded gap-2 transition-all duration-200`}
+      className={`${isSelected ? "bg-muted my-3 py-4" : "py-1 select-none"} ${
+        isClicked ? "bg-accent/80" : ""
+      } flex flex-col justify-center px-2 rounded gap-2 transition-all duration-200`}
       onDoubleClick={() => setIsSelected(true)}
       onClick={() => setIsClicked(true)}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         {/* Checkbox */}
-        <CheckSquare className="w-5 h-5 text-muted-foreground mr-2" />
+        <CheckSquare className="w-5 h-5 text-accent-foreground mr-2" />
 
         {/* Date/Time */}
         {!isSelected && (
-          <div className="flex items-center bg-muted px-2 py-0.5 rounded text-xs text-muted-foreground mr-2">
+          <div className="bg-muted text-muted-foreground flex items-center px-2 py-0.5 rounded text-xs mr-2">
             <CalendarIcon className="w-3 h-3 mr-1" />
             16 June 02:00 PM
           </div>
@@ -68,27 +66,25 @@ function TaskListItem() {
         {isSelected ? (
           <input
             type="text"
-            className="font-medium mr-2 text-sm outline-none"
+            className="font-medium mr-2 outline-none"
             value={"This is a task"}
             // onChange={e => setTitle(e.target.value)}
           />
         ) : (
-          <span className="font-medium mr-2 text-sm select-none">
-            This is a task
-          </span>
+          <span className="mr-2 text-sm select-none">This is a task</span>
         )}
 
         {!isSelected && (
           <>
             {/* Icons */}
-            <FileText className="w-4 h-4 text-muted-foreground mr-1" />
-            <List className="w-4 h-4 text-muted-foreground mr-2" />
+            <FileText className="text-muted-foreground w-4 h-4 mr-1" />
+            <List className="text-muted-foreground w-4 h-4 mr-2" />
           </>
         )}
 
         {/* Tag */}
         {!isSelected && (
-          <span className="border border-muted-foreground rounded-full px-2 py-0.5 text-xs text-muted-foreground mr-2">
+          <span className="border border-muted-foreground rounded-full px-1.5 py-0.25 text-xs text-muted-foreground mr-2">
             Errand
           </span>
         )}
@@ -105,11 +101,11 @@ function TaskListItem() {
         )}
       </div>
       {isSelected && (
-        <div className="flex flex-col gap-2 ml-9">
+        <div className="flex flex-col gap-2 ml-8 mr-2">
           <textarea
             placeholder="Notes"
             rows={2}
-            className="outline-none text-sm"
+            className="text-foreground/85 outline-none text-sm"
           />
           <div className="flex items-center">
             <div className="flex flex-col gap-4">
@@ -118,25 +114,25 @@ function TaskListItem() {
                 Errand
               </span>
               <div className="flex items-center text-xs text-muted-foreground">
-                <CalendarIcon className="w-4 h-4 mr-1" />
+                <CalendarIcon className="w-4 h-4 mr-1 text-chart-3" />
                 16 June 02:00 PM
               </div>
               <div className="flex items-center">
-                <Flag className="w-4 h-4 text-muted-foreground mr-1" />
+                <Flag className="w-4 h-4 text-chart-5 mr-1" />
                 <span className="text-xs text-muted-foreground">
                   9 days left
                 </span>
               </div>
             </div>
-            <div className="flex gap-2 ml-auto mt-auto">
-              <Tag className="w-4 h-4" />
+            <div className="flex gap-3 ml-auto mt-auto items-center">
+              <Tag className="w-5 h-5" />
               {/* Calendar icon and popup */}
               <Popover
                 open={isWhenPopoverOpen}
                 onOpenChange={setIsWhenPopoverOpen}
               >
                 <PopoverTrigger asChild>
-                  <CalendarIcon className="w-4 h-4 cursor-pointer" />
+                  <CalendarIcon className="text-chart-3 w-5 h-5 cursor-pointer" />
                 </PopoverTrigger>
                 <PopoverContent
                   className=""
@@ -159,7 +155,7 @@ function TaskListItem() {
                 onOpenChange={setIsDeadlinePopoverOpen}
               >
                 <PopoverTrigger asChild>
-                  <Flag className="w-4 h-4 cursor-pointer" />
+                  <Flag className="text-chart-5 w-5 h-5 cursor-pointer" />
                 </PopoverTrigger>
                 <PopoverContent
                   className=""
@@ -187,7 +183,7 @@ function TaskListItem() {
 
 function TaskList() {
   return (
-    <div>
+    <div className="flex flex-col gap-1">
       <TaskListItem />
       <TaskListItem />
       <TaskListItem />

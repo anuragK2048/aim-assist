@@ -27,6 +27,7 @@ import {
   Home,
   Inbox,
   Layers,
+  Layers2,
   Notebook,
   NotebookPen,
   NotebookText,
@@ -90,7 +91,8 @@ function ProjectListItem({ goal, targets }) {
                   onClick={() => console.log("link clicked")}
                   className="flex items-center flex-1 gap-2"
                 >
-                  <Layers size={16} />
+                  {isOpen ? <Layers2 size={16} /> : <Layers size={16} />}
+
                   <span className="font-semibold">{goal.title}</span>
                 </Link>
                 <CollapsibleTrigger className="ml-auto cursor-pointer" asChild>
@@ -116,7 +118,7 @@ function ProjectListItem({ goal, targets }) {
               {targets.map((item) => (
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton asChild>
-                    <Link to={`/targets/${item.id}`}>
+                    <Link to={`/goals/${goal.id}/targets/${item.id}`}>
                       <Circle className="h-3.5 w-3.5" />
                       <span>{item.title}</span>
                     </Link>

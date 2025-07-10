@@ -17,12 +17,13 @@ function AppRoutes() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route index element={<HomeScreen />} />
-          <Route path="goals/:goalId" element={<ProductViewPage />} />
-          <Route path="targets/:targetId" element={<ProductViewPage />} />
-          <Route
-            path="targets/:targetId/nodes/:nodeId"
-            element={<ProductViewPage />}
-          />
+          <Route path="goals/:goalId" element={<ProductViewPage />}>
+            <Route path="targets/:targetId/" element={<ProductViewPage />} />
+            <Route
+              path="targets/:targetId/nodes/*"
+              element={<ProductViewPage />}
+            />
+          </Route>
           <Route path="home" element={<HomeScreen />} />
           <Route path="visualize" element={<VisualiseScreen />} />
           <Route path="scheduleDay" element={<ScheduleDayScreen />} />

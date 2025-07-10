@@ -1,7 +1,9 @@
 function SectionOptionsItem() {
   return (
     <div>
-      <div className="border-b-2 border-b-blue-200">Projects</div>
+      <div className="border-b-2 border-b-accent-foreground hover:text-secondary-foreground text-secondary-foreground/75">
+        Projects
+      </div>
     </div>
   );
 }

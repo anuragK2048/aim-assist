@@ -3,15 +3,17 @@ import { ChevronRight, Flag } from "lucide-react";
 
 function NodeListItem() {
   return (
-    <div className="flex items-center gap-2 px-2 py-2 border-b border-muted-foreground/10 hover:bg-muted">
+    <div className="flex items-center gap-1 px-2 py-2 border-b border-muted-foreground/10 hover:bg-muted/40 cursor-pointer">
       {/* Circle Icon */}
-      <Circle />
+      <Circle className="w-4 h-4" />
 
       {/* Node Title */}
-      <span className="text-blue-400 font-medium text-sm">This is a node</span>
+      <span className="text-accent-foreground font-medium text-sm ml-2">
+        This is a node
+      </span>
 
       {/* Chevron */}
-      <ChevronRight className="w-4 h-4 text-blue-400" />
+      <ChevronRight className="w-4 h-4 text-accent-foreground" />
 
       {/* Spacer */}
       <div className="flex-1" />
