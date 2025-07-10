@@ -1,9 +1,4 @@
-import {
-  CircleCheckIcon,
-  CircleHelpIcon,
-  CircleIcon,
-  SlashIcon,
-} from "lucide-react";
+import { SlashIcon } from "lucide-react";
 
 import {
   NavigationMenu,
@@ -14,10 +9,11 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Link, useLocation, useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import React, { useEffect, useState } from "react";
 import { useAppStore } from "@/store/useAppStore";
+import { useCurrentBlockStore } from "../hooks/useCurrentBlock";
 
 export default function NavigationMenuDemo() {
   const goals = useAppStore((s) => s.goals);
@@ -26,6 +22,7 @@ export default function NavigationMenuDemo() {
   const [pathElementsDetails, setPathElementDetails] = useState(null);
   const [pathNodeIds, setPathNodeIds] = useState<string[]>([]);
   const params = useParams();
+  const { setBlock } = useCurrentBlockStore();
 
   useEffect(() => {
     console.log(params);
@@ -68,12 +65,18 @@ export default function NavigationMenuDemo() {
       });
     }
 
+    if (pathNodesDetails.length > 0) {
+      setBlock(pathNodesDetails.at(-1).selectedNode, "nodes");
+    } else if (targetObj.selectedTarget) {
+      setBlock(targetObj.selectedTarget, "targets");
+    }
+
     setPathElementDetails({
       goal: goalObj,
       target: targetObj,
       nodes: pathNodesDetails,
     });
-  }, [params]);
+  }, [params, goals, targets, nodes]);
 
   function determineNodesPath(index, selectedNodeId) {
     let nodePath = "";
@@ -86,7 +89,7 @@ export default function NavigationMenuDemo() {
   return (
     <>
       {console.log(pathElementsDetails)}
-      {pathElementsDetails ? (
+      {pathElementsDetails && goals.length && targets.length ? (
         <NavigationMenu viewport={false}>
           <NavigationMenuList>
             {/* Goal */}

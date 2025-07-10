@@ -6,12 +6,15 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import { fetchUserData } from "@/lib/fetchUserData";
 import { initRealtime } from "@/lib/sync";
+import { useUndoRedoHotkeys } from "@/features/project-view/hooks/useUndoRedoHotKeys";
 
 export default function MainLayout() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const undo = useAppStore((s) => s.undo);
   const redo = useAppStore((s) => s.redo);
+
+  useUndoRedoHotkeys();
 
   useEffect(() => {
     const checkSession = async () => {
@@ -34,15 +37,13 @@ export default function MainLayout() {
 
     checkSession();
   }, []);
+
   if (loading) return <div className="text-red-600">Loading...</div>;
   return (
     <SidebarProvider>
       <AppSidebar />
       <main className="w-full">
-        {/* <SidebarTrigger /> */}
-        {/* <button onClick={undo}>undo</button>
-        <button onClick={redo}>redo</button>
-        <TestGoal /> */}
+        <SidebarTrigger />
         <Outlet />
       </main>
     </SidebarProvider>
