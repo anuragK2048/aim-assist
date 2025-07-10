@@ -77,6 +77,8 @@ export default function NavigationMenuDemo() {
         "targets",
         targetObj.selectedTarget.id
       );
+    } else {
+      setBlock(goalObj.selectedGoal, "goals", goalObj.selectedGoal.id);
     }
 
     setPathElementDetails({

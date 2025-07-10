@@ -216,7 +216,6 @@ function TaskListItem({ task }) {
 function TaskList() {
   const { currentBlock, currentBlockType } = useCurrentBlockStore();
   const tasks = useAppStore((s) => s.tasks);
-  const nodes = useAppStore((s) => s.nodes);
   const [taskList, setTaskList] = useState<Task[] | []>([]);
 
   useEffect(() => {

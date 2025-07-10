@@ -1,7 +1,11 @@
 import Circle from "@/components/common/Circle";
 import { ChevronRight, Flag } from "lucide-react";
+import { useCurrentBlockStore } from "../hooks/useCurrentBlock";
+import { useAppStore } from "@/store/useAppStore";
+import { Node } from "@/types";
+import { useEffect, useState } from "react";
 
-function NodeListItem() {
+function NodeListItem({ node }) {
   return (
     <div className="flex items-center gap-1 px-2 py-1.5 border-b border-muted-foreground/10 hover:bg-muted/40 cursor-pointer">
       {/* Circle Icon */}
@@ -9,7 +13,7 @@ function NodeListItem() {
 
       {/* Node Title */}
       <span className="text-accent-foreground font-medium text-sm ml-2">
-        This is a node
+        {node.title}
       </span>
 
       {/* Chevron */}
@@ -20,20 +24,37 @@ function NodeListItem() {
 
       {/* Flag and days left */}
       <Flag className="w-4 h-4 text-muted-foreground mr-1" />
-      <span className="text-xs text-muted-foreground">9 days left</span>
+      <span className="text-xs text-muted-foreground">{node.deadline}</span>
     </div>
   );
 }
 
 function NodeList() {
+  const { currentBlock, currentBlockType } = useCurrentBlockStore();
+  const nodes = useAppStore((s) => s.nodes);
+  const [nodeList, setNodeList] = useState<Node[] | []>([]);
+
+  useEffect(() => {
+    if (currentBlockType === "targets") {
+      // filter all nodes whose parent is target
+      const filteredNodes = nodes.filter(
+        (node) =>
+          node.target_id === currentBlock.id && node.parent_node_id === null
+      );
+      setNodeList(filteredNodes);
+    } else if (currentBlockType === "nodes") {
+      // filter all nodes whose parent is node
+      const filteredNodes = nodes.filter(
+        (node) => node.parent_node_id === currentBlock.id
+      );
+      setNodeList(filteredNodes);
+    }
+  }, [currentBlock, currentBlockType]);
   return (
     <div>
-      <NodeListItem />
-      <NodeListItem />
-      <NodeListItem />
-      <NodeListItem />
-      <NodeListItem />
-      <NodeListItem />
+      {nodeList.map((node) => (
+        <NodeListItem key={node.id} node={node} />
+      ))}
     </div>
   );
 }

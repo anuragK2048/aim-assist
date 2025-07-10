@@ -84,12 +84,16 @@ function ProjectListItem({ goal, targets }) {
       <SidebarGroup>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="gap-0">
+            {/* <Link
+              to={`/goals/${goal.id}`}
+              onClick={() => console.log("link clicked")}
+            > */}
+            <SidebarMenuButton asChild className="gap-0 p-0">
               <div className="flex items-center">
                 <Link
                   to={`/goals/${goal.id}`}
                   onClick={() => console.log("link clicked")}
-                  className="flex items-center flex-1 gap-2"
+                  className="flex items-center flex-1 gap-2 p-2"
                 >
                   {isOpen ? <Layers2 size={16} /> : <Layers size={16} />}
 
@@ -110,6 +114,7 @@ function ProjectListItem({ goal, targets }) {
                 </CollapsibleTrigger>
               </div>
             </SidebarMenuButton>
+            {/* </Link> */}
           </SidebarMenuItem>
         </SidebarMenu>
         <CollapsibleContent>

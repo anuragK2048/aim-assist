@@ -37,6 +37,8 @@ function TitleSection() {
     updateBlock(currentBlockType, { id: currentBlock.id, title, description });
   }
 
+  if (currentBlockType === "goals") return <div>Goals</div>;
+
   return (
     <div className="flex flex-col gap-2">
       {/* title */}
