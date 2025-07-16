@@ -55,7 +55,7 @@ function NodeList() {
       );
       setNodeList(filteredNodes);
     }
-  }, [currentBlock, currentBlockType]);
+  }, [currentBlock, currentBlockType, nodes]);
   return (
     <div>
       {nodeList.map((node) => (

@@ -18,15 +18,30 @@ function ProjectViewPage() {
   const { addBlock } = useAppStore();
   function addNewTask() {
     if (currentBlockType === "targets") {
-      addBlock("tasks", {
+      addBlock("tasks", "user", {
         title: "",
         target_id: currentBlock.id,
         node_id: null,
       });
     } else if (currentBlockType === "nodes") {
-      addBlock("tasks", {
+      addBlock("tasks", "user", {
         title: "",
         node_id: currentBlock.id,
+        target_id: params.targetId,
+      });
+    }
+  }
+  function addNewNode() {
+    if (currentBlockType === "targets") {
+      addBlock("nodes", {
+        title: "",
+        target_id: currentBlock.id,
+        parent_node_id: null,
+      });
+    } else if (currentBlockType === "nodes") {
+      addBlock("nodes", {
+        title: "",
+        parent_node_id: currentBlock.id,
         target_id: params.targetId,
       });
     }
@@ -48,7 +63,7 @@ function ProjectViewPage() {
           <Button variant="outline" onClick={addNewTask}>
             Add Task <Plus />
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" onClick={addNewNode}>
             Add Node <Plus />
           </Button>
         </div>

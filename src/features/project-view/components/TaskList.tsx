@@ -16,11 +16,24 @@ import {
 import { useCurrentBlockStore } from "../store/useCurrentBlock";
 import { useAppStore } from "@/store/useAppStore";
 import { Task } from "@/types";
+import { useShallow } from "zustand/react/shallow";
 
 function TaskListItem({ task }) {
   const updateBlock = useAppStore.getState().updateBlock;
   const [isSelected, setIsSelected] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
+  const { lastAddedTaskId } = useAppStore(
+    useShallow((s) => ({
+      lastAddedTaskId: s.lastAddedTaskId,
+      // clearLastAddedTaskId: s.clearLastAddedTaskId,
+    }))
+  );
+
+  useEffect(() => {
+    if (lastAddedTaskId && lastAddedTaskId === task.id) {
+      setIsSelected(true);
+    }
+  }, []);
 
   // Task Details
   const [title, setTitle] = useState("");
@@ -46,6 +59,7 @@ function TaskListItem({ task }) {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      console.log("clicked");
       if (boxRef.current && !boxRef.current.contains(event.target as Node)) {
         console.log(title);
         updateBlock("tasks", { id: task.id, title, description });
@@ -89,6 +103,7 @@ function TaskListItem({ task }) {
             className="font-medium mr-2 outline-none w-full"
             value={title}
             placeholder="New Task"
+            autoFocus
             onChange={(e) => setTitle(e.target.value)}
             onBlur={saveChanges}
           />
@@ -220,7 +235,6 @@ function TaskList() {
 
   useEffect(() => {
     if (currentBlockType === "targets") {
-      console.log(tasks);
       // filter all tasks whose parent is target
       const filteredTasks = tasks.filter(
         (task) => task.target_id === currentBlock.id && task.node_id === null

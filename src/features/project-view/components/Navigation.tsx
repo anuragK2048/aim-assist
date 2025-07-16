@@ -47,15 +47,20 @@ export default function NavigationMenuDemo() {
 
     const pathNodesDetails: any = [];
     if (params["*"]) {
-      const calculatePathNodeIds = params["*"].split("/");
+      const calculatePathNodeIds = params["*"]
+        .split("/")
+        .filter((nodeId) => nodeId !== "nodes");
+      console.log("calculatePathNodeIds", calculatePathNodeIds);
       setPathNodeIds(calculatePathNodeIds);
       console.log(calculatePathNodeIds);
       calculatePathNodeIds.forEach((nodeId, i, arr) => {
         const selectedNode = nodes.find((node) => node.id === nodeId);
-        const relatedNodes = nodes.filter((node) =>
-          node.target_id
-            ? node.target_id === params.targetId && node.id !== nodeId
-            : node.parent_node_id === arr[i - 1] && node.id !== nodeId
+        const relatedNodes = nodes.filter(
+          (node) =>
+            node.id !== nodeId &&
+            node.target_id === params.targetId &&
+            ((node.parent_node_id === null && i === 0) ||
+              node.parent_node_id === arr[i - 1])
         );
         const nodeObj = {
           selectedNode,
@@ -82,6 +87,11 @@ export default function NavigationMenuDemo() {
     }
 
     setPathElementDetails({
+      goal: goalObj,
+      target: targetObj,
+      nodes: pathNodesDetails,
+    });
+    console.log("path element details", {
       goal: goalObj,
       target: targetObj,
       nodes: pathNodesDetails,

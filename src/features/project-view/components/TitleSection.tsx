@@ -36,7 +36,6 @@ function TitleSection() {
   function saveChanges() {
     updateBlock(currentBlockType, { id: currentBlock.id, title, description });
   }
-
   // if (currentBlockType === "goals") return <div>Goals</div>;
 
   return (
@@ -51,12 +50,27 @@ function TitleSection() {
           className="invisible whitespace-pre pointer-events-none absolute bg-amber-200 text-2xl"
           aria-hidden
         >
-          {title || "New Target"}
+          {title ||
+            (currentBlockType === "targets"
+              ? "New Target"
+              : currentBlockType === "nodes"
+              ? "New Node"
+              : currentBlockType === "goals"
+              ? "New Goal"
+              : "New Item")}
         </span>
 
         {/* Auto-width input */}
         <input
-          placeholder="New Target"
+          placeholder={
+            currentBlockType === "targets"
+              ? "New Target"
+              : currentBlockType === "nodes"
+              ? "New Node"
+              : currentBlockType === "goals"
+              ? "New Goal"
+              : "New Item"
+          }
           ref={inputRef}
           type="text"
           value={title}
