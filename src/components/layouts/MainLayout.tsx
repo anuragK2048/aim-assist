@@ -10,6 +10,7 @@ import { useUndoRedoHotkeys } from "@/hooks/useUndoRedoHotKeys";
 
 export default function MainLayout() {
   const [loading, setLoading] = useState(true);
+  const { setAuthUser } = useAppStore();
 
   useUndoRedoHotkeys();
 
@@ -21,6 +22,7 @@ export default function MainLayout() {
         const { data } = await supabase.auth.getUser();
         if (data?.user?.id) {
           await fetchUserData(data.user.id);
+          setAuthUser({ id: data.user.id });
           // initRealtime(data.user.id);
         }
       } else {

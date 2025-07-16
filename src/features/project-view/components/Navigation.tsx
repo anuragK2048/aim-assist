@@ -13,7 +13,7 @@ import { Link, useParams } from "react-router";
 import { BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import React, { useEffect, useState } from "react";
 import { useAppStore } from "@/store/useAppStore";
-import { useCurrentBlockStore } from "../hooks/useCurrentBlock";
+import { useCurrentBlockStore } from "../store/useCurrentBlock";
 
 export default function NavigationMenuDemo() {
   const goals = useAppStore((s) => s.goals);
@@ -94,6 +94,7 @@ export default function NavigationMenuDemo() {
       nodePath += `/${pathNodeIds[i]}`;
     }
     nodePath += `/${selectedNodeId}`;
+    return nodePath;
   }
 
   return (
@@ -105,7 +106,9 @@ export default function NavigationMenuDemo() {
             {/* Goal */}
             <NavigationMenuItem>
               <NavigationMenuTrigger>
-                {pathElementsDetails.goal.selectedGoal.title}
+                <Link to={`/goals/${pathElementsDetails.goal.selectedGoal.id}`}>
+                  {pathElementsDetails.goal.selectedGoal.title}
+                </Link>
               </NavigationMenuTrigger>
               <NavigationMenuContent>
                 {pathElementsDetails.goal.otherGoals.map((goal) => (

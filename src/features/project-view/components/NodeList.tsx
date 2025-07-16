@@ -1,13 +1,17 @@
 import Circle from "@/components/common/Circle";
 import { ChevronRight, Flag } from "lucide-react";
-import { useCurrentBlockStore } from "../hooks/useCurrentBlock";
+import { useCurrentBlockStore } from "../store/useCurrentBlock";
 import { useAppStore } from "@/store/useAppStore";
 import { Node } from "@/types";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
 
-function NodeListItem({ node }) {
+function NodeListItem({ node, ...props }) {
   return (
-    <div className="flex items-center gap-1 px-2 py-1.5 border-b border-muted-foreground/10 hover:bg-muted/40 cursor-pointer">
+    <div
+      className="flex items-center gap-1 px-2 py-1.5 border-b border-muted-foreground/10 hover:bg-muted/40 cursor-pointer"
+      {...props}
+    >
       {/* Circle Icon */}
       <Circle className="w-4 h-4" />
 
@@ -30,6 +34,8 @@ function NodeListItem({ node }) {
 }
 
 function NodeList() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { currentBlock, currentBlockType } = useCurrentBlockStore();
   const nodes = useAppStore((s) => s.nodes);
   const [nodeList, setNodeList] = useState<Node[] | []>([]);
@@ -53,7 +59,11 @@ function NodeList() {
   return (
     <div>
       {nodeList.map((node) => (
-        <NodeListItem key={node.id} node={node} />
+        <NodeListItem
+          key={node.id}
+          node={node}
+          onClick={() => navigate(`${location.pathname}/nodes/${node.id}`)}
+        />
       ))}
     </div>
   );

@@ -1,6 +1,6 @@
 import Circle from "@/components/common/Circle";
 import { Ellipsis } from "lucide-react";
-import { useCurrentBlockStore } from "../hooks/useCurrentBlock";
+import { useCurrentBlockStore } from "../store/useCurrentBlock";
 import { useEffect, useRef, useState } from "react";
 import { useAppStore } from "@/store/useAppStore";
 
@@ -37,13 +37,13 @@ function TitleSection() {
     updateBlock(currentBlockType, { id: currentBlock.id, title, description });
   }
 
-  if (currentBlockType === "goals") return <div>Goals</div>;
+  // if (currentBlockType === "goals") return <div>Goals</div>;
 
   return (
     <div className="flex flex-col gap-2">
       {/* title */}
       <div className="flex gap-3 items-center">
-        <Circle />
+        {currentBlockType === "goals" ? null : <Circle />}
 
         {/* Mirror span */}
         <span

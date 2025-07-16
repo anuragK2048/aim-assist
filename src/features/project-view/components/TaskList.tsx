@@ -13,7 +13,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@components/ui/popover";
-import { useCurrentBlockStore } from "../hooks/useCurrentBlock";
+import { useCurrentBlockStore } from "../store/useCurrentBlock";
 import { useAppStore } from "@/store/useAppStore";
 import { Task } from "@/types";
 
@@ -220,6 +220,7 @@ function TaskList() {
 
   useEffect(() => {
     if (currentBlockType === "targets") {
+      console.log(tasks);
       // filter all tasks whose parent is target
       const filteredTasks = tasks.filter(
         (task) => task.target_id === currentBlock.id && task.node_id === null
@@ -232,7 +233,7 @@ function TaskList() {
       );
       setTaskList(filteredTasks);
     }
-  }, [currentBlock, currentBlockType]);
+  }, [currentBlock, currentBlockType, tasks]);
 
   return (
     <div className="flex flex-col gap-1">
