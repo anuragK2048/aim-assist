@@ -28,7 +28,8 @@ export default function MainLayout() {
       } else {
         const id = "1cb1c31b-7e8e-448c-b766-662ac7dfdb16";
         await fetchUserData(id);
-        initRealtime(id);
+        // initRealtime(id);
+        setAuthUser({ id: "1cb1c31b-7e8e-448c-b766-662ac7dfdb16" }); // TODO test only
         // navigate("/register");
       }
       setLoading(false);

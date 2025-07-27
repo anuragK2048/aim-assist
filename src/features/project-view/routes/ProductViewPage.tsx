@@ -13,18 +13,18 @@ import { useParams } from "react-router";
 
 function ProjectViewPage() {
   const params = useParams();
-  console.log(params);
-  const { currentBlock, currentBlockType } = useCurrentBlockStore();
-  const { addBlock } = useAppStore();
+  const { currentBlock, currentBlockType, selectedTaskId, setSelectedTaskId } =
+    useCurrentBlockStore();
+  const { addBlock, setLastAddedTaskId, removeBlock } = useAppStore();
   function addNewTask() {
     if (currentBlockType === "targets") {
-      addBlock("tasks", "user", {
+      addBlock("user", "tasks", {
         title: "",
         target_id: currentBlock.id,
         node_id: null,
       });
     } else if (currentBlockType === "nodes") {
-      addBlock("tasks", "user", {
+      addBlock("user", "tasks", {
         title: "",
         node_id: currentBlock.id,
         target_id: params.targetId,
@@ -32,19 +32,24 @@ function ProjectViewPage() {
     }
   }
   function addNewNode() {
+    setLastAddedTaskId(null);
     if (currentBlockType === "targets") {
-      addBlock("nodes", {
+      addBlock("user", "nodes", {
         title: "",
         target_id: currentBlock.id,
         parent_node_id: null,
       });
     } else if (currentBlockType === "nodes") {
-      addBlock("nodes", {
+      addBlock("user", "nodes", {
         title: "",
         parent_node_id: currentBlock.id,
         target_id: params.targetId,
       });
     }
+  }
+  function deleteTask(id) {
+    removeBlock("user", "tasks", id);
+    setSelectedTaskId(null);
   }
   return (
     <div className="flex flex-col justify-start items-center w-full h-full p-6">
@@ -58,16 +63,29 @@ function ProjectViewPage() {
           {currentBlockType === "goals" && <TargetList />}
         </div>
       </div>
-      {currentBlockType !== "goals" && (
-        <div className="mt-auto pb-4">
-          <Button variant="outline" onClick={addNewTask}>
-            Add Task <Plus />
-          </Button>
-          <Button variant="outline" onClick={addNewNode}>
-            Add Node <Plus />
-          </Button>
-        </div>
-      )}
+      <div className="mt-auto pb-4">
+        {currentBlockType !== "goals" &&
+          (selectedTaskId ? (
+            <Button
+              variant="outline"
+              onClickCapture={(e) => {
+                e.stopPropagation();
+                deleteTask(selectedTaskId);
+              }}
+            >
+              Delete Selected Task <Plus />
+            </Button>
+          ) : (
+            <>
+              <Button variant="outline" onClick={addNewTask}>
+                Add Task <Plus />
+              </Button>
+              <Button variant="outline" onClick={addNewNode}>
+                Add Node <Plus />
+              </Button>
+            </>
+          ))}
+      </div>
     </div>
   );
 }

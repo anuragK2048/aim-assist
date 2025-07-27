@@ -16,8 +16,12 @@ function NodeListItem({ node, ...props }) {
       <Circle className="w-4 h-4" />
 
       {/* Node Title */}
-      <span className="text-accent-foreground font-medium text-sm ml-2">
-        {node.title}
+      <span
+        className={`${
+          node.title ? "text-accent-foreground" : "text-muted-foreground"
+        }  font-medium text-sm ml-2`}
+      >
+        {node.title || "New Node"}
       </span>
 
       {/* Chevron */}

@@ -97,7 +97,13 @@ function ProjectListItem({ goal, targets }) {
                 >
                   {isOpen ? <Layers2 size={16} /> : <Layers size={16} />}
 
-                  <span className="font-semibold">{goal.title}</span>
+                  <span
+                    className={`${
+                      goal.title ? "" : "text-muted-foreground"
+                    } font-semibold`}
+                  >
+                    {goal.title || "New Goal"}
+                  </span>
                 </Link>
                 <CollapsibleTrigger className="ml-auto cursor-pointer" asChild>
                   <div
@@ -125,7 +131,13 @@ function ProjectListItem({ goal, targets }) {
                   <SidebarMenuButton asChild>
                     <Link to={`/goals/${goal.id}/targets/${item.id}`}>
                       <Circle className="h-3.5 w-3.5" />
-                      <span>{item.title}</span>
+                      <span
+                        className={`${
+                          item.title ? "" : "text-muted-foreground"
+                        } font-semibold`}
+                      >
+                        {item.title || "New Target"}
+                      </span>
                     </Link>
                   </SidebarMenuButton>
                   <SidebarMenuBadge>12/02/26</SidebarMenuBadge>

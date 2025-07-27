@@ -31,21 +31,28 @@ export type AppState = AppData & {
   };
   undoStack: HistoryEntry[];
   redoStack: HistoryEntry[];
+  lastAddedTaskId: string | null;
   setInitialData: (data: AppData) => void;
   setAuthUser: (user: { id: string }) => void;
   undo: () => Promise<void>;
   redo: () => Promise<void>;
   // Corrected and type-safe action signatures
+  setLastAddedTaskId: (taskId: string | null) => void;
   addBlock: <T extends AllBlockTypes>(
-    blockType: keyof AppData,
     author: "user" | "system",
+    blockType: keyof AppData,
     block: Omit<T, "id" | "created_at" | "updated_at" | "client_id" | "user_id">
   ) => Promise<void>;
   updateBlock: <T extends AllBlockTypes>(
+    author: "user" | "system",
     blockType: keyof AppData,
     updatedBlock: Partial<T> & { id: string }
   ) => Promise<void>;
-  removeBlock: (blockType: keyof AppData, id: string) => Promise<void>;
+  removeBlock: (
+    author: "user" | "system",
+    blockType: keyof AppData,
+    id: string
+  ) => Promise<void>;
 };
 
 // --- DB HELPER FUNCTIONS ---
@@ -141,8 +148,8 @@ export const useAppStore = create<AppState>()(
 
       // --- GENERIC BLOCK ACTIONS ---
       addBlock: async <T extends AllBlockTypes>(
-        blockType: keyof AppData,
         author: "user" | "system" = "system",
+        blockType: keyof AppData,
         blockContent: Omit<
           T,
           "id" | "created_at" | "updated_at" | "client_id" | "user_id"
@@ -196,6 +203,7 @@ export const useAppStore = create<AppState>()(
       },
 
       updateBlock: async <T extends AllBlockTypes>(
+        author: "user" | "system" = "system",
         blockType: keyof AppData,
         updatedBlock: Partial<T> & { id: string }
       ) => {
@@ -230,7 +238,6 @@ export const useAppStore = create<AppState>()(
               .update({ ...updatedBlock, client_id })
               .eq("id", updatedBlock.id)
               .select();
-            console.log(data, error);
             return { error };
           },
           // supabase
@@ -240,7 +247,12 @@ export const useAppStore = create<AppState>()(
         });
       },
 
-      removeBlock: async (blockType: keyof AppData, id: string) => {
+      removeBlock: async (
+        author: "user" | "system" = "system",
+        blockType: keyof AppData,
+        id: string
+      ) => {
+        console.log("123456789098765432");
         const blockToRemove = get()[blockType].find((b) => b.id === id);
         if (!blockToRemove) return;
 

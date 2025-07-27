@@ -17,9 +17,12 @@ import { useCurrentBlockStore } from "../store/useCurrentBlock";
 import { useAppStore } from "@/store/useAppStore";
 import { Task } from "@/types";
 import { useShallow } from "zustand/react/shallow";
+import AnimatedCheckbox from "@/components/common/Checkbox";
 
 function TaskListItem({ task }) {
   const updateBlock = useAppStore.getState().updateBlock;
+  const setSelectedTaskId = useCurrentBlockStore().setSelectedTaskId;
+  const selectedTaskId = useCurrentBlockStore().selectedTaskId;
   const [isSelected, setIsSelected] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const { lastAddedTaskId } = useAppStore(
@@ -49,22 +52,32 @@ function TaskListItem({ task }) {
 
   function saveChanges() {
     console.log(title);
-    updateBlock("tasks", { id: task.id, title, description });
+    updateBlock("user", "tasks", { id: task.id, title, description });
   }
+
+  // set selectedTaskId
+  useEffect(() => {
+    if (isClicked || isSelected) {
+      setSelectedTaskId(task.id);
+    }
+  }, [isClicked, setSelectedTaskId, isSelected, task]);
 
   useEffect(() => {
     setTitle(task.title);
     setDescription(task.description);
-  }, []);
+  }, [task]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       console.log("clicked");
       if (boxRef.current && !boxRef.current.contains(event.target as Node)) {
         console.log(title);
-        updateBlock("tasks", { id: task.id, title, description });
+        updateBlock("user", "tasks", { id: task.id, title, description });
         setIsClicked(false);
         setIsSelected(false);
+        setTimeout(() => {
+          setSelectedTaskId(null);
+        }, 100);
       }
     }
     if (isSelected || isClicked) {
@@ -86,7 +99,7 @@ function TaskListItem({ task }) {
     >
       <div className="flex items-center gap-1">
         {/* Checkbox */}
-        <CheckSquare className="w-5 h-5 text-accent-foreground mr-2" />
+        <AnimatedCheckbox />
 
         {/* Date/Time */}
         {!isSelected && (

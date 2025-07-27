@@ -25,7 +25,6 @@ export default function NavigationMenuDemo() {
   const { setBlock } = useCurrentBlockStore();
 
   useEffect(() => {
-    console.log(params);
     const selectedGoal = goals.find((goal) => goal.id === params.goalId);
     const otherGoals = goals.filter((goal) => goal.id !== params.goalId);
     const goalObj = {
@@ -71,10 +70,11 @@ export default function NavigationMenuDemo() {
     }
 
     if (pathNodesDetails.length > 0) {
+      console.log(pathNodesDetails);
       setBlock(
         pathNodesDetails.at(-1).selectedNode,
         "nodes",
-        pathNodesDetails.at(-1).selectedNode.id
+        pathNodesDetails.at(-1).selectedNode?.id
       );
     } else if (targetObj.selectedTarget) {
       setBlock(
@@ -83,15 +83,10 @@ export default function NavigationMenuDemo() {
         targetObj.selectedTarget.id
       );
     } else {
-      setBlock(goalObj.selectedGoal, "goals", goalObj.selectedGoal.id);
+      setBlock(goalObj.selectedGoal, "goals", goalObj.selectedGoal?.id);
     }
 
     setPathElementDetails({
-      goal: goalObj,
-      target: targetObj,
-      nodes: pathNodesDetails,
-    });
-    console.log("path element details", {
       goal: goalObj,
       target: targetObj,
       nodes: pathNodesDetails,
@@ -109,7 +104,6 @@ export default function NavigationMenuDemo() {
 
   return (
     <>
-      {console.log(pathElementsDetails)}
       {pathElementsDetails && goals.length && targets.length ? (
         <NavigationMenu viewport={false}>
           <NavigationMenuList>
@@ -178,7 +172,7 @@ export default function NavigationMenuDemo() {
             {/* Nodes */}
             {pathElementsDetails.nodes.length > 0 &&
               pathElementsDetails.nodes.map((nodeObj, i, arr) => (
-                <React.Fragment key={nodeObj.selectedNode.id}>
+                <React.Fragment key={nodeObj.selectedNode?.id}>
                   <BreadcrumbSeparator>
                     <SlashIcon />
                   </BreadcrumbSeparator>
@@ -191,10 +185,10 @@ export default function NavigationMenuDemo() {
                               params.targetId
                             }/nodes${determineNodesPath(
                               i,
-                              nodeObj.selectedNode.id
+                              nodeObj.selectedNode?.id
                             )}`}
                           >
-                            {nodeObj.selectedNode.title}
+                            {nodeObj.selectedNode?.title}
                           </Link>
                         </NavigationMenuTrigger>
                         <NavigationMenuContent>
@@ -221,10 +215,10 @@ export default function NavigationMenuDemo() {
                             params.targetId
                           }/nodes${determineNodesPath(
                             i,
-                            nodeObj.selectedNode.id
+                            nodeObj.selectedNode?.id
                           )}`}
                         >
-                          {nodeObj.selectedNode.title}
+                          {nodeObj.selectedNode?.title}
                         </Link>
                       </NavigationMenuLink>
                     )}

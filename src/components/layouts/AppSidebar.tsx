@@ -40,11 +40,12 @@ import {
 import { Link } from "react-router";
 import { Button } from "@components/ui/button";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@components/ui/popover";
-import { Separator } from "../ui/separator";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import {
   Dialog,
@@ -60,6 +61,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ModeToggle } from "../common/ModeToggle";
 import ProjectList from "@/features/project-list/components/ProjectList";
+import { useAppStore } from "@/store/useAppStore";
+import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
+import { Popover } from "@radix-ui/react-popover";
+import { useState } from "react";
 
 export const CustomSidebarGroupLabel = () => (
   <>
@@ -104,6 +109,13 @@ const headerItems = [
 ];
 
 export function AppSidebar() {
+  const { addBlock } = useAppStore();
+  function handleAddNewGoal() {
+    addBlock("user", "goals", { title: "" });
+  }
+  function handleAddNewTarget(parentGoalId) {
+    addBlock("user", "targets", { title: "", goal_id: parentGoalId });
+  }
   return (
     <Sidebar>
       <SidebarHeader>
@@ -130,20 +142,15 @@ export function AppSidebar() {
 
       <SidebarFooter>
         <div className="flex items-center justify-between">
-          <Popover>
-            <PopoverTrigger asChild>
+          <NewListDropdown
+            trigger={
               <Button variant="ghost">
                 <PlusIcon /> New List
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-1 w-min">
-              <div className="flex flex-col gap-1">
-                <Button variant="ghost">Add New Goal</Button>
-                <Separator />
-                <Button variant="ghost">Add New Target</Button>
-              </div>
-            </PopoverContent>
-          </Popover>
+            }
+            onAddNewGoal={handleAddNewGoal}
+            onAddNewTarget={handleAddNewTarget}
+          />
           <Dialog>
             <form>
               <DialogTrigger asChild>
@@ -160,5 +167,39 @@ export function AppSidebar() {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
+  );
+}
+
+function NewListDropdown({ trigger, onAddNewGoal, onAddNewTarget }) {
+  const goals = useAppStore().goals;
+  const [open, setOpen] = useState(false);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="start">
+        <DropdownMenuItem onClick={onAddNewGoal}>Add New Goal</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={(e) => e.preventDefault()}>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger className="w-full text-start">
+              Add New Target
+            </DialogTrigger>
+            <DialogContent className="md:w-80 w-70">
+              <div>Select Goal of Target</div>
+              {goals.map((goal) => (
+                <Button
+                  onClick={() => {
+                    onAddNewTarget(goal.id);
+                    setOpen(false); // Close the dialog
+                  }}
+                >
+                  {goal.title}
+                </Button>
+              ))}
+            </DialogContent>
+          </Dialog>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
