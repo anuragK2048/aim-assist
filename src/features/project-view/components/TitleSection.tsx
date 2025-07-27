@@ -1,7 +1,7 @@
 import Circle from "@/components/common/Circle";
 import { Ellipsis } from "lucide-react";
 import { useCurrentBlockStore } from "../store/useCurrentBlock";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppStore } from "@/store/useAppStore";
 import { DropdownMenuDemo } from "./Dropdown";
 import { useLocation, useNavigate } from "react-router";
@@ -14,33 +14,16 @@ function TitleSection() {
   const { currentBlock, currentBlockType } = useCurrentBlockStore();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const mirrorRef = useRef<HTMLSpanElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const descMirrorRef = useRef<HTMLSpanElement>(null);
-  const descInputRef = useRef<HTMLTextAreaElement>(null);
-
-  // useEffect(() => {
-  //   if (descMirrorRef.current && descInputRef.current) {
-  //     descInputRef.current.style.width = `${descMirrorRef.current.offsetWidth}px`;
-  //   }
-  // }, [description]);
-
-  // useEffect(() => {
-  //   if (mirrorRef.current && inputRef.current) {
-  //     inputRef.current.style.width = `${mirrorRef.current.offsetWidth}px`;
-  //   }
-  // }, [title]);
 
   useEffect(() => {
     setTitle(currentBlock?.title || "");
     setDescription(currentBlock?.description || "");
   }, [currentBlock]);
 
-  function saveChanges() {
+  function saveChanges(changedTitle: string) {
     updateBlock("user", currentBlockType, {
       id: currentBlock.id,
-      title,
+      title: changedTitle,
       description,
     });
   }
@@ -73,9 +56,9 @@ function TitleSection() {
         {currentBlockType === "goals" ? null : <Circle />}
 
         <MirrorInput
+          classname={"text-2xl"}
           text={title}
           onSave={saveChanges}
-          setText={setTitle}
           placeholder={
             currentBlockType === "targets"
               ? "New Target"
@@ -86,41 +69,6 @@ function TitleSection() {
               : "New Item"
           }
         />
-
-        {/* Mirror span */}
-        {/* <span
-          ref={mirrorRef}
-          className="invisible whitespace-pre pointer-events-none absolute bg-amber-200 text-2xl ml-8"
-          aria-hidden
-        >
-          {title ||
-            (currentBlockType === "targets"
-              ? "New Target"
-              : currentBlockType === "nodes"
-              ? "New Node"
-              : currentBlockType === "goals"
-              ? "New Goal"
-              : "New Item")}
-        </span> */}
-
-        {/* Auto-width input */}
-        {/* <input
-          placeholder={
-            currentBlockType === "targets"
-              ? "New Target"
-              : currentBlockType === "nodes"
-              ? "New Node"
-              : currentBlockType === "goals"
-              ? "New Goal"
-              : "New Item"
-          }
-          ref={inputRef}
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="border-none outline-none text-2xl"
-          onBlur={saveChanges}
-        /> */}
 
         <div>
           <DropdownMenuDemo onDeleteSelect={handleDelete}>
@@ -137,7 +85,6 @@ function TitleSection() {
         rows={2}
         onBlur={saveChanges}
       />
-      {/* </div> */}
     </div>
   );
 }

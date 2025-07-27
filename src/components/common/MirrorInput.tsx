@@ -1,32 +1,54 @@
+import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
-function MirrorInput({ text, onSave, setText, placeholder }) {
+function MirrorInput({
+  text,
+  placeholder,
+  onSave,
+  classname,
+  isDisabled = false,
+}) {
+  const [currentText, setCurrentText] = useState(text);
   const mirrorRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    setCurrentText(text);
+  }, [text]);
+
+  useEffect(() => {
     if (mirrorRef.current && inputRef.current) {
-      console.log("doneee");
       inputRef.current.style.width = `${mirrorRef.current.offsetWidth}px`;
     }
-  }, [text, placeholder]);
+  }, [currentText, placeholder]);
+
+  useEffect(() => {
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isDisabled]);
+
   return (
     <div>
       <span
         ref={mirrorRef}
-        className="invisible pointer-events-none absolute bg-amber-200 text-2xl"
+        className={cn(classname, "invisible pointer-events-none absolute")}
         aria-hidden
       >
-        {text || placeholder}
+        {(currentText || placeholder).replace(/ /g, "\u00A0")}
       </span>
       <input
+        disabled={isDisabled}
         placeholder={placeholder}
         ref={inputRef}
         type="text"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        className="border-none outline-none text-2xl"
-        onBlur={onSave}
+        value={currentText}
+        onChange={(e) => setCurrentText(e.target.value)}
+        className={cn(
+          classname,
+          `${isDisabled ? "pointer-events-none" : ""} border-none outline-none`
+        )}
+        onBlur={() => onSave(currentText)}
       />
     </div>
   );

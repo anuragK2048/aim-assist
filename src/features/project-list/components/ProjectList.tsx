@@ -42,6 +42,7 @@ import { useAppStore } from "@/store/useAppStore";
 import Circle from "@/components/common/Circle";
 import { Link } from "react-router";
 import { useEffect, useMemo, useState } from "react";
+import MirrorInput from "@/components/common/MirrorInput";
 
 function ProjectList() {
   const goals = useAppStore((s) => s.goals);
@@ -73,7 +74,16 @@ function ProjectList() {
 export default ProjectList;
 
 function ProjectListItem({ goal, targets }) {
+  const updateBlock = useAppStore((store) => store.updateBlock);
   const [isOpen, setIsOpen] = useState(true);
+  const [editableTargetId, setEditableTargetId] = useState(null);
+  function onTargetTitleChange(id, changedTitle: string) {
+    setEditableTargetId(null);
+    updateBlock("user", "targets", {
+      id: id,
+      title: changedTitle,
+    });
+  }
   return (
     <Collapsible
       key={goal.id}
@@ -127,17 +137,35 @@ function ProjectListItem({ goal, targets }) {
           <SidebarGroupContent>
             <SidebarMenu>
               {targets.map((item) => (
-                <SidebarMenuItem key={item.id}>
+                <SidebarMenuItem
+                  key={item.id}
+                  onDoubleClick={() => {
+                    setEditableTargetId(item.id);
+                  }}
+                >
                   <SidebarMenuButton asChild>
                     <Link to={`/goals/${goal.id}/targets/${item.id}`}>
                       <Circle className="h-3.5 w-3.5" />
-                      <span
+                      <div className="max-w-5">
+                        <MirrorInput
+                          className={`${
+                            item.title ? "" : "text-muted-foreground"
+                          } font-semibold`}
+                          isDisabled={editableTargetId !== item.id}
+                          text={item.title}
+                          placeholder={"New Target"}
+                          onSave={(title) =>
+                            onTargetTitleChange(item.id, title)
+                          }
+                        />
+                      </div>
+                      {/* <span
                         className={`${
                           item.title ? "" : "text-muted-foreground"
                         } font-semibold`}
                       >
                         {item.title || "New Target"}
-                      </span>
+                      </span> */}
                     </Link>
                   </SidebarMenuButton>
                   <SidebarMenuBadge>12/02/26</SidebarMenuBadge>
