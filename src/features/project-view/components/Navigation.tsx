@@ -49,9 +49,7 @@ export default function NavigationMenuDemo() {
       const calculatePathNodeIds = params["*"]
         .split("/")
         .filter((nodeId) => nodeId !== "nodes");
-      console.log("calculatePathNodeIds", calculatePathNodeIds);
       setPathNodeIds(calculatePathNodeIds);
-      console.log(calculatePathNodeIds);
       calculatePathNodeIds.forEach((nodeId, i, arr) => {
         const selectedNode = nodes.find((node) => node.id === nodeId);
         const relatedNodes = nodes.filter(
@@ -70,7 +68,6 @@ export default function NavigationMenuDemo() {
     }
 
     if (pathNodesDetails.length > 0) {
-      console.log(pathNodesDetails);
       setBlock(
         pathNodesDetails.at(-1).selectedNode,
         "nodes",
@@ -105,7 +102,7 @@ export default function NavigationMenuDemo() {
   return (
     <>
       {pathElementsDetails && goals.length && targets.length ? (
-        <NavigationMenu viewport={false}>
+        <NavigationMenu viewport={false} className="z-50">
           <NavigationMenuList>
             {/* Goal */}
             <NavigationMenuItem>

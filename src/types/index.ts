@@ -35,6 +35,7 @@ export interface Node {
 }
 
 export interface Task {
+  tags: string[] | undefined | null;
   id: string;
   node_id?: string | null;
   target_id?: string | null;
@@ -43,6 +44,7 @@ export interface Task {
   status?: string;
   priority?: number;
   due_date?: string;
+  when?: string;
   reminder_at?: string;
   is_recurring?: boolean;
   repeat_interval?: string;

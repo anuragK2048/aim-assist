@@ -31,8 +31,8 @@ function NodeListItem({ node, ...props }) {
       <div className="flex-1" />
 
       {/* Flag and days left */}
-      <Flag className="w-4 h-4 text-muted-foreground mr-1" />
-      <span className="text-xs text-muted-foreground">{node.deadline}</span>
+      {/* <Flag className="w-4 h-4 text-muted-foreground mr-1" />
+      <span className="text-xs text-muted-foreground">{node.deadline}</span> */}
     </div>
   );
 }

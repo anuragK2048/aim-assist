@@ -81,35 +81,45 @@ const headerItems = [
     url: "/home",
     icon: Home,
   },
-  {
-    title: "Visualize",
-    url: "/visualize",
-    icon: View,
-  },
-  {
-    title: "Plan Your Day",
-    url: "/scheduleDay",
-    icon: NotebookPen,
-  },
-  {
-    title: "Today's Schedule",
-    url: "/today",
-    icon: NotebookText,
-  },
-  {
-    title: "Journal",
-    url: "/journal",
-    icon: Notebook,
-  },
-  {
-    title: "Calendar",
-    url: "/calendar",
-    icon: CalendarCheck,
-  },
+  // {
+  //   title: "Visualize",
+  //   url: "/visualize",
+  //   icon: View,
+  // },
+  // {
+  //   title: "Plan Your Day",
+  //   url: "/scheduleDay",
+  //   icon: NotebookPen,
+  // },
+  // {
+  //   title: "Today's Schedule",
+  //   url: "/today",
+  //   icon: NotebookText,
+  // },
+  // {
+  //   title: "Journal",
+  //   url: "/journal",
+  //   icon: Notebook,
+  // },
+  // {
+  //   title: "Calendar",
+  //   url: "/calendar",
+  //   icon: CalendarCheck,
+  // },
 ];
 
 export function AppSidebar() {
-  const { addBlock } = useAppStore();
+  const { addBlock, tasks } = useAppStore();
+  const todayTasks = tasks.filter((task) => {
+    if (!task.due_date) return false;
+    const dueDate = new Date(task.due_date);
+    const today = new Date();
+    return (
+      dueDate.getFullYear() === today.getFullYear() &&
+      dueDate.getMonth() === today.getMonth() &&
+      dueDate.getDate() === today.getDate()
+    );
+  });
   function handleAddNewGoal() {
     addBlock("user", "goals", { title: "" });
   }
@@ -128,7 +138,7 @@ export function AppSidebar() {
                   <span>{item.title}</span>
                 </Link>
               </SidebarMenuButton>
-              <SidebarMenuBadge>24</SidebarMenuBadge>
+              <SidebarMenuBadge>{todayTasks.length}</SidebarMenuBadge>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
@@ -185,7 +195,7 @@ function NewListDropdown({ trigger, onAddNewGoal, onAddNewTarget }) {
               Add New Target
             </DialogTrigger>
             <DialogContent className="md:w-80 w-70">
-              <div>Select Goal of Target</div>
+              <div>Select Goal for Target</div>
               {goals.map((goal) => (
                 <Button
                   onClick={() => {

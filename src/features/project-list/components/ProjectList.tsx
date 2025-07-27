@@ -74,6 +74,7 @@ function ProjectList() {
 export default ProjectList;
 
 function ProjectListItem({ goal, targets }) {
+  const tasks = useAppStore((store) => store.tasks);
   const updateBlock = useAppStore((store) => store.updateBlock);
   const [isOpen, setIsOpen] = useState(true);
   const [editableTargetId, setEditableTargetId] = useState(null);
@@ -136,41 +137,39 @@ function ProjectListItem({ goal, targets }) {
         <CollapsibleContent>
           <SidebarGroupContent>
             <SidebarMenu>
-              {targets.map((item) => (
-                <SidebarMenuItem
-                  key={item.id}
-                  onDoubleClick={() => {
-                    setEditableTargetId(item.id);
-                  }}
-                >
-                  <SidebarMenuButton asChild>
-                    <Link to={`/goals/${goal.id}/targets/${item.id}`}>
-                      <Circle className="h-3.5 w-3.5" />
-                      <div className="max-w-5">
-                        <MirrorInput
-                          className={`${
-                            item.title ? "" : "text-muted-foreground"
-                          } font-semibold`}
-                          isDisabled={editableTargetId !== item.id}
-                          text={item.title}
-                          placeholder={"New Target"}
-                          onSave={(title) =>
-                            onTargetTitleChange(item.id, title)
-                          }
-                        />
-                      </div>
-                      {/* <span
-                        className={`${
-                          item.title ? "" : "text-muted-foreground"
-                        } font-semibold`}
-                      >
-                        {item.title || "New Target"}
-                      </span> */}
-                    </Link>
-                  </SidebarMenuButton>
-                  <SidebarMenuBadge>12/02/26</SidebarMenuBadge>
-                </SidebarMenuItem>
-              ))}
+              {targets.map((item) => {
+                const totalFilteredTasks = tasks?.filter(
+                  (task) => task.target_id === item.id
+                ).length;
+                return (
+                  <SidebarMenuItem
+                    key={item.id}
+                    onDoubleClick={() => {
+                      setEditableTargetId(item.id);
+                    }}
+                  >
+                    <SidebarMenuButton asChild>
+                      <Link to={`/goals/${goal.id}/targets/${item.id}`}>
+                        <Circle className="h-3.5 w-3.5" />
+                        <div className="max-w-5">
+                          <MirrorInput
+                            className={`${
+                              item.title ? "" : "text-muted-foreground"
+                            } font-semibold`}
+                            isDisabled={editableTargetId !== item.id}
+                            text={item.title}
+                            placeholder={"New Target"}
+                            onSave={(title) =>
+                              onTargetTitleChange(item.id, title)
+                            }
+                          />
+                        </div>
+                      </Link>
+                    </SidebarMenuButton>
+                    <SidebarMenuBadge>{totalFilteredTasks}</SidebarMenuBadge>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </CollapsibleContent>

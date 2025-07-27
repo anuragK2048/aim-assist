@@ -43,7 +43,7 @@ export default function MainLayout() {
     <SidebarProvider>
       <AppSidebar />
       <main className="w-full">
-        <SidebarTrigger />
+        <SidebarTrigger className="absolute" />
         <Outlet />
       </main>
     </SidebarProvider>

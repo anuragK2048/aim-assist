@@ -232,7 +232,7 @@ export const useAppStore = create<AppState>()(
             draft.redoStack = [];
           },
           dbAction: async () => {
-            console.log(updatedBlock);
+            console.log(blockType, "is being updated in DB", updatedBlock);
             const { data, error } = await supabase
               .from(blockType)
               .update({ ...updatedBlock, client_id })

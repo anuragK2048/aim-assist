@@ -63,7 +63,7 @@ const AnimatedCheckbox = ({
         disabled ? "opacity-50 cursor-not-allowed" : ""
       } ${className}`}
     >
-      <div className="relative">
+      <div className="">
         <input
           type="checkbox"
           checked={isChecked}
@@ -75,7 +75,7 @@ const AnimatedCheckbox = ({
           className={`
             ${sizeClasses[size]}
             ${radiusClasses[borderRadius]}
-            border-2 transition-all duration-${animationDuration}
+            border-2 border-muted-foreground/70 transition-all duration-${animationDuration}
             ${
               isChecked
                 ? `${colorClasses[color]} border-opacity-100 shadow-md`

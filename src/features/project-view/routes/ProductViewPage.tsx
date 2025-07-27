@@ -76,14 +76,14 @@ function ProjectViewPage() {
               Delete Selected Task <Plus />
             </Button>
           ) : (
-            <>
+            <div className="flex gap-4">
               <Button variant="outline" onClick={addNewTask}>
                 Add Task <Plus />
               </Button>
               <Button variant="outline" onClick={addNewNode}>
                 Add Node <Plus />
               </Button>
-            </>
+            </div>
           ))}
       </div>
     </div>

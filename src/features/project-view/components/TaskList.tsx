@@ -18,11 +18,15 @@ import { useAppStore } from "@/store/useAppStore";
 import { Task } from "@/types";
 import { useShallow } from "zustand/react/shallow";
 import AnimatedCheckbox from "@/components/common/Checkbox";
+import {
+  formatForDB,
+  formatToUserFriendlyDate,
+  parseDate,
+} from "@/lib/date-helpers";
 
-function TaskListItem({ task }) {
+export function TaskListItem({ task }) {
   const updateBlock = useAppStore.getState().updateBlock;
   const setSelectedTaskId = useCurrentBlockStore().setSelectedTaskId;
-  const selectedTaskId = useCurrentBlockStore().selectedTaskId;
   const [isSelected, setIsSelected] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const { lastAddedTaskId } = useAppStore(
@@ -41,19 +45,19 @@ function TaskListItem({ task }) {
   // Task Details
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [deadlineDate, setDeadlineDate] = useState<Date | undefined>(
-    new Date()
+  const [dueDate, setDueDateDate] = useState<Date | undefined>(
+    task.due_date ? parseDate(task.due_date) : new Date()
   );
   const [whenDate, setWhenDate] = useState<Date | undefined>(new Date());
 
   const [isWhenPopoverOpen, setIsWhenPopoverOpen] = useState(false);
-  const [isDeadlinePopoverOpen, setIsDeadlinePopoverOpen] = useState(false);
+  const [isDueDatePopoverOpen, setIsDueDatePopoverOpen] = useState(false);
   const boxRef = useRef(null);
 
-  function saveChanges() {
-    console.log(title);
-    updateBlock("user", "tasks", { id: task.id, title, description });
-  }
+  useEffect(() => {
+    setTitle(task.title);
+    setDescription(task.description);
+  }, [task]);
 
   // set selectedTaskId
   useEffect(() => {
@@ -63,15 +67,8 @@ function TaskListItem({ task }) {
   }, [isClicked, setSelectedTaskId, isSelected, task]);
 
   useEffect(() => {
-    setTitle(task.title);
-    setDescription(task.description);
-  }, [task]);
-
-  useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      console.log("clicked");
       if (boxRef.current && !boxRef.current.contains(event.target as Node)) {
-        console.log(title);
         updateBlock("user", "tasks", { id: task.id, title, description });
         setIsClicked(false);
         setIsSelected(false);
@@ -80,6 +77,7 @@ function TaskListItem({ task }) {
         }, 100);
       }
     }
+
     if (isSelected || isClicked) {
       document.addEventListener("mousedown", handleClickOutside);
     }
@@ -87,6 +85,11 @@ function TaskListItem({ task }) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isSelected, isClicked, title, description]);
+
+  // Handle task details mutations
+  function saveChanges() {
+    updateBlock("user", "tasks", { id: task.id, title, description });
+  }
 
   return (
     <div
@@ -99,13 +102,21 @@ function TaskListItem({ task }) {
     >
       <div className="flex items-center gap-1">
         {/* Checkbox */}
-        <AnimatedCheckbox />
+        <AnimatedCheckbox
+          className="mr-1"
+          color="accent"
+          defaultChecked={task.completed}
+          onChange={(isChecked) => {
+            console.log("hjksam", isChecked);
+            updateBlock("user", "tasks", { id: task.id, completed: isChecked });
+          }}
+        />
 
         {/* Date/Time */}
-        {!isSelected && (
+        {!isSelected && task.when && (
           <div className="bg-muted text-muted-foreground flex items-center px-2 py-0.5 rounded text-xs mr-2">
             <CalendarIcon className="w-3 h-3 mr-1" />
-            16 June 02:00 PM
+            {formatToUserFriendlyDate(task.when)}
           </div>
         )}
 
@@ -130,29 +141,35 @@ function TaskListItem({ task }) {
           </span>
         )}
 
-        {!isSelected && (
+        {/* {!isSelected && (
           <>
-            {/* Icons */}
             <FileText className="text-muted-foreground w-4 h-4 mr-1" />
             <List className="text-muted-foreground w-4 h-4 mr-2" />
           </>
-        )}
+        )} */}
 
         {/* Tag */}
-        {!isSelected && (
-          <span className="border border-muted-foreground rounded-full px-1.5 py-0.25 text-xs text-muted-foreground mr-2">
-            Errand
-          </span>
-        )}
+        {!isSelected &&
+          task.tags?.length > 0 &&
+          task.tags.map((tag, i) => (
+            <span
+              key={i}
+              className="border border-muted-foreground rounded-full px-1.5 py-0.25 text-xs text-muted-foreground mr-2"
+            >
+              {tag}
+            </span>
+          ))}
 
         {/* Spacer */}
         <div className="flex-1" />
 
-        {/* Flag (deadline) */}
-        {!isSelected && (
+        {/* Flag (dueDate) */}
+        {!isSelected && task.due_date && (
           <>
             <Flag className="w-4 h-4 text-muted-foreground mr-1" />
-            <span className="text-xs text-muted-foreground">9 days left</span>
+            <span className="text-xs text-muted-foreground">
+              {formatToUserFriendlyDate(task.due_date)}
+            </span>
           </>
         )}
       </div>
@@ -165,34 +182,79 @@ function TaskListItem({ task }) {
             onBlur={saveChanges}
             placeholder="Notes"
             rows={2}
-            className="text-foreground/85 outline-none text-sm"
+            className="text-foreground/85 outline-none text-sm -ml-1"
           />
           <div className="flex items-center">
             <div className="flex flex-col gap-4">
               {/* Tag */}
-              <span className="border border-muted-foreground rounded-full px-2 py-0.5 text-xs text-muted-foreground mr-2 w-min">
-                Errand
-              </span>
-              <div className="flex items-center text-xs text-muted-foreground">
-                <CalendarIcon className="w-4 h-4 mr-1 text-chart-3" />
-                16 June 02:00 PM
-              </div>
-              <div className="flex items-center">
-                <Flag className="w-4 h-4 text-chart-5 mr-1" />
-                <span className="text-xs text-muted-foreground">
-                  9 days left
-                </span>
-              </div>
+              {task.tags?.length > 0 &&
+                task.tags.map((tag) => (
+                  <span className="border border-muted-foreground rounded-full px-1.5 py-0.25 text-xs text-muted-foreground mr-2">
+                    {tag}
+                  </span>
+                ))}
+              {task.when && (
+                <div className="flex items-center text-xs text-muted-foreground">
+                  <CalendarIcon className="w-4 h-4 mr-1 text-chart-3" />
+                  {formatToUserFriendlyDate(task.when)}
+                </div>
+              )}
+              {task.due_date && (
+                <div className="flex items-center">
+                  <Flag className="w-4 h-4 text-chart-5 mr-1" />
+                  <span className="text-xs text-muted-foreground">
+                    {formatToUserFriendlyDate(task.due_date)}
+                  </span>
+                </div>
+              )}
             </div>
             <div className="flex gap-3 ml-auto mt-auto items-center">
-              <Tag className="w-5 h-5" />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Tag className="w-5 h-5 cursor-pointer text-muted-foreground" />
+                </PopoverTrigger>
+                <PopoverContent
+                  className="p-2 w-56"
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                  <input
+                    type="text"
+                    placeholder="Add a tag"
+                    className="w-full px-2 py-1 text-sm border border-muted-foreground rounded mb-2 outline-none"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        const value = (
+                          e.target as HTMLInputElement
+                        ).value.trim();
+                        if (value) {
+                          updateBlock("user", "tasks", {
+                            id: task.id,
+                            tags: [...(task.tags || []), value],
+                          });
+                          (e.target as HTMLInputElement).value = "";
+                        }
+                      }
+                    }}
+                  />
+                  <div className="flex flex-wrap gap-1">
+                    {(task.tags || []).map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
               {/* Calendar icon and popup */}
               <Popover
                 open={isWhenPopoverOpen}
                 onOpenChange={setIsWhenPopoverOpen}
               >
                 <PopoverTrigger asChild>
-                  <CalendarIcon className="text-chart-3 w-5 h-5 cursor-pointer" />
+                  <CalendarIcon className="text-when w-5 h-5 cursor-pointer" />
                 </PopoverTrigger>
                 <PopoverContent
                   className=""
@@ -203,6 +265,11 @@ function TaskListItem({ task }) {
                     selected={whenDate}
                     onSelect={(selectedDate) => {
                       setWhenDate(selectedDate);
+                      const parsedDate = formatForDB(selectedDate);
+                      updateBlock("user", "tasks", {
+                        id: task.id,
+                        when: parsedDate,
+                      });
                       setIsWhenPopoverOpen(false); // close popover when date is selected
                     }}
                     className="rounded-md border shadow-sm bg-background"
@@ -211,11 +278,11 @@ function TaskListItem({ task }) {
                 </PopoverContent>
               </Popover>
               <Popover
-                open={isDeadlinePopoverOpen}
-                onOpenChange={setIsDeadlinePopoverOpen}
+                open={isDueDatePopoverOpen}
+                onOpenChange={setIsDueDatePopoverOpen}
               >
                 <PopoverTrigger asChild>
-                  <Flag className="text-chart-5 w-5 h-5 cursor-pointer" />
+                  <Flag className="text-deadline w-5 h-5 cursor-pointer" />
                 </PopoverTrigger>
                 <PopoverContent
                   className=""
@@ -223,10 +290,15 @@ function TaskListItem({ task }) {
                 >
                   <Calendar
                     mode="single"
-                    selected={deadlineDate}
+                    selected={dueDate}
                     onSelect={(selectedDate) => {
-                      setDeadlineDate(selectedDate);
-                      setIsDeadlinePopoverOpen(false); // close popover when date is selected
+                      setDueDateDate(selectedDate);
+                      const parsedDate = formatForDB(selectedDate);
+                      updateBlock("user", "tasks", {
+                        id: task.id,
+                        due_date: parsedDate,
+                      });
+                      setIsDueDatePopoverOpen(false); // close popover when date is selected
                     }}
                     className="rounded-md border shadow-sm bg-background"
                     captionLayout="dropdown"
