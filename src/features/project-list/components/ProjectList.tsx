@@ -75,6 +75,7 @@ export default ProjectList;
 
 function ProjectListItem({ goal, targets }) {
   const tasks = useAppStore((store) => store.tasks);
+  const nodes = useAppStore((store) => store.nodes);
   const updateBlock = useAppStore((store) => store.updateBlock);
   const [isOpen, setIsOpen] = useState(true);
   const [editableTargetId, setEditableTargetId] = useState(null);
@@ -141,6 +142,10 @@ function ProjectListItem({ goal, targets }) {
                 const totalFilteredTasks = tasks?.filter(
                   (task) => task.target_id === item.id
                 ).length;
+                const totalFilteredNodes = nodes?.filter(
+                  (node) => node.target_id === item.id && !node.parent_node_id
+                ).length;
+
                 return (
                   <SidebarMenuItem
                     key={item.id}
@@ -166,7 +171,9 @@ function ProjectListItem({ goal, targets }) {
                         </div>
                       </Link>
                     </SidebarMenuButton>
-                    <SidebarMenuBadge>{totalFilteredTasks}</SidebarMenuBadge>
+                    <SidebarMenuBadge>
+                      {totalFilteredTasks + totalFilteredNodes}
+                    </SidebarMenuBadge>
                   </SidebarMenuItem>
                 );
               })}

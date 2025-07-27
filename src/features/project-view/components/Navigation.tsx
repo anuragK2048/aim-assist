@@ -23,6 +23,11 @@ export default function NavigationMenuDemo() {
   const [pathNodeIds, setPathNodeIds] = useState<string[]>([]);
   const params = useParams();
   const { setBlock } = useCurrentBlockStore();
+  const setLastAddedTaskId = useAppStore().setLastAddedTaskId;
+
+  useEffect(() => {
+    setLastAddedTaskId(null);
+  }, [params, setLastAddedTaskId]);
 
   useEffect(() => {
     const selectedGoal = goals.find((goal) => goal.id === params.goalId);

@@ -52,7 +52,7 @@ export default function TodayPage() {
   };
 
   return (
-    <div className="h-full bg-background text-foreground px-100">
+    <div className="h-full bg-background text-foreground px-80">
       <div className="h-full">
         {/* --- MAIN TASK LIST (LEFT COLUMN) --- */}
         <div className="lg:col-span-2 h-full flex flex-col border-r border-border border-l">

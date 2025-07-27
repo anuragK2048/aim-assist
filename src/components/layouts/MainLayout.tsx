@@ -11,6 +11,7 @@ import { useUndoRedoHotkeys } from "@/hooks/useUndoRedoHotKeys";
 export default function MainLayout() {
   const [loading, setLoading] = useState(true);
   const { setAuthUser } = useAppStore();
+  const navigate = useNavigate();
 
   useUndoRedoHotkeys();
 
@@ -23,14 +24,14 @@ export default function MainLayout() {
         if (data?.user?.id) {
           await fetchUserData(data.user.id);
           setAuthUser({ id: data.user.id });
-          // initRealtime(data.user.id);
+          initRealtime(data.user.id);
         }
       } else {
-        const id = "1cb1c31b-7e8e-448c-b766-662ac7dfdb16";
-        await fetchUserData(id);
+        // const id = "1cb1c31b-7e8e-448c-b766-662ac7dfdb16";
+        // await fetchUserData(id);
         // initRealtime(id);
-        setAuthUser({ id: "1cb1c31b-7e8e-448c-b766-662ac7dfdb16" }); // TODO test only
-        // navigate("/register");
+        // setAuthUser({ id: "1cb1c31b-7e8e-448c-b766-662ac7dfdb16" }); // TODO test only
+        navigate("/login");
       }
       setLoading(false);
     };

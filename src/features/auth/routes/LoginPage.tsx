@@ -1,9 +1,9 @@
-import { LoginForm } from "@/features/auth/components/login-form";
+import { AuthForm } from "@/features/auth/components/login-form";
 
 function LoginPage() {
   return (
     <div className="min-w-1/4">
-      <LoginForm />
+      <AuthForm />
     </div>
   );
 }
