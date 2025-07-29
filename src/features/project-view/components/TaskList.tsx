@@ -189,7 +189,7 @@ export function TaskListItem({ task }) {
               {/* Tag */}
               {task.tags?.length > 0 &&
                 task.tags.map((tag) => (
-                  <span className="border border-muted-foreground rounded-full px-1.5 py-0.25 text-xs text-muted-foreground mr-2">
+                  <span className="border border-muted-foreground rounded-full px-1.5 py-0.25 text-xs text-muted-foreground mr-2 w-fit">
                     {tag}
                   </span>
                 ))}
