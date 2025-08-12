@@ -147,6 +147,7 @@ export function TaskListItem({ task }) {
               <DropdownMenuTask
                 setIsDropdownOpen={setIsDropdownOpen}
                 isDropdownOpen={isDropdownOpen}
+                task={task}
               >
                 <Ellipsis className="text-primary" />
               </DropdownMenuTask>
@@ -335,15 +336,22 @@ function TaskList() {
   useEffect(() => {
     if (currentBlockType === "targets") {
       // filter all tasks whose parent is target
-      const filteredTasks = tasks.filter(
-        (task) => task.target_id === currentBlock.id && task.node_id === null
-      );
+      const filteredTasks = tasks.filter((task) => {
+        const isRepeating = task.is_recurring && !task.is_repeat_origin;
+        console.log(isRepeating);
+        return (
+          task.target_id === currentBlock.id &&
+          task.node_id === null &&
+          !isRepeating
+        );
+      });
       setTaskList(filteredTasks);
     } else if (currentBlockType === "nodes") {
       // filter all tasks whose parent is target
-      const filteredTasks = tasks.filter(
-        (task) => task.node_id === currentBlock.id
-      );
+      const filteredTasks = tasks.filter((task) => {
+        const isRepeating = task.is_recurring && !task.is_repeat_origin;
+        return task.node_id === currentBlock.id && !isRepeating;
+      });
       setTaskList(filteredTasks);
     }
   }, [currentBlock, currentBlockType, tasks]);

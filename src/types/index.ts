@@ -51,6 +51,8 @@ export interface Task {
   is_recurring?: boolean;
   repeat_interval?: string;
   repeat_id?: string;
+  repeat_at?: string;
+  is_repeat_origin?: boolean;
   notes?: string;
   sort_order?: number;
   created_at: string;

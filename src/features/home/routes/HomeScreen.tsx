@@ -31,8 +31,8 @@ export default function TodayPage() {
 
   // Filter tasks to show only those due today
   const todayTasks = tasks.filter((task) => {
-    if (!task.due_date) return false;
-    const dueDate = new Date(task.due_date);
+    if (!task.when) return false;
+    const dueDate = new Date(task.when);
     const today = new Date();
     return (
       dueDate.getFullYear() === today.getFullYear() &&
