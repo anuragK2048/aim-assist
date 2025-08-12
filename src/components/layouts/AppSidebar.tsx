@@ -27,6 +27,7 @@ import ProjectList from "@/features/project-list/components/ProjectList";
 import { useAppStore } from "@/store/useAppStore";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export const CustomSidebarGroupLabel = () => (
   <>
@@ -88,6 +89,15 @@ export function AppSidebar() {
   function handleAddNewTarget(parentGoalId) {
     addBlock("user", "targets", { title: "", goal_id: parentGoalId });
   }
+  async function handleLogout() {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error.message);
+    } else {
+      console.log("Signed out successfully");
+      window.location.href = "/login";
+    }
+  }
   return (
     <Sidebar>
       <SidebarHeader>
@@ -130,8 +140,9 @@ export function AppSidebar() {
                   <Settings2 />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[325px]">
                 <ModeToggle />
+                <Button onClick={handleLogout}>Logout</Button>
               </DialogContent>
             </form>
           </Dialog>
