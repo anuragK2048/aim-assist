@@ -3,7 +3,7 @@ import { Ellipsis } from "lucide-react";
 import { useCurrentBlockStore } from "../store/useCurrentBlock";
 import { useEffect, useState } from "react";
 import { useAppStore } from "@/store/useAppStore";
-import { DropdownMenuDemo } from "./Dropdown";
+import { DropdownMenuTitle } from "./Dropdown";
 import { useLocation, useNavigate } from "react-router";
 import MirrorInput from "@/components/common/MirrorInput";
 
@@ -71,9 +71,9 @@ function TitleSection() {
         />
 
         <div>
-          <DropdownMenuDemo onDeleteSelect={handleDelete}>
+          <DropdownMenuTitle onDeleteSelect={handleDelete}>
             <Ellipsis className="text-primary" />
-          </DropdownMenuDemo>
+          </DropdownMenuTitle>
         </div>
       </div>
 

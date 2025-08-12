@@ -6,7 +6,7 @@ import NodeList from "@/features/project-view/components/NodeList";
 import { useCurrentBlockStore } from "../store/useCurrentBlock";
 import TargetList from "../components/TargetList";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Delete, Plus, Trash } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { useProjectViewStore } from "../store/useProjectViewStore";
 import { useParams } from "react-router";
@@ -73,7 +73,7 @@ function ProjectViewPage() {
                 deleteTask(selectedTaskId);
               }}
             >
-              Delete Selected Task <Plus />
+              Delete Selected Task <Trash />
             </Button>
           ) : (
             <div className="flex gap-4">

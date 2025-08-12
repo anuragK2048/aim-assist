@@ -1,69 +1,31 @@
-import {
-  Calendar,
-  CalendarCheck,
-  ChevronDown,
-  Home,
-  Inbox,
-  Notebook,
-  NotebookPen,
-  NotebookText,
-  Plus,
-  PlusIcon,
-  Search,
-  Settings,
-  Settings2,
-  View,
-} from "lucide-react";
+import { ChevronDown, Home, PlusIcon, Settings2 } from "lucide-react";
 
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupAction,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSkeleton,
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@components/ui/collapsible";
 import { Link } from "react-router";
 import { Button } from "@components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ModeToggle } from "../common/ModeToggle";
 import ProjectList from "@/features/project-list/components/ProjectList";
 import { useAppStore } from "@/store/useAppStore";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
-import { Popover } from "@radix-ui/react-popover";
 import { useState } from "react";
 
 export const CustomSidebarGroupLabel = () => (

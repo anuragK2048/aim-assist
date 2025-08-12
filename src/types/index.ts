@@ -50,6 +50,7 @@ export interface Task {
   reminder_at?: string;
   is_recurring?: boolean;
   repeat_interval?: string;
+  repeat_id?: string;
   notes?: string;
   sort_order?: number;
   created_at: string;

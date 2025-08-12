@@ -1,11 +1,4 @@
-import {
-  CheckSquare,
-  FileText,
-  List,
-  Flag,
-  Tag,
-  Calendar as CalendarIcon,
-} from "lucide-react";
+import { Flag, Tag, Calendar as CalendarIcon, Ellipsis } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Calendar } from "@components/ui/calendar";
 import {
@@ -23,6 +16,7 @@ import {
   formatToUserFriendlyDate,
   parseDate,
 } from "@/lib/date-helpers";
+import { DropdownMenuTask } from "./Dropdown";
 
 export function TaskListItem({ task }) {
   const updateBlock = useAppStore.getState().updateBlock;
@@ -53,6 +47,7 @@ export function TaskListItem({ task }) {
   const [isWhenPopoverOpen, setIsWhenPopoverOpen] = useState(false);
   const [isDueDatePopoverOpen, setIsDueDatePopoverOpen] = useState(false);
   const boxRef = useRef(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     setTitle(task.title);
@@ -77,14 +72,30 @@ export function TaskListItem({ task }) {
         }, 100);
       }
     }
-
-    if (isSelected || isClicked) {
+    if ((isSelected || isClicked) && !isDropdownOpen) {
+      console.log("listener attached");
       document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
+      console.log("listener removed");
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isSelected, isClicked, title, description]);
+  }, [
+    isSelected,
+    isClicked,
+    title,
+    description,
+    isDropdownOpen,
+    setSelectedTaskId,
+    task.id,
+    updateBlock,
+  ]);
+
+  // useEffect(()=>{
+  //   if(isDropdownOpen){
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   }
+  // },[isDropdownOpen])
 
   // Handle task details mutations
   function saveChanges() {
@@ -122,15 +133,25 @@ export function TaskListItem({ task }) {
 
         {/* Task Title */}
         {isSelected ? (
-          <input
-            type="text"
-            className="font-medium mr-2 outline-none w-full"
-            value={title}
-            placeholder="New Task"
-            autoFocus
-            onChange={(e) => setTitle(e.target.value)}
-            onBlur={saveChanges}
-          />
+          <>
+            <input
+              type="text"
+              className="font-medium mr-2 outline-none w-full"
+              value={title}
+              placeholder="New Task"
+              autoFocus
+              onChange={(e) => setTitle(e.target.value)}
+              onBlur={saveChanges}
+            />
+            <div>
+              <DropdownMenuTask
+                setIsDropdownOpen={setIsDropdownOpen}
+                isDropdownOpen={isDropdownOpen}
+              >
+                <Ellipsis className="text-primary" />
+              </DropdownMenuTask>
+            </div>
+          </>
         ) : (
           <span
             className={`mr-2 text-sm select-none ${
@@ -140,13 +161,6 @@ export function TaskListItem({ task }) {
             {title ? title : "New Task"}
           </span>
         )}
-
-        {/* {!isSelected && (
-          <>
-            <FileText className="text-muted-foreground w-4 h-4 mr-1" />
-            <List className="text-muted-foreground w-4 h-4 mr-2" />
-          </>
-        )} */}
 
         {/* Tag */}
         {!isSelected &&
