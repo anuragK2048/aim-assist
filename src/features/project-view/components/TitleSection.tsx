@@ -20,11 +20,16 @@ function TitleSection() {
     setDescription(currentBlock?.description || "");
   }, [currentBlock]);
 
-  function saveChanges(changedTitle: string) {
+  function saveTitle(changedTitle: string) {
     updateBlock("user", currentBlockType, {
       id: currentBlock.id,
       title: changedTitle,
-      description,
+    });
+  }
+  function saveDescription(changedDescription: string) {
+    updateBlock("user", currentBlockType, {
+      id: currentBlock.id,
+      description: changedDescription,
     });
   }
 
@@ -58,7 +63,7 @@ function TitleSection() {
         <MirrorInput
           classname={"text-2xl"}
           text={title}
-          onSave={saveChanges}
+          onSave={saveTitle}
           placeholder={
             currentBlockType === "targets"
               ? "New Target"
@@ -83,7 +88,7 @@ function TitleSection() {
         onChange={(e) => setDescription(e.target.value)}
         className="border-none outline-none resize-none text-foreground/85 text-sm"
         rows={2}
-        onBlur={saveChanges}
+        onBlur={(e) => saveDescription(e.target.value)}
       />
     </div>
   );
